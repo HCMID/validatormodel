@@ -33,13 +33,18 @@ md"# MID validator notebook"
 md"## Configuration"
 
 # ╔═╡ 7da35330-4d0b-11eb-3487-81d04b9d1f4a
-md"""XML editions are in:
+md"""Subdirectory for XML editions:
 $(@bind editions TextField(default="editions"))
+"""
+
+# ╔═╡ 97afc2a2-4d0f-11eb-3869-8ff78542ee6b
+md"""Subdirectory for DSE tables:
+$(@bind dsedir TextField(default="dse"))
 """
 
 # ╔═╡ 83083c48-4d0b-11eb-10ee-15323c58e479
 md"""---
-#### Code libraries
+The cells in this block import required code libraries.
 """
 
 # ╔═╡ 0545e9ee-4d0c-11eb-2e3e-7753da1e02f7
@@ -84,7 +89,7 @@ end
 # ╔═╡ 527f86ea-4d0f-11eb-1440-293fc241c198
 md"""
 Repository root: 
-$(@bind reporoot TextField(default=initroot))
+$(@bind reporoot TextField((80,1); default=initroot))
 """
 
 # ╔═╡ 53dd4ae6-4d0e-11eb-1ac4-d77658c5b3d3
@@ -99,10 +104,11 @@ end
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─7da35330-4d0b-11eb-3487-81d04b9d1f4a
+# ╟─97afc2a2-4d0f-11eb-3869-8ff78542ee6b
 # ╟─83083c48-4d0b-11eb-10ee-15323c58e479
-# ╠═8e3f7536-4d0b-11eb-13dc-c786ef06e27b
-# ╠═db6cad90-4d0d-11eb-28ad-e16c43bec2c6
+# ╟─8e3f7536-4d0b-11eb-13dc-c786ef06e27b
+# ╟─db6cad90-4d0d-11eb-28ad-e16c43bec2c6
 # ╟─0545e9ee-4d0c-11eb-2e3e-7753da1e02f7
-# ╟─53dd4ae6-4d0e-11eb-1ac4-d77658c5b3d3
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
+# ╟─53dd4ae6-4d0e-11eb-1ac4-d77658c5b3d3
 # ╟─33f05ce6-4d0e-11eb-206d-35763c8fdd07
