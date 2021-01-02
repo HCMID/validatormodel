@@ -26,11 +26,23 @@ using PlutoUI
 # ╔═╡ 5c5d9426-4d0b-11eb-2eee-d11655453f29
 md"# MID validator notebook"
 
-# ╔═╡ e8a5ddb0-4d0d-11eb-39c5-01602f517042
+# ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
+md"## Summary of contents"
 
+# ╔═╡ 142e0644-4d13-11eb-3b89-c17cf5611ad3
+md"## Validation results"
 
 # ╔═╡ 72ae34b0-4d0b-11eb-2aa2-5121099491db
-md"## Configuration"
+md"""## Configuration
+
+### Directory organization
+"""
+
+# ╔═╡ 527f86ea-4d0f-11eb-1440-293fc241c198
+md"""
+Repository root: 
+$(@bind reporoot TextField((50,1)); default=pwd())
+"""
 
 # ╔═╡ 7da35330-4d0b-11eb-3487-81d04b9d1f4a
 md"""Subdirectory for XML editions:
@@ -46,6 +58,27 @@ $(@bind dsedir TextField(default="dse"))
 md"""---
 The cells in this block import required code libraries.
 """
+
+# ╔═╡ 50c8bdb4-4d12-11eb-262d-73b0553b6364
+md"""
+---
+
+Organizing contents
+"""
+
+# ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
+xmleditions = begin
+	filter(f -> endswith(f, "xml"), readdir(reporoot * editions))
+end
+
+# ╔═╡ 86f739ee-4d12-11eb-28bf-85a424c369e7
+editionslist = begin
+	items = map(ed -> "<li>" * ed * "</li>", xmleditions)
+	HTML("<p>Your editions:</p><ul>" * join(items, "\n") * "</ul>")
+end
+
+# ╔═╡ e8a5ddb0-4d0d-11eb-39c5-01602f517042
+editionslist
 
 # ╔═╡ 0545e9ee-4d0c-11eb-2e3e-7753da1e02f7
 md"""
@@ -78,20 +111,6 @@ css = html"""
 </style>
 """
 
-# ╔═╡ 33f05ce6-4d0e-11eb-206d-35763c8fdd07
-# Don't re-execute this cell or you'll
-# keep walking up the directory tree!
-initroot = begin
-	cd("..")
-	pwd()
-end
-
-# ╔═╡ 527f86ea-4d0f-11eb-1440-293fc241c198
-md"""
-Repository root: 
-$(@bind reporoot TextField((80,1); default=initroot))
-"""
-
 # ╔═╡ 53dd4ae6-4d0e-11eb-1ac4-d77658c5b3d3
 begin
 	msg = "<p class='note'>Using <b>" * reporoot * "</b> as repository's root directory.</p>"
@@ -100,7 +119,9 @@ end
 
 # ╔═╡ Cell order:
 # ╟─5c5d9426-4d0b-11eb-2eee-d11655453f29
-# ╠═e8a5ddb0-4d0d-11eb-39c5-01602f517042
+# ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
+# ╟─e8a5ddb0-4d0d-11eb-39c5-01602f517042
+# ╟─142e0644-4d13-11eb-3b89-c17cf5611ad3
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─7da35330-4d0b-11eb-3487-81d04b9d1f4a
@@ -108,7 +129,9 @@ end
 # ╟─83083c48-4d0b-11eb-10ee-15323c58e479
 # ╟─8e3f7536-4d0b-11eb-13dc-c786ef06e27b
 # ╟─db6cad90-4d0d-11eb-28ad-e16c43bec2c6
+# ╟─50c8bdb4-4d12-11eb-262d-73b0553b6364
+# ╟─af505654-4d11-11eb-07a0-efd94c6ff985
+# ╟─86f739ee-4d12-11eb-28bf-85a424c369e7
 # ╟─0545e9ee-4d0c-11eb-2e3e-7753da1e02f7
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─53dd4ae6-4d0e-11eb-1ac4-d77658c5b3d3
-# ╟─33f05ce6-4d0e-11eb-206d-35763c8fdd07
