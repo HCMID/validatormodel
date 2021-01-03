@@ -135,25 +135,6 @@ struct CitationConfig
 	ctparser
 end
 
-# ╔═╡ e3371418-4d33-11eb-3cd0-ed52600e1850
-function fromcex(s::AbstractString) #, delimiter = "|")
-	delimiter = "|"
-	parts = split(s,delimiter)
-	if size(parts,1) != 3
-		throw(ArgumentError("Invalid CEX string $(s).  Should have 3 columns"))
-	else
-		try
-			ctsu = CtsUrn(parts[1])
-			fnctn = Meta.parse(parts[3])
-			CitationConfig(ctsu, parts[2], fnctn)
-		catch e
-			throw(e)
-		end
-	end
-	
-
-end
-
 # ╔═╡ 37b53fac-4d56-11eb-0151-9d792d546365
 fromcex("urn|citation.cex|print")
 
@@ -177,5 +158,4 @@ fromcex("urn|citation.cex|print")
 # ╟─53dd4ae6-4d0e-11eb-1ac4-d77658c5b3d3
 # ╟─8e3ac1a8-4d33-11eb-15fc-d7ace694d1a7
 # ╠═afb1cde0-4d33-11eb-2aa0-e9c5d0c4c5e6
-# ╠═e3371418-4d33-11eb-3cd0-ed52600e1850
 # ╠═37b53fac-4d56-11eb-0151-9d792d546365
