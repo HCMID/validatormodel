@@ -5,7 +5,7 @@ Sample repository for HC MID validation and verification using an interactive Pl
 
 Requirements:  julia.
 
-Start julia, then:
+From a terminal `cd` into the `notebooks` directory, and run `julia`. Then at the `julia` prompt, enter these two commands:
 
 ```julia
 using Pluto
