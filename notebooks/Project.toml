@@ -1,0 +1,9 @@
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+CitableText = "41e66566-473b-49d4-85b7-da83b66615d8"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
+PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+
+[compat]
+CitableText = "0.3"
