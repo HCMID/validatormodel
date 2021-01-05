@@ -1,7 +1,7 @@
 # validatormodel
 
 
-Sample repository for HC MID validation using an interactive Pluto notebook.
+Sample repository for HC MID validation and verification using an interactive Pluto notebook.
 
 Requirements:  julia.
 
@@ -12,4 +12,4 @@ using Pluto
 Pluto.run()
 ```
 
-Within notebook, open validator
+Within Pluto, open the generic `midvalidator.jl` notebook.  If your project has additional project-specific tests, they should be managed in `projectvalidator.jl`, so open that notebook as well.
