@@ -13,15 +13,19 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 8e3f7536-4d0b-11eb-13dc-c786ef06e27b
+# ╔═╡ 9b7d76ac-4faf-11eb-17de-69db047d5f91
 begin
-	using Pkg
+	import Pkg
+	Pkg.activate(".")
 	Pkg.add("PlutoUI")
+	Pkg.add("CitableText")
+	Pkg.add("CSV")
+	Pkg.add("HTTP")
+	using PlutoUI
+	using CitableText
+	using CSV
+	using HTTP
 end
-
-
-# ╔═╡ db6cad90-4d0d-11eb-28ad-e16c43bec2c6
-using PlutoUI
 
 # ╔═╡ 5c5d9426-4d0b-11eb-2eee-d11655453f29
 md"# MID validator notebook"
@@ -39,10 +43,7 @@ md"""## Configuration
 """
 
 # ╔═╡ 527f86ea-4d0f-11eb-1440-293fc241c198
-md"""
-Repository root: 
-$(@bind reporoot TextField((50,1)); default=pwd())
-"""
+reporoot = dirname(pwd())
 
 # ╔═╡ 7da35330-4d0b-11eb-3487-81d04b9d1f4a
 md"""Subdirectory for XML editions:
@@ -54,11 +55,6 @@ md"""Subdirectory for DSE tables:
 $(@bind dsedir TextField(default="dse"))
 """
 
-# ╔═╡ 83083c48-4d0b-11eb-10ee-15323c58e479
-md"""---
-The cells in this block import required code libraries.
-"""
-
 # ╔═╡ 50c8bdb4-4d12-11eb-262d-73b0553b6364
 md"""
 ---
@@ -68,7 +64,7 @@ Organizing contents
 
 # ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
 xmleditions = begin
-	filter(f -> endswith(f, "xml"), readdir(reporoot * editions))
+	filter(f -> endswith(f, "xml"), readdir(reporoot * "/" * editions))
 end
 
 # ╔═╡ 86f739ee-4d12-11eb-28bf-85a424c369e7
@@ -118,6 +114,7 @@ begin
 end
 
 # ╔═╡ Cell order:
+# ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─5c5d9426-4d0b-11eb-2eee-d11655453f29
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
 # ╟─e8a5ddb0-4d0d-11eb-39c5-01602f517042
@@ -126,9 +123,6 @@ end
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─7da35330-4d0b-11eb-3487-81d04b9d1f4a
 # ╟─97afc2a2-4d0f-11eb-3869-8ff78542ee6b
-# ╟─83083c48-4d0b-11eb-10ee-15323c58e479
-# ╟─8e3f7536-4d0b-11eb-13dc-c786ef06e27b
-# ╟─db6cad90-4d0d-11eb-28ad-e16c43bec2c6
 # ╟─50c8bdb4-4d12-11eb-262d-73b0553b6364
 # ╟─af505654-4d11-11eb-07a0-efd94c6ff985
 # ╟─86f739ee-4d12-11eb-28bf-85a424c369e7
