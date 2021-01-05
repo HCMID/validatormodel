@@ -13,16 +13,19 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 8e3f7536-4d0b-11eb-13dc-c786ef06e27b
+# ╔═╡ 9b7d76ac-4faf-11eb-17de-69db047d5f91
 begin
-	using Pkg
+	import Pkg
+	Pkg.activate(".")
 	Pkg.add("PlutoUI")
 	Pkg.add("CitableText")
+	Pkg.add("CSV")
+	Pkg.add("HTTP")
+	using PlutoUI
+	using CitableText
+	using CSV
+	using HTTP
 end
-
-
-# ╔═╡ db6cad90-4d0d-11eb-28ad-e16c43bec2c6
-using PlutoUI, CitableText
 
 # ╔═╡ 5c5d9426-4d0b-11eb-2eee-d11655453f29
 md"# MID validator notebook"
@@ -40,10 +43,7 @@ md"""## Configuration
 """
 
 # ╔═╡ 527f86ea-4d0f-11eb-1440-293fc241c198
-md"""
-Repository root: 
-$(@bind reporoot TextField((50,1)); default=pwd())
-"""
+reporoot = dirname(pwd())
 
 # ╔═╡ 7da35330-4d0b-11eb-3487-81d04b9d1f4a
 md"""Subdirectory for XML editions:
@@ -55,11 +55,6 @@ md"""Subdirectory for DSE tables:
 $(@bind dsedir TextField(default="dse"))
 """
 
-# ╔═╡ 83083c48-4d0b-11eb-10ee-15323c58e479
-md"""---
-The cells in this block import required code libraries.
-"""
-
 # ╔═╡ 50c8bdb4-4d12-11eb-262d-73b0553b6364
 md"""
 ---
@@ -69,7 +64,7 @@ Organizing contents
 
 # ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
 xmleditions = begin
-	filter(f -> endswith(f, "xml"), readdir(reporoot * editions))
+	filter(f -> endswith(f, "xml"), readdir(reporoot * "/" * editions))
 end
 
 # ╔═╡ 86f739ee-4d12-11eb-28bf-85a424c369e7
@@ -118,27 +113,8 @@ begin
 	HTML(msg)
 end
 
-# ╔═╡ 8e3ac1a8-4d33-11eb-15fc-d7ace694d1a7
-md"""
----
-
-### Prototypes
-
-structs and functions here should be moved into public packages once they've been added to the Julia Registry.
-
-"""
-
-# ╔═╡ afb1cde0-4d33-11eb-2aa0-e9c5d0c4c5e6
-struct CitationConfig
-	urn::CtsUrn
-	filename
-	ctparser
-end
-
-# ╔═╡ 37b53fac-4d56-11eb-0151-9d792d546365
-fromcex("urn|citation.cex|print")
-
 # ╔═╡ Cell order:
+# ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─5c5d9426-4d0b-11eb-2eee-d11655453f29
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
 # ╟─e8a5ddb0-4d0d-11eb-39c5-01602f517042
@@ -147,15 +123,9 @@ fromcex("urn|citation.cex|print")
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─7da35330-4d0b-11eb-3487-81d04b9d1f4a
 # ╟─97afc2a2-4d0f-11eb-3869-8ff78542ee6b
-# ╟─83083c48-4d0b-11eb-10ee-15323c58e479
-# ╠═8e3f7536-4d0b-11eb-13dc-c786ef06e27b
-# ╠═db6cad90-4d0d-11eb-28ad-e16c43bec2c6
 # ╟─50c8bdb4-4d12-11eb-262d-73b0553b6364
 # ╟─af505654-4d11-11eb-07a0-efd94c6ff985
 # ╟─86f739ee-4d12-11eb-28bf-85a424c369e7
 # ╟─0545e9ee-4d0c-11eb-2e3e-7753da1e02f7
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─53dd4ae6-4d0e-11eb-1ac4-d77658c5b3d3
-# ╟─8e3ac1a8-4d33-11eb-15fc-d7ace694d1a7
-# ╠═afb1cde0-4d33-11eb-2aa0-e9c5d0c4c5e6
-# ╠═37b53fac-4d56-11eb-0151-9d792d546365
