@@ -3,9 +3,18 @@
 
 Sample repository for HC MID validation and verification using an interactive Pluto notebook.
 
-Requirements:  julia.
 
-From a terminal `cd` into the `notebooks` directory, and run `julia`. Then at the `julia` prompt, enter these two commands:
+## Installation
+
+Requirements:  julia, with the `Pluto` module installed. 
+
+1. [Download julia](https://julialang.org/downloads/)
+2. Start julia, and from the `julia` prompt, enter `] add Pluto` (including the right bracket!)
+
+
+## Usage
+
+From a bash terminal, `cd` into the `notebooks` directory, and start `julia`. Then at the `julia` prompt, enter these two commands:
 
 ```julia
 using Pluto
