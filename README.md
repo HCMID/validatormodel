@@ -1,7 +1,7 @@
-# validatormodel
+# `validatormodel`, version `0.1.0`
 
 
-Sample repository for HC MID validation and verification using an interactive Pluto notebook.
+Template repository illustrating HC MID validation and verification using an interactive Pluto notebook.
 
 
 ## Installation
@@ -14,7 +14,7 @@ Requirements:  julia, with the `Pluto` module installed.
 
 ## Usage
 
-From a bash terminal, `cd` into the `notebooks` directory, and start `julia`. Then at the `julia` prompt, enter these two commands:
+From a bash terminal, `cd` into the `notebooks` directory, and start `julia`. (If you're using VS Code, you can use the `Terminal` menu to open a new terminal in VS Code.) Then at the `julia` prompt, enter these two commands:
 
 ```julia
 using Pluto
