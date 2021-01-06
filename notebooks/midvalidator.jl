@@ -152,8 +152,16 @@ md"## Summary of text cataloging
 
 "
 
+# ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
+nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
+
+
+# ╔═╡ d0218ccc-5040-11eb-2249-755b68e24f4b
+md"Using version **$(nbversion)** of MID validation notebook"
+
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
+# ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
 # ╟─a7acabd8-502b-11eb-326f-2725d64c5b85
@@ -172,3 +180,4 @@ md"## Summary of text cataloging
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
 # ╟─8ea2fb34-4ff3-11eb-211d-857b2c643b61
+# ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
