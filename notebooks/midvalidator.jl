@@ -30,7 +30,8 @@ begin
 end
 
 # ╔═╡ 5c5d9426-4d0b-11eb-2eee-d11655453f29
-md"# MID validator notebook"
+md"# MID validator notebook
+"
 
 # ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
 md"## Summary of contents"
@@ -103,9 +104,20 @@ md"""
 Formatting
 """
 
+# ╔═╡ db26554c-5029-11eb-0627-cf019fae0e9b
+function hdr() 
+	HTML("<blockquote><p class='center'>Validating project repository in directory:</p><h4 class='center'><i>" * reporoot * "</i></h4></blockquote>")
+end
+
+# ╔═╡ d9fae7aa-5029-11eb-3061-89361e04f904
+hdr()
+
 # ╔═╡ 0fea289c-4d0c-11eb-0eda-f767b124aa57
 css = html"""
 <style>
+ .center {
+text-align: center;
+}
 .highlight {
   background: yellow;  
 }
@@ -127,12 +139,6 @@ css = html"""
  }
 </style>
 """
-
-# ╔═╡ 53dd4ae6-4d0e-11eb-1ac4-d77658c5b3d3
-begin
-	msg = "<p class='note'>Using <b>" * reporoot * "</b> as repository's root directory.</p>"
-	HTML(msg)
-end
 
 # ╔═╡ 788ba1fc-4ff3-11eb-1a02-f1d099051ef5
 md"""Prototyping for `EditorsRepo` 
@@ -158,10 +164,11 @@ typeof(cite)
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─5c5d9426-4d0b-11eb-2eee-d11655453f29
+# ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
 # ╟─e8a5ddb0-4d0d-11eb-39c5-01602f517042
 # ╟─142e0644-4d13-11eb-3b89-c17cf5611ad3
-# ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
+# ╠═72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─7da35330-4d0b-11eb-3487-81d04b9d1f4a
 # ╟─97afc2a2-4d0f-11eb-3869-8ff78542ee6b
 # ╟─50c8bdb4-4d12-11eb-262d-73b0553b6364
@@ -171,8 +178,8 @@ typeof(cite)
 # ╠═4618a496-4ff2-11eb-0dd0-d1390252fbd1
 # ╠═124b4904-4ff3-11eb-316a-d76573925421
 # ╟─0545e9ee-4d0c-11eb-2e3e-7753da1e02f7
+# ╠═db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
-# ╟─53dd4ae6-4d0e-11eb-1ac4-d77658c5b3d3
 # ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
 # ╠═8ea2fb34-4ff3-11eb-211d-857b2c643b61
 # ╠═2de2b626-4ff4-11eb-0ee5-75016c78cb4b
