@@ -43,11 +43,8 @@ md"""## Indexing in DSE tables
 
 # ╔═╡ 72ae34b0-4d0b-11eb-2aa2-5121099491db
 html"""<blockquote>
-<h2>Settings for this notebook</h2>
+<h3>Adjustable settings for this repository</h3>
 </blockquote>
-
-<h3>Directory organization</h3>
-
 
 """
 
@@ -61,11 +58,14 @@ md"""Subdirectory for DSE tables:
 $(@bind dsedir TextField(default="dse"))
 """
 
-# ╔═╡ 50c8bdb4-4d12-11eb-262d-73b0553b6364
-md"""
----
+# ╔═╡ 88b55824-503f-11eb-101f-a12e4725f738
+html"""<blockquote>
+<h3>Cells for loading and formatting data</h3>
+</blockquote>
 
-Organizing contents and loading data
+<p>You should not normally edit contents of these cells.
+
+
 """
 
 # ╔═╡ 527f86ea-4d0f-11eb-1440-293fc241c198
@@ -86,12 +86,6 @@ end
 
 # ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
 filesonline = xmleditions()
-
-# ╔═╡ 0545e9ee-4d0c-11eb-2e3e-7753da1e02f7
-md"""
----
-Formatting
-"""
 
 # ╔═╡ db26554c-5029-11eb-0627-cf019fae0e9b
 function hdr() 
@@ -171,10 +165,9 @@ md"## Summary of text cataloging
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─7da35330-4d0b-11eb-3487-81d04b9d1f4a
 # ╟─97afc2a2-4d0f-11eb-3869-8ff78542ee6b
-# ╟─50c8bdb4-4d12-11eb-262d-73b0553b6364
+# ╟─88b55824-503f-11eb-101f-a12e4725f738
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─af505654-4d11-11eb-07a0-efd94c6ff985
-# ╟─0545e9ee-4d0c-11eb-2e3e-7753da1e02f7
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
