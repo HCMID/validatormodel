@@ -19,12 +19,15 @@ begin
 	Pkg.activate(".")
 	Pkg.add("PlutoUI")
 	Pkg.add("CitableText")
+	Pkg.add("CitableObject")
 	Pkg.add("CSV")
 	Pkg.add("HTTP")
 	Pkg.add("DataFrames")
+	# Not yet in registry
 	Pkg.add(url="https://github.com/HCMID/CitableTeiReaders.jl")
 	using PlutoUI
 	using CitableText
+	using CitableObject
 	using CSV
 	using DataFrames
 	using HTTP
@@ -77,17 +80,41 @@ catalogedtexts = begin
 	fromfile(CatalogedText, reporoot * "/" * editions * "/catalog.cex")
 end
 
+# ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
+nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
+
+
+# ╔═╡ d0218ccc-5040-11eb-2249-755b68e24f4b
+md"Using version **$(nbversion)** of MID validation notebook"
+
 # ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
 function xmleditions()
 	loadem
-	filenames = filter(f -> endswith(f, "xml"), readdir(reporoot * "/" * editions))
-	DataFrame( filename = filenames)
+	#filenames = filter(f -> endswith(f, "xml"), readdir(reporoot * "/" * editions))
+	DataFrame( filename = xmlfilenames())
 end
 
 # ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
 filesonline = xmleditions()
 
+# ╔═╡ 0c1bd986-5059-11eb-128f-ab73320d2bf4
+xmlfilenames = function()
+	loadem
+	filenames = filter(f -> endswith(f, "xml"), readdir(reporoot * "/" * editions))
+	filenames
+end
+
+
+# ╔═╡ 14889dce-5055-11eb-1da8-adf98e2e5885
+# Collect names of all .cex files in DSE directory.
+function dsefiles()
+	loadem
+	filenames = filter(f -> endswith(f, "cex"), readdir(reporoot * "/" * dsedir))
+	filenames
+end
+
 # ╔═╡ db26554c-5029-11eb-0627-cf019fae0e9b
+# Format HTML header for notebook.
 function hdr() 
 	HTML("<blockquote  class='center'><h1>MID validation notebook</h1>" *
 		"<p>Using repository in directory:</p><h4><i>" * reporoot * "</i></h4></blockquote>")
@@ -125,7 +152,7 @@ text-align: center;
 """
 
 # ╔═╡ 788ba1fc-4ff3-11eb-1a02-f1d099051ef5
-md"""Prototyping for `EditorsRepo` 
+md"""Prototyping for `EditorsRepo`  and `CitablePhysicalText` (DSE)
 
 """
 
@@ -152,12 +179,54 @@ md"## Summary of text cataloging
 
 "
 
-# ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
-nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
+# ╔═╡ 49444ab8-5055-11eb-3d56-67100f4dbdb9
+# Read a single DSE file into a DataFrame
+function readdse(f)
+	loadem
+	arr = CSV.File(f, skipto=2, delim="|") |> Array
+	# text, image, surface
+	urns = map(row -> CtsUrn(row[1]), arr)
+	files = map(row -> Cite2Urn(row[2]), arr)
+	fnctns = map(row -> Cite2Urn(row[3]), arr)
+	DataFrame(urn = urns, file = files, converter = fnctns)
+end 
 
+# ╔═╡ 3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
+# Fake experiment.
+# In reality, need to concat all CEX data into a single dataframe.
+dse_df = begin 
+	alldse = dsefiles()
+	fullnames = map(f -> reporoot * "/" * dsedir * "/" * f, alldse)
+	dfs = map(f -> readdse(f), fullnames)
+	#	onedf = readdse(reporoot * "/" * dsedir * "/" * alldse[1])
+	#onedf
+	alldfs = vcat(dfs)
+	#typeof(alldfs)
+	alldfs
+end
 
-# ╔═╡ d0218ccc-5040-11eb-2249-755b68e24f4b
-md"Using version **$(nbversion)** of MID validation notebook"
+# ╔═╡ 38375cea-5057-11eb-1829-b103c0831bf6
+length(dse_df)
+
+# ╔═╡ dbbf722a-5058-11eb-26ab-fb80ee36370d
+typeof(dsefiles())
+
+# ╔═╡ 6166ecb6-5057-11eb-19cd-59100a749001
+# Fake experiment.
+# in reality:
+# 1. match document URNs with file names.
+# 2. cycle those pairs, and turn into a corpus
+# 3. could then recursively concat corpora
+begin 
+	docurn = CtsUrn("urn:cts:lycian:tl.tl56.v1:")
+	fname = reporoot * "/" * editions * "/" * xmlfilenames()[1]
+
+	xml = open(fname) do file
+	    read(file, String)
+	end
+    c = simpleAbReader(xml, docurn)
+
+end
 
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
@@ -175,9 +244,16 @@ md"Using version **$(nbversion)** of MID validation notebook"
 # ╟─97afc2a2-4d0f-11eb-3869-8ff78542ee6b
 # ╟─88b55824-503f-11eb-101f-a12e4725f738
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
-# ╟─af505654-4d11-11eb-07a0-efd94c6ff985
+# ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
+# ╠═af505654-4d11-11eb-07a0-efd94c6ff985
+# ╠═0c1bd986-5059-11eb-128f-ab73320d2bf4
+# ╟─14889dce-5055-11eb-1da8-adf98e2e5885
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
 # ╟─8ea2fb34-4ff3-11eb-211d-857b2c643b61
-# ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
+# ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
+# ╠═38375cea-5057-11eb-1829-b103c0831bf6
+# ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
+# ╠═dbbf722a-5058-11eb-26ab-fb80ee36370d
+# ╠═6166ecb6-5057-11eb-19cd-59100a749001
