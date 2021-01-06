@@ -61,6 +61,11 @@ md"""Subdirectory for DSE tables:
 $(@bind dsedir TextField(default="dse"))
 """
 
+# ╔═╡ 98d7a57a-5064-11eb-328c-2d922aecc642
+md"""Delimiter for DSE tables:
+$(@bind delimiter TextField((3,1), default="|"))
+"""
+
 # ╔═╡ 88b55824-503f-11eb-101f-a12e4725f738
 html"""<blockquote>
 <h3>Cells for loading and formatting data</h3>
@@ -152,12 +157,14 @@ text-align: center;
 """
 
 # ╔═╡ 788ba1fc-4ff3-11eb-1a02-f1d099051ef5
-md"""Prototyping for `EditorsRepo`  and `CitablePhysicalText` (DSE)
+md"""---
+
+Prototyping for `EditorsRepo`  and `CitablePhysicalText` (DSE)
 
 """
 
 # ╔═╡ 8ea2fb34-4ff3-11eb-211d-857b2c643b61
-#  CSV.File(filename, skipto=2, delim=delimiter)
+# Read citation configuration into a DataFrame
 function readcite()
 	loadem
 	arr = CSV.File(reporoot * "/" * editions * "/citation.cex", skipto=2, delim="|") |> Array
@@ -208,8 +215,31 @@ end
 # ╔═╡ 38375cea-5057-11eb-1829-b103c0831bf6
 length(dse_df)
 
+# ╔═╡ 83cac370-5063-11eb-3654-2be7d823652c
+#=
+match document URNs with file names, and with parser function.
+=#
+
+function editedfiles()
+	configedall = innerjoin(catalogedtexts, markupschemes, on = :urn)
+	configedall
+end
+
+
+# ╔═╡ 0ab5e022-5064-11eb-3362-df6eafabca6b
+editedfiles()
+
 # ╔═╡ dbbf722a-5058-11eb-26ab-fb80ee36370d
 typeof(dsefiles())
+
+# ╔═╡ 42b03540-5064-11eb-19a6-37738914ba06
+begin
+	allfiles = editedfiles()
+	allfiles[:, [:urn, :converter, :file]]
+end
+
+# ╔═╡ f92b4b7a-5064-11eb-15e1-49a9304f6a31
+editedfiles()
 
 # ╔═╡ 6166ecb6-5057-11eb-19cd-59100a749001
 # Fake experiment.
@@ -242,11 +272,12 @@ end
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─7da35330-4d0b-11eb-3487-81d04b9d1f4a
 # ╟─97afc2a2-4d0f-11eb-3869-8ff78542ee6b
+# ╟─98d7a57a-5064-11eb-328c-2d922aecc642
 # ╟─88b55824-503f-11eb-101f-a12e4725f738
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
-# ╠═af505654-4d11-11eb-07a0-efd94c6ff985
-# ╠═0c1bd986-5059-11eb-128f-ab73320d2bf4
+# ╟─af505654-4d11-11eb-07a0-efd94c6ff985
+# ╟─0c1bd986-5059-11eb-128f-ab73320d2bf4
 # ╟─14889dce-5055-11eb-1da8-adf98e2e5885
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
@@ -255,5 +286,9 @@ end
 # ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
 # ╠═38375cea-5057-11eb-1829-b103c0831bf6
 # ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
+# ╠═0ab5e022-5064-11eb-3362-df6eafabca6b
+# ╠═83cac370-5063-11eb-3654-2be7d823652c
 # ╠═dbbf722a-5058-11eb-26ab-fb80ee36370d
+# ╠═42b03540-5064-11eb-19a6-37738914ba06
+# ╠═f92b4b7a-5064-11eb-15e1-49a9304f6a31
 # ╠═6166ecb6-5057-11eb-19cd-59100a749001
