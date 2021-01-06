@@ -229,17 +229,27 @@ end
 # ╔═╡ 0ab5e022-5064-11eb-3362-df6eafabca6b
 editedfiles()
 
-# ╔═╡ dbbf722a-5058-11eb-26ab-fb80ee36370d
-typeof(dsefiles())
-
 # ╔═╡ 42b03540-5064-11eb-19a6-37738914ba06
-begin
+triplets = function()
+	loadem
 	allfiles = editedfiles()
-	allfiles[:, [:urn, :converter, :file]]
+	triples = allfiles[:, [:urn, :converter, :file]]
+	triples[1,:]
+	# one row:
+	#onetriple = triples[1,:]
+	#onetriple
 end
 
-# ╔═╡ f92b4b7a-5064-11eb-15e1-49a9304f6a31
-editedfiles()
+# ╔═╡ bc9f40a4-5068-11eb-38dd-7bbb330383ab
+begin
+	allfiles = editedfiles()
+	triples = allfiles[:, [:urn, :converter, :file]]
+	x = triples[1,:]
+	x
+end
+
+# ╔═╡ 4f8537f4-5067-11eb-3bbc-e3921ca5a024
+
 
 # ╔═╡ 6166ecb6-5057-11eb-19cd-59100a749001
 # Fake experiment.
@@ -288,7 +298,7 @@ end
 # ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
 # ╠═0ab5e022-5064-11eb-3362-df6eafabca6b
 # ╠═83cac370-5063-11eb-3654-2be7d823652c
-# ╠═dbbf722a-5058-11eb-26ab-fb80ee36370d
 # ╠═42b03540-5064-11eb-19a6-37738914ba06
-# ╠═f92b4b7a-5064-11eb-15e1-49a9304f6a31
+# ╠═bc9f40a4-5068-11eb-38dd-7bbb330383ab
+# ╠═4f8537f4-5067-11eb-3bbc-e3921ca5a024
 # ╠═6166ecb6-5057-11eb-19cd-59100a749001
