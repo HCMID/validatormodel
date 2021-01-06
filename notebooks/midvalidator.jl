@@ -214,8 +214,8 @@ typeof(dsefiles())
 # ╔═╡ 6166ecb6-5057-11eb-19cd-59100a749001
 # Fake experiment.
 # in reality:
-# 1. match document URNs with file names.
-# 2. cycle those pairs, and turn into a corpus
+# 1. match document URNs with file names, and with parser function.
+# 2. cycle those triplets, and turn into a corpus.
 # 3. could then recursively concat corpora
 begin 
 	docurn = CtsUrn("urn:cts:lycian:tl.tl56.v1:")
