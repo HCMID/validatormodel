@@ -22,11 +22,13 @@ begin
 	Pkg.add("CSV")
 	Pkg.add("HTTP")
 	Pkg.add("DataFrames")
+	Pkg.add(url="https://github.com/HCMID/CitableTeiReaders.jl")
 	using PlutoUI
 	using CitableText
 	using CSV
 	using DataFrames
 	using HTTP
+	using CitableTeiReaders
 end
 
 # ╔═╡ c37ed214-502b-11eb-284e-31588e9de7c4
@@ -140,7 +142,7 @@ function readcite()
 	arr = CSV.File(reporoot * "/" * editions * "/citation.cex", skipto=2, delim="|") |> Array
 	urns = map(row -> CtsUrn(row[1]), arr)
 	files = map(row -> row[2], arr)
-	fnctns = map(row -> row[3], arr)
+	fnctns = map(row -> eval(Meta.parse(row[3])), arr)
 	DataFrame(urn = urns, file = files, converter = fnctns)
 end
 
@@ -162,7 +164,7 @@ md"## Summary of text cataloging
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
 # ╟─a7acabd8-502b-11eb-326f-2725d64c5b85
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
-# ╠═8a426414-502d-11eb-1e7d-357a363bb627
+# ╟─8a426414-502d-11eb-1e7d-357a363bb627
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
 # ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
