@@ -34,10 +34,21 @@ md"# MID validator notebook
 "
 
 # ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
-md"## Summary of contents"
+md"## Summary of texts"
 
-# ╔═╡ 142e0644-4d13-11eb-3b89-c17cf5611ad3
-md"## Validation results"
+# ╔═╡ 6beaff5a-502b-11eb-0225-cbc0aadf69fa
+md"""## Indexing in DSE tables
+"""
+
+# ╔═╡ 72ae34b0-4d0b-11eb-2aa2-5121099491db
+html"""<blockquote>
+<h2>Settings for this notebook</h2>
+</blockquote>
+
+<h3>Directory organization</h3>
+
+
+"""
 
 # ╔═╡ 7da35330-4d0b-11eb-3487-81d04b9d1f4a
 md"""Subdirectory for XML editions:
@@ -58,15 +69,6 @@ Organizing contents
 
 # ╔═╡ 527f86ea-4d0f-11eb-1440-293fc241c198
 reporoot = dirname(pwd())
-
-# ╔═╡ 72ae34b0-4d0b-11eb-2aa2-5121099491db
-md"""## Configuration
-
-### Directory organization
-
-Editing in repository: **$(reporoot)**
-
-"""
 
 # ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
 xmleditions = begin
@@ -167,8 +169,8 @@ typeof(cite)
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
 # ╟─e8a5ddb0-4d0d-11eb-39c5-01602f517042
-# ╟─142e0644-4d13-11eb-3b89-c17cf5611ad3
-# ╠═72ae34b0-4d0b-11eb-2aa2-5121099491db
+# ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
+# ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─7da35330-4d0b-11eb-3487-81d04b9d1f4a
 # ╟─97afc2a2-4d0f-11eb-3869-8ff78542ee6b
 # ╟─50c8bdb4-4d12-11eb-262d-73b0553b6364
