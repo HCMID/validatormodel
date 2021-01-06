@@ -33,8 +33,16 @@ end
 md"# MID validator notebook
 "
 
+# ╔═╡ c37ed214-502b-11eb-284e-31588e9de7c4
+md"Use the `Reload data` button to update your notebook."
+
+# ╔═╡ a7acabd8-502b-11eb-326f-2725d64c5b85
+@bind loadem Button("Reload data")
+
 # ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
-md"## Summary of texts"
+md"## Summary of texts
+
+Text catalog:"
 
 # ╔═╡ 6beaff5a-502b-11eb-0225-cbc0aadf69fa
 md"""## Indexing in DSE tables
@@ -150,6 +158,7 @@ md"""Prototyping for `EditorsRepo`
 # ╔═╡ 8ea2fb34-4ff3-11eb-211d-857b2c643b61
 #  CSV.File(filename, skipto=2, delim=delimiter)
 function readcite()
+	loadem
 	arr = CSV.File(reporoot * "/" * editions * "/citation.cex", skipto=2, delim="|") |> Array
 	urns = map(row -> CtsUrn(row[1]), arr)
 	files = map(row -> row[2], arr)
@@ -167,7 +176,10 @@ typeof(cite)
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─5c5d9426-4d0b-11eb-2eee-d11655453f29
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
+# ╟─c37ed214-502b-11eb-284e-31588e9de7c4
+# ╟─a7acabd8-502b-11eb-326f-2725d64c5b85
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
+# ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╟─e8a5ddb0-4d0d-11eb-39c5-01602f517042
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
@@ -176,13 +188,12 @@ typeof(cite)
 # ╟─50c8bdb4-4d12-11eb-262d-73b0553b6364
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─af505654-4d11-11eb-07a0-efd94c6ff985
-# ╠═86f739ee-4d12-11eb-28bf-85a424c369e7
+# ╟─86f739ee-4d12-11eb-28bf-85a424c369e7
 # ╠═4618a496-4ff2-11eb-0dd0-d1390252fbd1
 # ╠═124b4904-4ff3-11eb-316a-d76573925421
 # ╟─0545e9ee-4d0c-11eb-2e3e-7753da1e02f7
-# ╠═db26554c-5029-11eb-0627-cf019fae0e9b
+# ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
 # ╠═8ea2fb34-4ff3-11eb-211d-857b2c643b61
-# ╠═2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╠═6fd51a50-4ff8-11eb-0379-7d2c19a9c2d6
