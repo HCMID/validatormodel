@@ -25,6 +25,7 @@ begin
 	Pkg.add("DataFrames")
 	# Not yet in registry
 	Pkg.add(url="https://github.com/HCMID/CitableTeiReaders.jl")
+	Pkg.add(url="https://github.com/HCMID/EditorsRepo.jl")
 	using PlutoUI
 	using CitableText
 	using CitableObject
@@ -32,6 +33,7 @@ begin
 	using DataFrames
 	using HTTP
 	using CitableTeiReaders
+	using EditorsRepo
 end
 
 # ╔═╡ c37ed214-502b-11eb-284e-31588e9de7c4
@@ -84,6 +86,9 @@ catalogedtexts = begin
 	loadem
 	fromfile(CatalogedText, reporoot * "/" * editions * "/catalog.cex")
 end
+
+# ╔═╡ 46213fee-50fa-11eb-3a43-6b8a464b8043
+editorsrepo = EditingRepository(reporoot, editions, dsedir)
 
 # ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
 nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
@@ -284,16 +289,17 @@ catalogedtexts[:,:urn]
 # ╟─97afc2a2-4d0f-11eb-3869-8ff78542ee6b
 # ╟─98d7a57a-5064-11eb-328c-2d922aecc642
 # ╟─88b55824-503f-11eb-101f-a12e4725f738
+# ╟─46213fee-50fa-11eb-3a43-6b8a464b8043
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
 # ╟─af505654-4d11-11eb-07a0-efd94c6ff985
-# ╠═0c1bd986-5059-11eb-128f-ab73320d2bf4
-# ╟─14889dce-5055-11eb-1da8-adf98e2e5885
+# ╟─0c1bd986-5059-11eb-128f-ab73320d2bf4
+# ╠═14889dce-5055-11eb-1da8-adf98e2e5885
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
-# ╟─8ea2fb34-4ff3-11eb-211d-857b2c643b61
-# ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
+# ╠═8ea2fb34-4ff3-11eb-211d-857b2c643b61
+# ╠═3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
 # ╠═38375cea-5057-11eb-1829-b103c0831bf6
 # ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
 # ╠═0ab5e022-5064-11eb-3362-df6eafabca6b

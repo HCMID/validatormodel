@@ -110,6 +110,14 @@ git-tree-sha1 = "b7715ae18be02110a8cf9cc8ed2ccdb1e3e3aba2"
 uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 version = "0.26.1"
 
+[[EditorsRepo]]
+deps = ["CSV", "CitableBase", "CitableObject", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "Test"]
+git-tree-sha1 = "3f03e22ec0c248d4780ee00a2e9746e82e54d289"
+repo-rev = "main"
+repo-url = "https://github.com/HCMID/EditorsRepo.jl"
+uuid = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
+version = "0.1.0"
+
 [[EzXML]]
 deps = ["Printf", "XML2_jll"]
 git-tree-sha1 = "0fa3b52a04a4e210aeb1626def9c90df3ae65268"
