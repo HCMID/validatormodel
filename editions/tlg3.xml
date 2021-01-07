@@ -5,7 +5,7 @@
   <teiHeader>
     <fileDesc>
       <titleStmt>
-        <title>TL 25</title>
+        <title>TL 3</title>
         <editor>Dane Scott</editor>
       </titleStmt>
       <publicationStmt>
@@ -18,13 +18,10 @@
   </teiHeader>
   <text>
     <body>
-     <ab n="1"><w><unclear>e</unclear>beis</w> : tokedres : <unclear>?</unclear></ab>
-     <ab n="2"><w><unclear>t</unclear>owetE</w> : xssbezE : <w>kro<unclear>p</unclear></w></ab>
-     <ab n="3">tideimi : se porihi <w>me=<supplied>ti</supplied></w></ab>
-     <ab n="4">tohes : <placeName><w>tlANna</w></placeName> atro : <w>ehb<supplied>i</supplied></w></ab>
-     <ab n="5">se lado : ehbi : <persName><w>tikeokEprE</w></persName></ab>
-     <ab n="6">pilleNni : <persName><w>ortaqeyahN</w></persName> : kbatro</ab>
-     <ab n="7">se priyenobehN : tohesN</ab>
+     <ab n="1">ebENnE : xopA : mE=ti prNnawatE : <w n="1">te</w></ab>
+     <ab n="2"><w n="1">winezEi</w> : ppNtazah : <persname><w>asawAzala</w></persname></ab>
+     <ab n="3">tideimi : hrppi : ladi : se <w>tide<supplied>imi</supplied></w></ab>
+      <ab n="4"><w><choice><sic>p</sic><corr>m</corr></choice>iNti</w> : adaiyE <num>111</num></ab>
     </body>
   </text>
 </TEI>
