@@ -248,9 +248,6 @@ begin
 	x
 end
 
-# ╔═╡ 4f8537f4-5067-11eb-3bbc-e3921ca5a024
-
-
 # ╔═╡ 6166ecb6-5057-11eb-19cd-59100a749001
 # Fake experiment.
 # in reality:
@@ -267,6 +264,9 @@ begin
     c = simpleAbReader(xml, docurn)
 
 end
+
+# ╔═╡ 6330e4ce-50f8-11eb-24ce-a1b013abf7e6
+catalogedtexts[:,:urn]
 
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
@@ -287,7 +287,7 @@ end
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
 # ╟─af505654-4d11-11eb-07a0-efd94c6ff985
-# ╟─0c1bd986-5059-11eb-128f-ab73320d2bf4
+# ╠═0c1bd986-5059-11eb-128f-ab73320d2bf4
 # ╟─14889dce-5055-11eb-1da8-adf98e2e5885
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
@@ -300,5 +300,5 @@ end
 # ╠═83cac370-5063-11eb-3654-2be7d823652c
 # ╠═42b03540-5064-11eb-19a6-37738914ba06
 # ╠═bc9f40a4-5068-11eb-38dd-7bbb330383ab
-# ╠═4f8537f4-5067-11eb-3bbc-e3921ca5a024
 # ╠═6166ecb6-5057-11eb-19cd-59100a749001
+# ╠═6330e4ce-50f8-11eb-24ce-a1b013abf7e6
