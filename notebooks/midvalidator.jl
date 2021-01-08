@@ -69,7 +69,7 @@ md"""
 |--- | --- |
 | Configuration files are in | $(@bind configdir TextField(default="config")) |
 | XML editions are in | $(@bind editions TextField(default="editions")) |
-| DSE tables are in | $(@bind dse TextField(default="dse")) |
+| DSE tables are in | $(@bind dsedir TextField(default="dse")) |
 
 """
 
@@ -110,7 +110,6 @@ md"This is version **$(nbversion)** of MID validation notebook"
 # ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
 function xmleditions()
 	loadem
-	#filenames = filter(f -> endswith(f, "xml"), readdir(reporoot * "/" * editions))
 	DataFrame( filename = xmlfilenames())
 end
 
@@ -291,7 +290,7 @@ catalogedtexts[:,:urn]
 # ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
-# ╠═a7acabd8-502b-11eb-326f-2725d64c5b85
+# ╟─a7acabd8-502b-11eb-326f-2725d64c5b85
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
 # ╟─8a426414-502d-11eb-1e7d-357a363bb627
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
@@ -306,8 +305,8 @@ catalogedtexts[:,:urn]
 # ╟─46213fee-50fa-11eb-3a43-6b8a464b8043
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
-# ╟─af505654-4d11-11eb-07a0-efd94c6ff985
-# ╟─0c1bd986-5059-11eb-128f-ab73320d2bf4
+# ╠═af505654-4d11-11eb-07a0-efd94c6ff985
+# ╠═0c1bd986-5059-11eb-128f-ab73320d2bf4
 # ╠═71ea41d8-514b-11eb-2735-c152214415df
 # ╟─14889dce-5055-11eb-1da8-adf98e2e5885
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
