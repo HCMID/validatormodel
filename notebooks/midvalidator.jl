@@ -26,7 +26,7 @@ begin
 	Pkg.add("DataFrames")
 
 	# Not yet in registry
-	Pkg.add(url="https://github.com/HCMID/EditorsRepo.jl")
+	#Pkg.add(url="https://github.com/HCMID/EditorsRepo.jl#dev")
 	
 	using PlutoUI
 	using CitableText
@@ -36,14 +36,14 @@ begin
 	using DataFrames
 	using HTTP
 
-	using EditorsRepo
+	#using EditorsRepo
 end
 
 # ╔═╡ c37ed214-502b-11eb-284e-31588e9de7c4
-md"Use the `(Re)load data` button to update your notebook."
+md"Use the `Load/reload data` button to update your notebook."
 
 # ╔═╡ a7acabd8-502b-11eb-326f-2725d64c5b85
-@bind loadem Button("(Re)load data")
+@bind loadem Button("Load/reload data")
 
 # ╔═╡ 6beaff5a-502b-11eb-0225-cbc0aadf69fa
 md"""## 2. Indexing in DSE tables
@@ -94,11 +94,8 @@ reporoot = dirname(pwd())
 # ╔═╡ 8a426414-502d-11eb-1e7d-357a363bb627
 catalogedtexts = begin
 	loadem
-	fromfile(CatalogedText, reporoot * "/" * editions * "/catalog.cex")
+	fromfile(CatalogedText, reporoot * "/" * configdir * "/catalog.cex")
 end
-
-# ╔═╡ 46213fee-50fa-11eb-3a43-6b8a464b8043
-editorsrepo = EditingRepository(reporoot, editions, dsedir)
 
 # ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
 nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
@@ -109,31 +106,26 @@ md"This is version **$(nbversion)** of MID validation notebook"
 
 # ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
 function xmleditions()
-	loadem
+	#loadem
 	DataFrame( filename = xmlfilenames())
 end
 
-# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
-filesonline = xmleditions()
-
 # ╔═╡ 0c1bd986-5059-11eb-128f-ab73320d2bf4
+#=
 xmlfilenames = function()
-	loadem
+	#loadem
 	filenames = filter(f -> endswith(f, "xml"), readdir(reporoot * "/" * editions))
 	filenames
 end
-
+=#
 
 # ╔═╡ 14889dce-5055-11eb-1da8-adf98e2e5885
 # Collect names of all .cex files in DSE directory.
 function dsefiles()
-	loadem
+	#loadem
 	filenames = filter(f -> endswith(f, "cex"), readdir(reporoot * "/" * dsedir))
 	filenames
 end
-
-# ╔═╡ 71ea41d8-514b-11eb-2735-c152214415df
-dselist = dsefiles(editorsrepo)
 
 # ╔═╡ db26554c-5029-11eb-0627-cf019fae0e9b
 # Format HTML header for notebook.
@@ -183,8 +175,8 @@ Prototyping for `EditorsRepo`  and `CitablePhysicalText` (DSE)
 # ╔═╡ 8ea2fb34-4ff3-11eb-211d-857b2c643b61
 # Read citation configuration into a DataFrame
 function readcite()
-	loadem
-	arr = CSV.File(reporoot * "/" * editions * "/citation.cex", skipto=2, delim="|") |> Array
+	#loadem
+	arr = CSV.File(reporoot * "/" * configdir * "/citation.cex", skipto=2, delim="|") |> Array
 	urns = map(row -> CtsUrn(row[1]), arr)
 	files = map(row -> row[2], arr)
 	fnctns = map(row -> eval(Meta.parse(row[3])), arr)
@@ -192,16 +184,10 @@ function readcite()
 end
 
 # ╔═╡ 2de2b626-4ff4-11eb-0ee5-75016c78cb4b
-markupschemes = readcite()
-
-# ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
-md"## 1. Summary of text cataloging
-
-- **$(nrow(catalogedtexts))** text(s) cataloged
-- **$(nrow(markupschemes))** text(s) with a defined markup scheme
-- **$(nrow(filesonline))** file(s) found in editing directory
-
-"
+markupschemes = begin
+	loadem
+	readcite()
+end
 
 # ╔═╡ 49444ab8-5055-11eb-3d56-67100f4dbdb9
 # Read a single DSE file into a DataFrame
@@ -214,23 +200,6 @@ function readdse(f)
 	fnctns = map(row -> Cite2Urn(row[3]), arr)
 	DataFrame(urn = urns, file = files, converter = fnctns)
 end 
-
-# ╔═╡ 3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
-# Fake experiment.
-# In reality, need to concat all CEX data into a single dataframe.
-dse_df = begin 
-	alldse = dsefiles()
-	fullnames = map(f -> reporoot * "/" * dsedir * "/" * f, alldse)
-	dfs = map(f -> readdse(f), fullnames)
-	#	onedf = readdse(reporoot * "/" * dsedir * "/" * alldse[1])
-	#onedf
-	alldfs = vcat(dfs)
-	#typeof(alldfs)
-	alldfs
-end
-
-# ╔═╡ 38375cea-5057-11eb-1829-b103c0831bf6
-length(dse_df)
 
 # ╔═╡ 83cac370-5063-11eb-3654-2be7d823652c
 #=
@@ -271,6 +240,8 @@ end
 # 1. match document URNs with file names, and with parser function.
 # 2. cycle those triplets, and turn into a corpus.
 # 3. could then recursively concat corpora
+
+#=
 begin 
 	docurn = CtsUrn("urn:cts:lycian:tl.tl56.v1:")
 	fname = reporoot * "/" * editions * "/" * xmlfilenames()[1]
@@ -281,9 +252,109 @@ begin
     c = simpleAbReader(xml, docurn)
 
 end
+=#
 
 # ╔═╡ 6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 catalogedtexts[:,:urn]
+
+# ╔═╡ 05b84db8-51cb-11eb-0a46-630fb235b828
+md"""
+---
+
+Content temporarily copied in from `EditorsRepo` while waiting for package to clear in Julia Registry
+"""
+
+# ╔═╡ 1e34fe7c-51cb-11eb-292a-457d1828f29f
+struct EditingRepository
+    root::AbstractString
+    editions::AbstractString
+    dse::AbstractString
+    configs::AbstractString
+
+    function EditingRepository(r, e, d, c)
+        root = endswith(r,'/') ? chop(r, head=0, tail=1) : r
+        editions = endswith(e, '/') ? chop(e, head=0, tail=1) : e
+        editingdir = root * "/" * editions
+        if (! isdir(editingdir))
+            throw(ArgumentError("Editing directory $(editingdir) does not exist."))
+        end
+
+        dse = endswith(d, '/') ? chop(d, head=0, tail=1) : d
+        dsedir = root * "/" * dse
+        if (! isdir(dsedir))
+            throw(ArgumentError("DSE directory $(dsedir) does not exist."))
+        end
+        
+        config = endswith(c, "/") ? chop(c, head=0, tail=1)  : c
+        configdir = root * "/" * config
+        if (! isdir(configdir))
+            throw(ArgumentError("Configuration directory $(configdir) does not exist."))
+        end
+        new(root, editions, dse, config)
+    end
+end
+
+# ╔═╡ 46213fee-50fa-11eb-3a43-6b8a464b8043
+editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
+
+# ╔═╡ ccbc12f0-51cb-11eb-26bb-19165830f7d5
+function xmlfiles(repository::EditingRepository)
+    fullpath = readdir(repository.root * "/" * repository.editions)
+    filenames = filter(f -> endswith(f, "xml"), fullpath)        
+	filenames
+end
+
+# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
+filesonline =   begin
+	loadem
+	fnames  =	xmlfiles(editorsrepo)
+	DataFrame(filename = fnames)
+end
+
+# ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
+md"""## 1. Summary of text cataloging
+
+- **$(nrow(catalogedtexts))** text(s) cataloged
+- **$(nrow(markupschemes))** text(s) with a defined markup scheme
+- **$(nrow(filesonline))** file(s) found in editing directory
+"""
+
+#=
+
+
+
+
+=#
+
+# ╔═╡ 0736d258-51cc-11eb-21a0-2976bdfcf17e
+function dsefiles(repository::EditingRepository)
+    fullpath = readdir(repository.root * "/" * repository.dse)
+    filenames = filter(f -> endswith(f, "cex"), fullpath)        
+	filenames
+end
+
+# ╔═╡ 71ea41d8-514b-11eb-2735-c152214415df
+dselist = begin
+	loadem
+	dsefiles(editorsrepo)
+end
+
+# ╔═╡ 3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
+# Fake experiment.
+# In reality, need to concat all CEX data into a single dataframe.
+dse_df = begin 
+	alldse = dsefiles()
+	fullnames = map(f -> reporoot * "/" * dsedir * "/" * f, alldse)
+	dfs = map(f -> readdse(f), fullnames)
+	#	onedf = readdse(reporoot * "/" * dsedir * "/" * alldse[1])
+	#onedf
+	alldfs = vcat(dfs)
+	#typeof(alldfs)
+	alldfs
+end
+
+# ╔═╡ 38375cea-5057-11eb-1829-b103c0831bf6
+length(dse_df)
 
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
@@ -308,17 +379,21 @@ catalogedtexts[:,:urn]
 # ╠═af505654-4d11-11eb-07a0-efd94c6ff985
 # ╠═0c1bd986-5059-11eb-128f-ab73320d2bf4
 # ╠═71ea41d8-514b-11eb-2735-c152214415df
-# ╟─14889dce-5055-11eb-1da8-adf98e2e5885
+# ╠═14889dce-5055-11eb-1da8-adf98e2e5885
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
-# ╟─8ea2fb34-4ff3-11eb-211d-857b2c643b61
+# ╠═8ea2fb34-4ff3-11eb-211d-857b2c643b61
 # ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
 # ╠═38375cea-5057-11eb-1829-b103c0831bf6
 # ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
-# ╠═0ab5e022-5064-11eb-3362-df6eafabca6b
+# ╟─0ab5e022-5064-11eb-3362-df6eafabca6b
 # ╟─83cac370-5063-11eb-3654-2be7d823652c
-# ╠═42b03540-5064-11eb-19a6-37738914ba06
+# ╟─42b03540-5064-11eb-19a6-37738914ba06
 # ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
-# ╟─6166ecb6-5057-11eb-19cd-59100a749001
+# ╠═6166ecb6-5057-11eb-19cd-59100a749001
 # ╠═6330e4ce-50f8-11eb-24ce-a1b013abf7e6
+# ╟─05b84db8-51cb-11eb-0a46-630fb235b828
+# ╠═1e34fe7c-51cb-11eb-292a-457d1828f29f
+# ╠═ccbc12f0-51cb-11eb-26bb-19165830f7d5
+# ╠═0736d258-51cc-11eb-21a0-2976bdfcf17e
