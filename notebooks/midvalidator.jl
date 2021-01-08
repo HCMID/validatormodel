@@ -104,12 +104,6 @@ nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
 # ╔═╡ d0218ccc-5040-11eb-2249-755b68e24f4b
 md"This is version **$(nbversion)** of MID validation notebook"
 
-# ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
-function xmleditions()
-	#loadem
-	DataFrame( filename = xmlfilenames())
-end
-
 # ╔═╡ 0c1bd986-5059-11eb-128f-ab73320d2bf4
 #=
 xmlfilenames = function()
@@ -118,14 +112,6 @@ xmlfilenames = function()
 	filenames
 end
 =#
-
-# ╔═╡ 14889dce-5055-11eb-1da8-adf98e2e5885
-# Collect names of all .cex files in DSE directory.
-function dsefiles()
-	#loadem
-	filenames = filter(f -> endswith(f, "cex"), readdir(reporoot * "/" * dsedir))
-	filenames
-end
 
 # ╔═╡ db26554c-5029-11eb-0627-cf019fae0e9b
 # Format HTML header for notebook.
@@ -172,49 +158,6 @@ Prototyping for `EditorsRepo`  and `CitablePhysicalText` (DSE)
 
 """
 
-# ╔═╡ 8ea2fb34-4ff3-11eb-211d-857b2c643b61
-# Read citation configuration into a DataFrame
-function readcite()
-	#loadem
-	arr = CSV.File(reporoot * "/" * configdir * "/citation.cex", skipto=2, delim="|") |> Array
-	urns = map(row -> CtsUrn(row[1]), arr)
-	files = map(row -> row[2], arr)
-	fnctns = map(row -> eval(Meta.parse(row[3])), arr)
-	DataFrame(urn = urns, file = files, converter = fnctns)
-end
-
-# ╔═╡ 2de2b626-4ff4-11eb-0ee5-75016c78cb4b
-markupschemes = begin
-	loadem
-	readcite()
-end
-
-# ╔═╡ 49444ab8-5055-11eb-3d56-67100f4dbdb9
-# Read a single DSE file into a DataFrame
-function readdse(f)
-	loadem
-	arr = CSV.File(f, skipto=2, delim="|") |> Array
-	# text, image, surface
-	urns = map(row -> CtsUrn(row[1]), arr)
-	files = map(row -> Cite2Urn(row[2]), arr)
-	fnctns = map(row -> Cite2Urn(row[3]), arr)
-	DataFrame(urn = urns, file = files, converter = fnctns)
-end 
-
-# ╔═╡ 83cac370-5063-11eb-3654-2be7d823652c
-#=
-match document URNs with file names, and with parser function.
-=#
-
-function editedfiles()
-	configedall = innerjoin(catalogedtexts, markupschemes, on = :urn)
-	configedall
-end
-
-
-# ╔═╡ 0ab5e022-5064-11eb-3362-df6eafabca6b
-editedfiles()
-
 # ╔═╡ 42b03540-5064-11eb-19a6-37738914ba06
 triplets = function()
 	loadem
@@ -224,14 +167,6 @@ triplets = function()
 	# one row:
 	#onetriple = triples[1,:]
 	#onetriple
-end
-
-# ╔═╡ bc9f40a4-5068-11eb-38dd-7bbb330383ab
-begin
-	allfiles = editedfiles()
-	triples = allfiles[:, [:urn, :converter, :file]]
-	x = triples[1,:]
-	x
 end
 
 # ╔═╡ 6166ecb6-5057-11eb-19cd-59100a749001
@@ -311,6 +246,71 @@ filesonline =   begin
 	DataFrame(filename = fnames)
 end
 
+# ╔═╡ 0736d258-51cc-11eb-21a0-2976bdfcf17e
+function dsefiles(repository::EditingRepository)
+    fullpath = readdir(repository.root * "/" * repository.dse)
+    filenames = filter(f -> endswith(f, "cex"), fullpath)        
+	filenames
+end
+
+# ╔═╡ 71ea41d8-514b-11eb-2735-c152214415df
+dselist = begin
+	loadem
+	dsefiles(editorsrepo)
+end
+
+# ╔═╡ 9bf7ea5a-51cd-11eb-2111-09702c904914
+md"*Add these or something similar to `EditorsRepo`*"
+
+# ╔═╡ 49444ab8-5055-11eb-3d56-67100f4dbdb9
+# Read a single DSE file into a DataFrame
+function readdse(f)
+	loadem
+	arr = CSV.File(f, skipto=2, delim="|") |> Array
+	# text, image, surface
+	urns = map(row -> CtsUrn(row[1]), arr)
+	files = map(row -> Cite2Urn(row[2]), arr)
+	fnctns = map(row -> Cite2Urn(row[3]), arr)
+	DataFrame(urn = urns, file = files, converter = fnctns)
+end 
+
+# ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
+function xmleditions()
+	#loadem
+	DataFrame( filename = xmlfilenames())
+end
+
+# ╔═╡ 3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
+# Fake experiment.
+# In reality, need to concat all CEX data into a single dataframe.
+dse_df = begin 
+	alldse = dsefiles(editorsrepo)
+	fullnames = map(f -> reporoot * "/" * dsedir * "/" * f, alldse)
+	dfs = map(f -> readdse(f), fullnames)
+	#	onedf = readdse(reporoot * "/" * dsedir * "/" * alldse[1])
+	#onedf
+	alldfs = vcat(dfs)
+	#typeof(alldfs)
+	alldfs
+end
+
+# ╔═╡ 8ea2fb34-4ff3-11eb-211d-857b2c643b61
+# Read citation configuration into a DataFrame
+function readcite()
+	#loadem
+	arr = CSV.File(reporoot * "/" * configdir * "/citation.cex", skipto=2, delim="|") |> Array
+	urns = map(row -> CtsUrn(row[1]), arr)
+	files = map(row -> row[2], arr)
+	fnctns = map(row -> eval(Meta.parse(row[3])), arr)
+	DataFrame(urn = urns, file = files, converter = fnctns)
+end
+
+# ╔═╡ 2de2b626-4ff4-11eb-0ee5-75016c78cb4b
+markupschemes = begin
+	loadem
+	readcite()
+end
+
 # ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
 md"""## 1. Summary of text cataloging
 
@@ -326,35 +326,38 @@ md"""## 1. Summary of text cataloging
 
 =#
 
-# ╔═╡ 0736d258-51cc-11eb-21a0-2976bdfcf17e
-function dsefiles(repository::EditingRepository)
-    fullpath = readdir(repository.root * "/" * repository.dse)
-    filenames = filter(f -> endswith(f, "cex"), fullpath)        
-	filenames
+# ╔═╡ 83cac370-5063-11eb-3654-2be7d823652c
+#=
+match document URNs with file names, and with parser function.
+=#
+
+function editedfiles()
+	configedall = innerjoin(catalogedtexts, markupschemes, on = :urn)
+	configedall
 end
 
-# ╔═╡ 71ea41d8-514b-11eb-2735-c152214415df
-dselist = begin
-	loadem
-	dsefiles(editorsrepo)
+
+# ╔═╡ bc9f40a4-5068-11eb-38dd-7bbb330383ab
+begin
+	allfiles = editedfiles()
+	triples = allfiles[:, [:urn, :converter, :file]]
+	x = triples[1,:]
+	x
 end
 
-# ╔═╡ 3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
-# Fake experiment.
-# In reality, need to concat all CEX data into a single dataframe.
-dse_df = begin 
-	alldse = dsefiles()
-	fullnames = map(f -> reporoot * "/" * dsedir * "/" * f, alldse)
-	dfs = map(f -> readdse(f), fullnames)
-	#	onedf = readdse(reporoot * "/" * dsedir * "/" * alldse[1])
-	#onedf
-	alldfs = vcat(dfs)
-	#typeof(alldfs)
-	alldfs
+# ╔═╡ f4312ab2-51cd-11eb-3b0e-91c03f39cda4
+# Read orthography configuration into a DataFrame
+#
+function readortho()
+	arr = CSV.File(reporoot * "/" * configdir * "/orthography.cex", skipto=2, delim="|") |> Array
+	urns = map(row -> CtsUrn(row[1]), arr)
+	fnctns = map(row -> eval(Meta.parse(row[2])), arr)
+	DataFrame(urn = urns, converter = fnctns)
 end
 
-# ╔═╡ 38375cea-5057-11eb-1829-b103c0831bf6
-length(dse_df)
+
+# ╔═╡ 23c832b6-51ce-11eb-16b1-07c702944fda
+readortho()
 
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
@@ -376,24 +379,24 @@ length(dse_df)
 # ╟─46213fee-50fa-11eb-3a43-6b8a464b8043
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
-# ╠═af505654-4d11-11eb-07a0-efd94c6ff985
 # ╠═0c1bd986-5059-11eb-128f-ab73320d2bf4
 # ╠═71ea41d8-514b-11eb-2735-c152214415df
-# ╠═14889dce-5055-11eb-1da8-adf98e2e5885
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
-# ╠═8ea2fb34-4ff3-11eb-211d-857b2c643b61
-# ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
-# ╠═38375cea-5057-11eb-1829-b103c0831bf6
-# ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
-# ╟─0ab5e022-5064-11eb-3362-df6eafabca6b
-# ╟─83cac370-5063-11eb-3654-2be7d823652c
 # ╟─42b03540-5064-11eb-19a6-37738914ba06
 # ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
-# ╠═6166ecb6-5057-11eb-19cd-59100a749001
+# ╟─6166ecb6-5057-11eb-19cd-59100a749001
 # ╠═6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 # ╟─05b84db8-51cb-11eb-0a46-630fb235b828
-# ╠═1e34fe7c-51cb-11eb-292a-457d1828f29f
-# ╠═ccbc12f0-51cb-11eb-26bb-19165830f7d5
-# ╠═0736d258-51cc-11eb-21a0-2976bdfcf17e
+# ╟─1e34fe7c-51cb-11eb-292a-457d1828f29f
+# ╟─ccbc12f0-51cb-11eb-26bb-19165830f7d5
+# ╟─0736d258-51cc-11eb-21a0-2976bdfcf17e
+# ╟─83cac370-5063-11eb-3654-2be7d823652c
+# ╟─9bf7ea5a-51cd-11eb-2111-09702c904914
+# ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
+# ╟─af505654-4d11-11eb-07a0-efd94c6ff985
+# ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
+# ╠═8ea2fb34-4ff3-11eb-211d-857b2c643b61
+# ╠═23c832b6-51ce-11eb-16b1-07c702944fda
+# ╠═f4312ab2-51cd-11eb-3b0e-91c03f39cda4
