@@ -20,30 +20,37 @@ begin
 	Pkg.add("PlutoUI")
 	Pkg.add("CitableText")
 	Pkg.add("CitableObject")
+	Pkg.add("CitableTeiReaders")
 	Pkg.add("CSV")
 	Pkg.add("HTTP")
 	Pkg.add("DataFrames")
+
 	# Not yet in registry
-	Pkg.add(url="https://github.com/HCMID/CitableTeiReaders.jl")
 	Pkg.add(url="https://github.com/HCMID/EditorsRepo.jl")
+	
 	using PlutoUI
 	using CitableText
 	using CitableObject
+	using CitableTeiReaders
 	using CSV
 	using DataFrames
 	using HTTP
-	using CitableTeiReaders
+
 	using EditorsRepo
 end
 
 # ╔═╡ c37ed214-502b-11eb-284e-31588e9de7c4
-md"Use the `Reload data` button to update your notebook."
+md"Use the `(Re)load data` button to update your notebook."
 
 # ╔═╡ a7acabd8-502b-11eb-326f-2725d64c5b85
-@bind loadem Button("Reload data")
+@bind loadem Button("(Re)load data")
 
 # ╔═╡ 6beaff5a-502b-11eb-0225-cbc0aadf69fa
-md"""## Indexing in DSE tables
+md"""## 2. Indexing in DSE tables
+"""
+
+# ╔═╡ abbf895a-51b3-11eb-1bc3-f932be13133f
+md"""## 3. Orthography and tokenization
 """
 
 # ╔═╡ 72ae34b0-4d0b-11eb-2aa2-5121099491db
@@ -53,19 +60,22 @@ html"""<blockquote>
 
 """
 
-# ╔═╡ 7da35330-4d0b-11eb-3487-81d04b9d1f4a
-md"""Subdirectory for XML editions:
-$(@bind editions TextField(default="editions"))
-"""
+# ╔═╡ 851842f4-51b5-11eb-1ed9-ad0a6eb633d2
+md"Organization of your repository"
 
-# ╔═╡ 97afc2a2-4d0f-11eb-3869-8ff78542ee6b
-md"""Subdirectory for DSE tables:
-$(@bind dsedir TextField(default="dse"))
+# ╔═╡ 8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
+md"""
+| Content | Subdirectory |
+|--- | --- |
+| Configuration files are in | $(@bind configdir TextField(default="config")) |
+| XML editions are in | $(@bind editions TextField(default="editions")) |
+| DSE tables are in | $(@bind dse TextField(default="dse")) |
+
 """
 
 # ╔═╡ 98d7a57a-5064-11eb-328c-2d922aecc642
 md"""Delimiter for DSE tables:
-$(@bind delimiter TextField((3,1), default="|"))
+$(@bind delimiter TextField(default="|"))
 """
 
 # ╔═╡ 88b55824-503f-11eb-101f-a12e4725f738
@@ -95,7 +105,7 @@ nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
 
 
 # ╔═╡ d0218ccc-5040-11eb-2249-755b68e24f4b
-md"Using version **$(nbversion)** of MID validation notebook"
+md"This is version **$(nbversion)** of MID validation notebook"
 
 # ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
 function xmleditions()
@@ -122,6 +132,9 @@ function dsefiles()
 	filenames = filter(f -> endswith(f, "cex"), readdir(reporoot * "/" * dsedir))
 	filenames
 end
+
+# ╔═╡ 71ea41d8-514b-11eb-2735-c152214415df
+dselist = dsefiles(editorsrepo)
 
 # ╔═╡ db26554c-5029-11eb-0627-cf019fae0e9b
 # Format HTML header for notebook.
@@ -183,7 +196,7 @@ end
 markupschemes = readcite()
 
 # ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
-md"## Summary of text cataloging
+md"## 1. Summary of text cataloging
 
 - **$(nrow(catalogedtexts))** text(s) cataloged
 - **$(nrow(markupschemes))** text(s) with a defined markup scheme
@@ -278,15 +291,16 @@ catalogedtexts[:,:urn]
 # ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
-# ╟─a7acabd8-502b-11eb-326f-2725d64c5b85
+# ╠═a7acabd8-502b-11eb-326f-2725d64c5b85
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
 # ╟─8a426414-502d-11eb-1e7d-357a363bb627
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
 # ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
+# ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
-# ╟─7da35330-4d0b-11eb-3487-81d04b9d1f4a
-# ╟─97afc2a2-4d0f-11eb-3869-8ff78542ee6b
+# ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
+# ╟─8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
 # ╟─98d7a57a-5064-11eb-328c-2d922aecc642
 # ╟─88b55824-503f-11eb-101f-a12e4725f738
 # ╟─46213fee-50fa-11eb-3a43-6b8a464b8043
@@ -294,17 +308,18 @@ catalogedtexts[:,:urn]
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
 # ╟─af505654-4d11-11eb-07a0-efd94c6ff985
 # ╟─0c1bd986-5059-11eb-128f-ab73320d2bf4
-# ╠═14889dce-5055-11eb-1da8-adf98e2e5885
+# ╠═71ea41d8-514b-11eb-2735-c152214415df
+# ╟─14889dce-5055-11eb-1da8-adf98e2e5885
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
-# ╠═8ea2fb34-4ff3-11eb-211d-857b2c643b61
-# ╠═3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
+# ╟─8ea2fb34-4ff3-11eb-211d-857b2c643b61
+# ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
 # ╠═38375cea-5057-11eb-1829-b103c0831bf6
 # ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
 # ╠═0ab5e022-5064-11eb-3362-df6eafabca6b
-# ╠═83cac370-5063-11eb-3654-2be7d823652c
+# ╟─83cac370-5063-11eb-3654-2be7d823652c
 # ╠═42b03540-5064-11eb-19a6-37738914ba06
-# ╠═bc9f40a4-5068-11eb-38dd-7bbb330383ab
-# ╠═6166ecb6-5057-11eb-19cd-59100a749001
+# ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
+# ╟─6166ecb6-5057-11eb-19cd-59100a749001
 # ╠═6330e4ce-50f8-11eb-24ce-a1b013abf7e6
