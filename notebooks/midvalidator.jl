@@ -159,9 +159,6 @@ Prototyping for <code>EditorsRepo</code>
 
 """
 
-# ╔═╡ 9bf7ea5a-51cd-11eb-2111-09702c904914
-md"*Add these or something similar to `EditorsRepo`*"
-
 # ╔═╡ 6166ecb6-5057-11eb-19cd-59100a749001
 # Fake experiment.
 # in reality:
@@ -242,11 +239,33 @@ orthography = begin
 	orthography_df(editorsrepo)
 end
 
-# ╔═╡ 4530dc46-5377-11eb-1548-3b68de92ed78
-md"""
----
+# ╔═╡ cb30618c-537b-11eb-01ca-3f7ca0fe2869
+html"""
+<hr/>
 
-*Already tested in next `dev` branch of `EditorsRepo`*
+<blockquote>
+Prototyping for <code>CitablePhysicalText</code> (DSE)
+</blockquote>
+
+
+"""
+
+# ╔═╡ d4ffdf08-537b-11eb-0f66-71fc864661b3
+md"See checklist in issues for `CitablePhysicalText` repo."
+
+# ╔═╡ f3f7e432-537b-11eb-0d2b-57a426b595e2
+html"""
+<hr/>
+
+<blockquote>
+<i>Already tested in next dev branch of <code>EditorsRepo</code></i>. 
+
+<p>
+Delete when updating version of <code>EditorsRepo</code></i>.
+</p>
+</blockquote>
+
+
 """
 
 # ╔═╡ 8ea2fb34-4ff3-11eb-211d-857b2c643b61
@@ -340,7 +359,6 @@ md"""## 1. Summary of text cataloging
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─8988790a-537a-11eb-1acb-ef423c2b6096
-# ╟─9bf7ea5a-51cd-11eb-2111-09702c904914
 # ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
 # ╟─6330e4ce-50f8-11eb-24ce-a1b013abf7e6
@@ -351,6 +369,8 @@ md"""## 1. Summary of text cataloging
 # ╟─e6e1d182-537a-11eb-0bca-01b7966e4d19
 # ╟─23c832b6-51ce-11eb-16b1-07c702944fda
 # ╟─f4312ab2-51cd-11eb-3b0e-91c03f39cda4
-# ╟─4530dc46-5377-11eb-1548-3b68de92ed78
+# ╟─cb30618c-537b-11eb-01ca-3f7ca0fe2869
+# ╟─d4ffdf08-537b-11eb-0f66-71fc864661b3
+# ╟─f3f7e432-537b-11eb-0d2b-57a426b595e2
 # ╟─8ea2fb34-4ff3-11eb-211d-857b2c643b61
 # ╟─b22fa6e6-5378-11eb-1e3b-9b5520179e73
