@@ -1,4 +1,4 @@
-# HC MID template repository, version `0.1.0`
+# HC MID template repository
 
 
 Template repository illustrating HC MID validation and verification using an interactive Pluto notebook.
