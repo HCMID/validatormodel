@@ -61,7 +61,7 @@ html"""<blockquote>
 """
 
 # ╔═╡ 851842f4-51b5-11eb-1ed9-ad0a6eb633d2
-md"Organization of your repository"
+md"**Organization of your repository**"
 
 # ╔═╡ 8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
 md"""
@@ -76,6 +76,21 @@ md"""
 # ╔═╡ 98d7a57a-5064-11eb-328c-2d922aecc642
 md"""Delimiter for DSE tables:
 $(@bind delimiter TextField(default="|"))
+"""
+
+# ╔═╡ 6ada2e5a-5397-11eb-292a-e5908dfc2e04
+md"**Digital image services**"
+
+# ╔═╡ 09e397b2-5397-11eb-0b66-1f5d1966ba9d
+md"""
+IIIF image service: 
+$(@bind iiif TextField((55,1), default="http://www.homermultitext.org/iipsrv"))
+"""
+
+# ╔═╡ 87a8daf4-5397-11eb-17cc-d9da3cc3acfa
+md"""
+Image Citation Tool: 
+$(@bind ict TextField((55,1), default="http://www.homermultitext.org/ict2/"))
 """
 
 # ╔═╡ 88b55824-503f-11eb-101f-a12e4725f738
@@ -102,12 +117,6 @@ end
 
 # ╔═╡ 46213fee-50fa-11eb-3a43-6b8a464b8043
 editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
-
-# ╔═╡ 71ea41d8-514b-11eb-2735-c152214415df
-dselist = begin
-	loadem
-	dsefiles(editorsrepo)
-end
 
 # ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
 nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
@@ -153,9 +162,6 @@ text-align: center;
  }
 </style>
 """
-
-# ╔═╡ 7a07eb28-538e-11eb-3c5d-1b69f152ebd8
-all_dse_files = dsefiles(editorsrepo)
 
 # ╔═╡ 8988790a-537a-11eb-1acb-ef423c2b6096
 html"""
@@ -351,20 +357,21 @@ end
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
 # ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
-# ╟─71ea41d8-514b-11eb-2735-c152214415df
 # ╟─7d83b94a-5392-11eb-0dd0-fb894692e19d
 # ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
 # ╟─8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
 # ╟─98d7a57a-5064-11eb-328c-2d922aecc642
+# ╟─6ada2e5a-5397-11eb-292a-e5908dfc2e04
+# ╟─09e397b2-5397-11eb-0b66-1f5d1966ba9d
+# ╟─87a8daf4-5397-11eb-17cc-d9da3cc3acfa
 # ╟─88b55824-503f-11eb-101f-a12e4725f738
 # ╟─46213fee-50fa-11eb-3a43-6b8a464b8043
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
-# ╠═7a07eb28-538e-11eb-3c5d-1b69f152ebd8
 # ╟─8988790a-537a-11eb-1acb-ef423c2b6096
 # ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
