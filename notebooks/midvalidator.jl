@@ -97,11 +97,10 @@ end
 # ╔═╡ 46213fee-50fa-11eb-3a43-6b8a464b8043
 editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
 
-# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
-filesonline =   begin
+# ╔═╡ 71ea41d8-514b-11eb-2735-c152214415df
+dselist = begin
 	loadem
-	fnames  =	xmlfiles(editorsrepo)
-	DataFrame(filename = fnames)
+	dsefiles(editorsrepo)
 end
 
 # ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
@@ -110,12 +109,6 @@ nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
 
 # ╔═╡ d0218ccc-5040-11eb-2249-755b68e24f4b
 md"This is version **$(nbversion)** of MID validation notebook"
-
-# ╔═╡ 71ea41d8-514b-11eb-2735-c152214415df
-dselist = begin
-	loadem
-	dsefiles(editorsrepo)
-end
 
 # ╔═╡ db26554c-5029-11eb-0627-cf019fae0e9b
 # Format HTML header for notebook.
@@ -155,23 +148,19 @@ text-align: center;
 </style>
 """
 
-# ╔═╡ 788ba1fc-4ff3-11eb-1a02-f1d099051ef5
-md"""---
+# ╔═╡ 8988790a-537a-11eb-1acb-ef423c2b6096
+html"""
+<hr/>
 
-Prototyping for `EditorsRepo`  and `CitablePhysicalText` (DSE)
+<blockquote>
+Prototyping for <code>EditorsRepo</code>
+</blockquote>
+
 
 """
 
-# ╔═╡ 42b03540-5064-11eb-19a6-37738914ba06
-triplets = function()
-	loadem
-	allfiles = editedfiles()
-	triples = allfiles[:, [:urn, :converter, :file]]
-	triples[1,:]
-	# one row:
-	#onetriple = triples[1,:]
-	#onetriple
-end
+# ╔═╡ 9bf7ea5a-51cd-11eb-2111-09702c904914
+md"*Add these or something similar to `EditorsRepo`*"
 
 # ╔═╡ 6166ecb6-5057-11eb-19cd-59100a749001
 # Fake experiment.
@@ -194,17 +183,15 @@ end
 =#
 
 # ╔═╡ 6330e4ce-50f8-11eb-24ce-a1b013abf7e6
+# catalogedtexts is defined above by using the `CitableText` library's
+# type-parameterized `fromfile` function
 catalogedtexts[:,:urn]
 
-# ╔═╡ 05b84db8-51cb-11eb-0a46-630fb235b828
+# ╔═╡ cf58613e-537a-11eb-3a55-81d1fe57ee56
 md"""
----
 
-Content temporarily copied in from `EditorsRepo` while waiting for package to clear in Julia Registry
+**This is the next important function to complete:**
 """
-
-# ╔═╡ 9bf7ea5a-51cd-11eb-2111-09702c904914
-md"*Add these or something similar to `EditorsRepo`*"
 
 # ╔═╡ 49444ab8-5055-11eb-3d56-67100f4dbdb9
 # Read a single DSE file into a DataFrame
@@ -217,12 +204,6 @@ function readdse(f)
 	fnctns = map(row -> Cite2Urn(row[3]), arr)
 	DataFrame(urn = urns, file = files, converter = fnctns)
 end 
-
-# ╔═╡ af505654-4d11-11eb-07a0-efd94c6ff985
-function xmleditions()
-	#loadem
-	DataFrame( filename = xmlfilenames())
-end
 
 # ╔═╡ 3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
 # Fake experiment.
@@ -238,11 +219,40 @@ dse_df = begin
 	alldfs
 end
 
+# ╔═╡ e6e1d182-537a-11eb-0bca-01b7966e4d19
+md"""
+The following one is ready to add to `EditorsRepo`:
+"""
+
+# ╔═╡ f4312ab2-51cd-11eb-3b0e-91c03f39cda4
+# Read orthography configuration into a DataFrame
+#
+function orthography_df(repo::EditingRepository)
+	arr = CSV.File(repo.root * "/" * repo.configs * "/orthography.cex", skipto=2, delim="|") |> Array
+	urns = map(row -> CtsUrn(row[1]), arr)
+	dipl = map(row -> eval(Meta.parse(row[2])), arr)
+	normed = map(row -> eval(Meta.parse(row[3])), arr)
+	DataFrame(urn = urns, diplomatic = dipl, normalized = normed)
+end
+
+
+# ╔═╡ 23c832b6-51ce-11eb-16b1-07c702944fda
+orthography = begin
+	loadem
+	orthography_df(editorsrepo)
+end
+
+# ╔═╡ 4530dc46-5377-11eb-1548-3b68de92ed78
+md"""
+---
+
+*Already tested in next `dev` branch of `EditorsRepo`*
+"""
+
 # ╔═╡ 8ea2fb34-4ff3-11eb-211d-857b2c643b61
 # Read citation configuration into a DataFrame
-function readcite()
-	#loadem
-	arr = CSV.File(reporoot * "/" * configdir * "/citation.cex", skipto=2, delim="|") |> Array
+function cite_df(repo::EditingRepository)
+	arr = CSV.File(repo.root * "/" * repo.configs * "/citation.cex", skipto=2, delim="|") |> Array
 	urns = map(row -> CtsUrn(row[1]), arr)
 	files = map(row -> row[2], arr)
 	fnctns = map(row -> eval(Meta.parse(row[3])), arr)
@@ -252,7 +262,43 @@ end
 # ╔═╡ 2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 markupschemes = begin
 	loadem
-	readcite()
+	cite_df(editorsrepo)
+end
+
+# ╔═╡ 83cac370-5063-11eb-3654-2be7d823652c
+#=
+match document URNs with file names, and with parser function.
+
+* catalogedtexts is defined above by using the `CitableText` library's
+	type-parameterized `fromfile` function
+* markupschemes is defined above using the `EditorsRepo` module's `cite_df` function
+=# 
+
+function editedfiles()
+	configedall = innerjoin(catalogedtexts, markupschemes, on = :urn)
+	configedall
+end
+
+
+# ╔═╡ bc9f40a4-5068-11eb-38dd-7bbb330383ab
+ohco2readers = begin
+	allfiles = editedfiles()
+	triples = allfiles[:, [:urn, :converter, :file]]
+	x = triples[1,:]
+	x
+end
+
+# ╔═╡ b22fa6e6-5378-11eb-1e3b-9b5520179e73
+# Create DataFrame with list of XML files
+function xmlfiles_df(repository::EditingRepository)
+    fnames = xmlfiles(repository)
+    DataFrame(filename = fnames)
+end
+
+# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
+filesonline =   begin
+	loadem
+	xmlfiles_df(editorsrepo)
 end
 
 # ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
@@ -270,39 +316,6 @@ md"""## 1. Summary of text cataloging
 
 =#
 
-# ╔═╡ 83cac370-5063-11eb-3654-2be7d823652c
-#=
-match document URNs with file names, and with parser function.
-=#
-
-function editedfiles()
-	configedall = innerjoin(catalogedtexts, markupschemes, on = :urn)
-	configedall
-end
-
-
-# ╔═╡ bc9f40a4-5068-11eb-38dd-7bbb330383ab
-begin
-	allfiles = editedfiles()
-	triples = allfiles[:, [:urn, :converter, :file]]
-	x = triples[1,:]
-	x
-end
-
-# ╔═╡ f4312ab2-51cd-11eb-3b0e-91c03f39cda4
-# Read orthography configuration into a DataFrame
-#
-function readortho()
-	arr = CSV.File(reporoot * "/" * configdir * "/orthography.cex", skipto=2, delim="|") |> Array
-	urns = map(row -> CtsUrn(row[1]), arr)
-	fnctns = map(row -> eval(Meta.parse(row[2])), arr)
-	DataFrame(urn = urns, converter = fnctns)
-end
-
-
-# ╔═╡ 23c832b6-51ce-11eb-16b1-07c702944fda
-readortho()
-
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
@@ -314,29 +327,30 @@ readortho()
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
 # ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
+# ╟─71ea41d8-514b-11eb-2735-c152214415df
 # ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
 # ╟─8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
 # ╟─98d7a57a-5064-11eb-328c-2d922aecc642
 # ╟─88b55824-503f-11eb-101f-a12e4725f738
-# ╠═46213fee-50fa-11eb-3a43-6b8a464b8043
+# ╟─46213fee-50fa-11eb-3a43-6b8a464b8043
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
-# ╟─71ea41d8-514b-11eb-2735-c152214415df
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
-# ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
-# ╟─42b03540-5064-11eb-19a6-37738914ba06
+# ╟─8988790a-537a-11eb-1acb-ef423c2b6096
+# ╟─9bf7ea5a-51cd-11eb-2111-09702c904914
 # ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
-# ╠═6330e4ce-50f8-11eb-24ce-a1b013abf7e6
-# ╟─05b84db8-51cb-11eb-0a46-630fb235b828
+# ╟─6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 # ╟─83cac370-5063-11eb-3654-2be7d823652c
-# ╟─9bf7ea5a-51cd-11eb-2111-09702c904914
+# ╟─cf58613e-537a-11eb-3a55-81d1fe57ee56
 # ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
-# ╟─af505654-4d11-11eb-07a0-efd94c6ff985
 # ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
-# ╟─8ea2fb34-4ff3-11eb-211d-857b2c643b61
+# ╟─e6e1d182-537a-11eb-0bca-01b7966e4d19
 # ╟─23c832b6-51ce-11eb-16b1-07c702944fda
 # ╟─f4312ab2-51cd-11eb-3b0e-91c03f39cda4
+# ╟─4530dc46-5377-11eb-1548-3b68de92ed78
+# ╟─8ea2fb34-4ff3-11eb-211d-857b2c643b61
+# ╟─b22fa6e6-5378-11eb-1e3b-9b5520179e73
