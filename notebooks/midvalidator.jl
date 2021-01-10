@@ -94,6 +94,16 @@ catalogedtexts = begin
 	fromfile(CatalogedText, reporoot * "/" * configdir * "/catalog.cex")
 end
 
+# ╔═╡ 46213fee-50fa-11eb-3a43-6b8a464b8043
+editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
+
+# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
+filesonline =   begin
+	loadem
+	fnames  =	xmlfiles(editorsrepo)
+	DataFrame(filename = fnames)
+end
+
 # ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
 nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
 
@@ -101,14 +111,11 @@ nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
 # ╔═╡ d0218ccc-5040-11eb-2249-755b68e24f4b
 md"This is version **$(nbversion)** of MID validation notebook"
 
-# ╔═╡ 0c1bd986-5059-11eb-128f-ab73320d2bf4
-#=
-xmlfilenames = function()
-	#loadem
-	filenames = filter(f -> endswith(f, "xml"), readdir(reporoot * "/" * editions))
-	filenames
+# ╔═╡ 71ea41d8-514b-11eb-2735-c152214415df
+dselist = begin
+	loadem
+	dsefiles(editorsrepo)
 end
-=#
 
 # ╔═╡ db26554c-5029-11eb-0627-cf019fae0e9b
 # Format HTML header for notebook.
@@ -195,66 +202,6 @@ md"""
 
 Content temporarily copied in from `EditorsRepo` while waiting for package to clear in Julia Registry
 """
-
-# ╔═╡ 1e34fe7c-51cb-11eb-292a-457d1828f29f
-struct EditingRepository
-    root::AbstractString
-    editions::AbstractString
-    dse::AbstractString
-    configs::AbstractString
-
-    function EditingRepository(r, e, d, c)
-        root = endswith(r,'/') ? chop(r, head=0, tail=1) : r
-        editions = endswith(e, '/') ? chop(e, head=0, tail=1) : e
-        editingdir = root * "/" * editions
-        if (! isdir(editingdir))
-            throw(ArgumentError("Editing directory $(editingdir) does not exist."))
-        end
-
-        dse = endswith(d, '/') ? chop(d, head=0, tail=1) : d
-        dsedir = root * "/" * dse
-        if (! isdir(dsedir))
-            throw(ArgumentError("DSE directory $(dsedir) does not exist."))
-        end
-        
-        config = endswith(c, "/") ? chop(c, head=0, tail=1)  : c
-        configdir = root * "/" * config
-        if (! isdir(configdir))
-            throw(ArgumentError("Configuration directory $(configdir) does not exist."))
-        end
-        new(root, editions, dse, config)
-    end
-end
-
-# ╔═╡ 46213fee-50fa-11eb-3a43-6b8a464b8043
-editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
-
-# ╔═╡ ccbc12f0-51cb-11eb-26bb-19165830f7d5
-function xmlfiles(repository::EditingRepository)
-    fullpath = readdir(repository.root * "/" * repository.editions)
-    filenames = filter(f -> endswith(f, "xml"), fullpath)        
-	filenames
-end
-
-# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
-filesonline =   begin
-	loadem
-	fnames  =	xmlfiles(editorsrepo)
-	DataFrame(filename = fnames)
-end
-
-# ╔═╡ 0736d258-51cc-11eb-21a0-2976bdfcf17e
-function dsefiles(repository::EditingRepository)
-    fullpath = readdir(repository.root * "/" * repository.dse)
-    filenames = filter(f -> endswith(f, "cex"), fullpath)        
-	filenames
-end
-
-# ╔═╡ 71ea41d8-514b-11eb-2735-c152214415df
-dselist = begin
-	loadem
-	dsefiles(editorsrepo)
-end
 
 # ╔═╡ 9bf7ea5a-51cd-11eb-2111-09702c904914
 md"*Add these or something similar to `EditorsRepo`*"
@@ -357,7 +304,7 @@ end
 readortho()
 
 # ╔═╡ Cell order:
-# ╠═9b7d76ac-4faf-11eb-17de-69db047d5f91
+# ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
@@ -373,11 +320,10 @@ readortho()
 # ╟─8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
 # ╟─98d7a57a-5064-11eb-328c-2d922aecc642
 # ╟─88b55824-503f-11eb-101f-a12e4725f738
-# ╟─46213fee-50fa-11eb-3a43-6b8a464b8043
+# ╠═46213fee-50fa-11eb-3a43-6b8a464b8043
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
-# ╠═0c1bd986-5059-11eb-128f-ab73320d2bf4
-# ╠═71ea41d8-514b-11eb-2735-c152214415df
+# ╟─71ea41d8-514b-11eb-2735-c152214415df
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─788ba1fc-4ff3-11eb-1a02-f1d099051ef5
@@ -386,9 +332,6 @@ readortho()
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
 # ╠═6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 # ╟─05b84db8-51cb-11eb-0a46-630fb235b828
-# ╟─1e34fe7c-51cb-11eb-292a-457d1828f29f
-# ╟─ccbc12f0-51cb-11eb-26bb-19165830f7d5
-# ╟─0736d258-51cc-11eb-21a0-2976bdfcf17e
 # ╟─83cac370-5063-11eb-3654-2be7d823652c
 # ╟─9bf7ea5a-51cd-11eb-2111-09702c904914
 # ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9

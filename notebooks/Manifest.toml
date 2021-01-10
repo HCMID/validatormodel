@@ -35,9 +35,9 @@ version = "1.1.0"
 
 [[CitableObject]]
 deps = ["CitableBase", "DocStringExtensions", "Documenter", "Test"]
-git-tree-sha1 = "292648bb72c1dff248a99e5e8445570380f251df"
+git-tree-sha1 = "74ffdeb078a9b21667168c59bab9446a57c1fba7"
 uuid = "e2b2f5ea-1cd8-4ce8-9b2b-05dad64c2a57"
-version = "0.1.1"
+version = "0.2.1"
 
 [[CitableTeiReaders]]
 deps = ["CitableText", "DocStringExtensions", "Documenter", "EzXML", "Test"]
@@ -47,9 +47,9 @@ version = "0.2.0"
 
 [[CitableText]]
 deps = ["BenchmarkTools", "CSV", "CitableBase", "DataFrames", "DocStringExtensions", "Documenter", "HTTP", "Test"]
-git-tree-sha1 = "54c48c38b94f614f784602c1e92dcb9695eebb16"
+git-tree-sha1 = "de34fef99de2abecab6814bd3012cd686a96aaa0"
 uuid = "41e66566-473b-49d4-85b7-da83b66615d8"
-version = "0.3.1"
+version = "0.3.2"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
@@ -110,9 +110,9 @@ version = "0.26.1"
 
 [[EditorsRepo]]
 deps = ["CSV", "CitableBase", "CitableObject", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "Test"]
-git-tree-sha1 = "16ec6300945b9ce44f9b416a6757b4916bf173bb"
+git-tree-sha1 = "521a5886c3fd41def71d83d74a517c4a5cde1b8c"
 uuid = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
-version = "0.1.0"
+version = "0.2.1"
 
 [[EzXML]]
 deps = ["Printf", "XML2_jll"]
@@ -170,9 +170,9 @@ uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
 
 [[JLLWrappers]]
-git-tree-sha1 = "04b49c556240b62d5a799e94c63d5fc14d3c07cd"
+git-tree-sha1 = "a431f5f2ca3f4feef3bd7a5e94b8b8d4f2f647a0"
 uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
-version = "1.1.4"
+version = "1.2.0"
 
 [[JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
