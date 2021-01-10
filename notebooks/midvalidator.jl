@@ -49,7 +49,7 @@ md"""## 2. Indexing in DSE tables
 # ╔═╡ abbf895a-51b3-11eb-1bc3-f932be13133f
 md"""## 3. Orthography and tokenization
 
-> Validation and verification of orthograph: **TBA**
+> Validation and verification of orthograph: **TBA** in version 1.1.
 
 """
 
