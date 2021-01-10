@@ -48,6 +48,9 @@ md"""## 2. Indexing in DSE tables
 
 # ╔═╡ abbf895a-51b3-11eb-1bc3-f932be13133f
 md"""## 3. Orthography and tokenization
+
+> Validation and verification of orthograph: **TBA**
+
 """
 
 # ╔═╡ 72ae34b0-4d0b-11eb-2aa2-5121099491db
@@ -76,7 +79,10 @@ $(@bind delimiter TextField(default="|"))
 """
 
 # ╔═╡ 88b55824-503f-11eb-101f-a12e4725f738
-html"""<blockquote>
+html"""<hr/>
+
+
+<blockquote>
 <h3>Cells for loading and formatting data</h3>
 </blockquote>
 
@@ -148,6 +154,9 @@ text-align: center;
 </style>
 """
 
+# ╔═╡ 7a07eb28-538e-11eb-3c5d-1b69f152ebd8
+all_dse_files = dsefiles(editorsrepo)
+
 # ╔═╡ 8988790a-537a-11eb-1acb-ef423c2b6096
 html"""
 <hr/>
@@ -183,38 +192,6 @@ end
 # catalogedtexts is defined above by using the `CitableText` library's
 # type-parameterized `fromfile` function
 catalogedtexts[:,:urn]
-
-# ╔═╡ cf58613e-537a-11eb-3a55-81d1fe57ee56
-md"""
-
-**This is the next important function to complete:**
-"""
-
-# ╔═╡ 49444ab8-5055-11eb-3d56-67100f4dbdb9
-# Read a single DSE file into a DataFrame
-function readdse(f)
-	loadem
-	arr = CSV.File(f, skipto=2, delim="|") |> Array
-	# text, image, surface
-	urns = map(row -> CtsUrn(row[1]), arr)
-	files = map(row -> Cite2Urn(row[2]), arr)
-	fnctns = map(row -> Cite2Urn(row[3]), arr)
-	DataFrame(urn = urns, file = files, converter = fnctns)
-end 
-
-# ╔═╡ 3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
-# Fake experiment.
-# In reality, need to concat all CEX data into a single dataframe.
-dse_df = begin 
-	alldse = dsefiles(editorsrepo)
-	fullnames = map(f -> reporoot * "/" * dsedir * "/" * f, alldse)
-	dfs = map(f -> readdse(f), fullnames)
-	#	onedf = readdse(reporoot * "/" * dsedir * "/" * alldse[1])
-	#onedf
-	alldfs = vcat(dfs)
-	#typeof(alldfs)
-	alldfs
-end
 
 # ╔═╡ e6e1d182-537a-11eb-0bca-01b7966e4d19
 md"""
@@ -335,6 +312,34 @@ md"""## 1. Summary of text cataloging
 
 =#
 
+# ╔═╡ 49444ab8-5055-11eb-3d56-67100f4dbdb9
+# Read a single DSE file into a DataFrame
+function readdsefile(f)
+	loadem
+	arr = CSV.File(f, skipto=2, delim="|") |> Array
+	# text, image, surface
+	urns = map(row -> CtsUrn(row[1]), arr)
+	files = map(row -> Cite2Urn(row[2]), arr)
+	fnctns = map(row -> Cite2Urn(row[3]), arr)
+	DataFrame(urn = urns, file = files, converter = fnctns)
+end 
+
+# ╔═╡ 3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
+# Merge all dse into a single DataFrame
+function dse_df(repository::EditingRepository)
+    alldse = dsefiles(repository)
+    dirpath = repository.root * "/" * repository.dse * "/"
+	fullnames = map(f ->  dirpath * f, alldse)
+    dfs = map(f -> readdsefile(f), fullnames)
+    vcat(dfs...)
+end
+
+# ╔═╡ 7d83b94a-5392-11eb-0dd0-fb894692e19d
+alldse = begin
+	loadem
+	dse_df(editorsrepo)
+end
+
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
@@ -347,6 +352,7 @@ md"""## 1. Summary of text cataloging
 # ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
 # ╟─71ea41d8-514b-11eb-2735-c152214415df
+# ╟─7d83b94a-5392-11eb-0dd0-fb894692e19d
 # ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
@@ -358,14 +364,12 @@ md"""## 1. Summary of text cataloging
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
+# ╠═7a07eb28-538e-11eb-3c5d-1b69f152ebd8
 # ╟─8988790a-537a-11eb-1acb-ef423c2b6096
 # ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
 # ╟─6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 # ╟─83cac370-5063-11eb-3654-2be7d823652c
-# ╟─cf58613e-537a-11eb-3a55-81d1fe57ee56
-# ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
-# ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
 # ╟─e6e1d182-537a-11eb-0bca-01b7966e4d19
 # ╟─23c832b6-51ce-11eb-16b1-07c702944fda
 # ╟─f4312ab2-51cd-11eb-3b0e-91c03f39cda4
@@ -374,3 +378,5 @@ md"""## 1. Summary of text cataloging
 # ╟─f3f7e432-537b-11eb-0d2b-57a426b595e2
 # ╟─8ea2fb34-4ff3-11eb-211d-857b2c643b61
 # ╟─b22fa6e6-5378-11eb-1e3b-9b5520179e73
+# ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
+# ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
