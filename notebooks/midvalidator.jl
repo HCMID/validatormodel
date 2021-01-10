@@ -118,6 +118,33 @@ end
 # ╔═╡ 46213fee-50fa-11eb-3a43-6b8a464b8043
 editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
 
+# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
+filesonline =   begin
+	loadem
+	xmlfiles_df(editorsrepo)
+end
+
+# ╔═╡ 2de2b626-4ff4-11eb-0ee5-75016c78cb4b
+markupschemes = begin
+	loadem
+	citation_df(editorsrepo)
+end
+
+# ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
+md"""## 1. Summary of text cataloging
+
+- **$(nrow(catalogedtexts))** text(s) cataloged
+- **$(nrow(markupschemes))** text(s) with a defined markup scheme
+- **$(nrow(filesonline))** file(s) found in editing directory
+"""
+
+
+# ╔═╡ 7d83b94a-5392-11eb-0dd0-fb894692e19d
+alldse = begin
+	loadem
+	dse_df(editorsrepo)
+end
+
 # ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
 nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
 
@@ -199,6 +226,29 @@ end
 # type-parameterized `fromfile` function
 catalogedtexts[:,:urn]
 
+# ╔═╡ 83cac370-5063-11eb-3654-2be7d823652c
+#=
+match document URNs with file names, and with parser function.
+
+* catalogedtexts is defined above by using the `CitableText` library's
+	type-parameterized `fromfile` function
+* markupschemes is defined above using the `EditorsRepo` module's `cite_df` function
+=# 
+
+function editedfiles()
+	configedall = innerjoin(catalogedtexts, markupschemes, on = :urn)
+	configedall
+end
+
+
+# ╔═╡ bc9f40a4-5068-11eb-38dd-7bbb330383ab
+ohco2readers = begin
+	allfiles = editedfiles()
+	triples = allfiles[:, [:urn, :converter, :file]]
+	x = triples[1,:]
+	x
+end
+
 # ╔═╡ e6e1d182-537a-11eb-0bca-01b7966e4d19
 md"""
 The following one is ready to add to `EditorsRepo`:
@@ -241,7 +291,7 @@ html"""
 <hr/>
 
 <blockquote>
-<i>Already tested in next dev branch of <code>EditorsRepo</code></i>. 
+<i>Content below here is already tested in next dev branch of <code>EditorsRepo</code></i>. 
 
 <p>
 Delete when updating version of <code>EditorsRepo</code></i>.
@@ -251,103 +301,8 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 
 """
 
-# ╔═╡ 8ea2fb34-4ff3-11eb-211d-857b2c643b61
-# Read citation configuration into a DataFrame
-function cite_df(repo::EditingRepository)
-	arr = CSV.File(repo.root * "/" * repo.configs * "/citation.cex", skipto=2, delim="|") |> Array
-	urns = map(row -> CtsUrn(row[1]), arr)
-	files = map(row -> row[2], arr)
-	fnctns = map(row -> eval(Meta.parse(row[3])), arr)
-	DataFrame(urn = urns, file = files, converter = fnctns)
-end
-
-# ╔═╡ 2de2b626-4ff4-11eb-0ee5-75016c78cb4b
-markupschemes = begin
-	loadem
-	cite_df(editorsrepo)
-end
-
-# ╔═╡ 83cac370-5063-11eb-3654-2be7d823652c
-#=
-match document URNs with file names, and with parser function.
-
-* catalogedtexts is defined above by using the `CitableText` library's
-	type-parameterized `fromfile` function
-* markupschemes is defined above using the `EditorsRepo` module's `cite_df` function
-=# 
-
-function editedfiles()
-	configedall = innerjoin(catalogedtexts, markupschemes, on = :urn)
-	configedall
-end
-
-
-# ╔═╡ bc9f40a4-5068-11eb-38dd-7bbb330383ab
-ohco2readers = begin
-	allfiles = editedfiles()
-	triples = allfiles[:, [:urn, :converter, :file]]
-	x = triples[1,:]
-	x
-end
-
-# ╔═╡ b22fa6e6-5378-11eb-1e3b-9b5520179e73
-# Create DataFrame with list of XML files
-function xmlfiles_df(repository::EditingRepository)
-    fnames = xmlfiles(repository)
-    DataFrame(filename = fnames)
-end
-
-# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
-filesonline =   begin
-	loadem
-	xmlfiles_df(editorsrepo)
-end
-
-# ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
-md"""## 1. Summary of text cataloging
-
-- **$(nrow(catalogedtexts))** text(s) cataloged
-- **$(nrow(markupschemes))** text(s) with a defined markup scheme
-- **$(nrow(filesonline))** file(s) found in editing directory
-"""
-
-#=
-
-
-
-
-=#
-
-# ╔═╡ 49444ab8-5055-11eb-3d56-67100f4dbdb9
-# Read a single DSE file into a DataFrame
-function readdsefile(f)
-	loadem
-	arr = CSV.File(f, skipto=2, delim="|") |> Array
-	# text, image, surface
-	urns = map(row -> CtsUrn(row[1]), arr)
-	files = map(row -> Cite2Urn(row[2]), arr)
-	fnctns = map(row -> Cite2Urn(row[3]), arr)
-	DataFrame(urn = urns, file = files, converter = fnctns)
-end 
-
-# ╔═╡ 3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
-# Merge all dse into a single DataFrame
-function dse_df(repository::EditingRepository)
-    alldse = dsefiles(repository)
-    dirpath = repository.root * "/" * repository.dse * "/"
-	fullnames = map(f ->  dirpath * f, alldse)
-    dfs = map(f -> readdsefile(f), fullnames)
-    vcat(dfs...)
-end
-
-# ╔═╡ 7d83b94a-5392-11eb-0dd0-fb894692e19d
-alldse = begin
-	loadem
-	dse_df(editorsrepo)
-end
-
 # ╔═╡ Cell order:
-# ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
+# ╠═9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
@@ -383,7 +338,3 @@ end
 # ╟─cb30618c-537b-11eb-01ca-3f7ca0fe2869
 # ╟─d4ffdf08-537b-11eb-0f66-71fc864661b3
 # ╟─f3f7e432-537b-11eb-0d2b-57a426b595e2
-# ╟─8ea2fb34-4ff3-11eb-211d-857b2c643b61
-# ╟─b22fa6e6-5378-11eb-1e3b-9b5520179e73
-# ╟─3a1af7f8-5055-11eb-0b66-7b0de8bb18a7
-# ╟─49444ab8-5055-11eb-3d56-67100f4dbdb9
