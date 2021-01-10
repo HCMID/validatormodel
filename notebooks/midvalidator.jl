@@ -24,9 +24,7 @@ begin
 	Pkg.add("CSV")
 	Pkg.add("HTTP")
 	Pkg.add("DataFrames")
-
-	# Not yet in registry
-	#Pkg.add(url="https://github.com/HCMID/EditorsRepo.jl#dev")
+	Pkg.add("EditorsRepo")
 	
 	using PlutoUI
 	using CitableText
@@ -35,8 +33,7 @@ begin
 	using CSV
 	using DataFrames
 	using HTTP
-
-	#using EditorsRepo
+	using EditorsRepo
 end
 
 # ╔═╡ c37ed214-502b-11eb-284e-31588e9de7c4
@@ -360,7 +357,7 @@ end
 readortho()
 
 # ╔═╡ Cell order:
-# ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
+# ╠═9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
