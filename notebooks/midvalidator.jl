@@ -230,6 +230,9 @@ end
 # ╔═╡ b209e56e-53dc-11eb-3939-9f5fef5aa7e0
 surfaceDse = filter(row -> row.surface == surfurn, alldse)
 
+# ╔═╡ ed36fb6e-5430-11eb-3be1-1f7bf17384d8
+md"*Found **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(surfurn))*"
+
 # ╔═╡ 5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
 begin
 	cellout = []
@@ -359,6 +362,7 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
 # ╟─284a9468-539d-11eb-0e2b-a97ac09eca48
+# ╟─ed36fb6e-5430-11eb-3be1-1f7bf17384d8
 # ╟─5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
 # ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
