@@ -36,7 +36,7 @@ begin
 	using EditorsRepo
 	
 	using Markdown
-	using DataFramesMeta
+
 end
 
 # ╔═╡ c37ed214-502b-11eb-284e-31588e9de7c4
