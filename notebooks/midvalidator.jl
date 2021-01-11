@@ -49,27 +49,10 @@ md"Use the `Load/reload data` button to update your notebook."
 md"""## 2. Indexing in DSE tables
 """
 
-# ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
-
-function mdForRow(row::DataFrameRow)
-	citation = "**" * passagecomponent(row.passage)  * "** "
-	txt = "(Text for " * row.passage.urn * ")"
-	img = "(Image embedded from " * row.image.urn * ")"
-	
-	record = """$(citation) $(txt)
-
-$(img)
-	
-	
----	
-"""	
-   record
-end
-
 # ╔═╡ abbf895a-51b3-11eb-1bc3-f932be13133f
 md"""## 3. Orthography and tokenization
 
-> Validation and verification of orthograph: **TBA** in version 1.1.
+> Validation and verification of orthography: **TBA** in version 1.1.
 
 """
 
@@ -114,7 +97,9 @@ $(@bind ict TextField((55,1), default="http://www.homermultitext.org/ict2/"))
 """
 
 # ╔═╡ 88b55824-503f-11eb-101f-a12e4725f738
-html"""<hr/>
+html"""<hr/><p/>
+
+<hr/><p/>
 
 
 <blockquote>
@@ -129,50 +114,8 @@ html"""<hr/>
 # ╔═╡ 527f86ea-4d0f-11eb-1440-293fc241c198
 reporoot = dirname(pwd())
 
-# ╔═╡ 8a426414-502d-11eb-1e7d-357a363bb627
-catalogedtexts = begin
-	loadem
-	fromfile(CatalogedText, reporoot * "/" * configdir * "/catalog.cex")
-end
-
 # ╔═╡ 46213fee-50fa-11eb-3a43-6b8a464b8043
 editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
-
-# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
-filesonline =   begin
-	loadem
-	xmlfiles_df(editorsrepo)
-end
-
-# ╔═╡ 2de2b626-4ff4-11eb-0ee5-75016c78cb4b
-markupschemes = begin
-	loadem
-	citation_df(editorsrepo)
-end
-
-# ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
-md"""## 1. Summary of text cataloging
-
-- **$(nrow(catalogedtexts))** text(s) cataloged
-- **$(nrow(markupschemes))** text(s) with a defined markup scheme
-- **$(nrow(filesonline))** file(s) found in editing directory
-"""
-
-
-# ╔═╡ e2c40ec2-539c-11eb-1d17-39d16591d367
-uniquesurfs = begin 
-	surfurns = EditorsRepo.surfaces(editorsrepo)
-	surflist = map(u -> u.urn, surfurns)
-end
-
-# ╔═╡ 284a9468-539d-11eb-0e2b-a97ac09eca48
-md"""
-Choose a surface: 
-$(@bind surface Select(uniquesurfs))
-"""
-
-# ╔═╡ 66385382-53dc-11eb-25da-cd1777daba5f
-surfurn = Cite2Urn(surface)
 
 # ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
 nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
@@ -219,6 +162,65 @@ text-align: center;
 </style>
 """
 
+# ╔═╡ 8a426414-502d-11eb-1e7d-357a363bb627
+catalogedtexts = begin
+	loadem
+	fromfile(CatalogedText, reporoot * "/" * configdir * "/catalog.cex")
+end
+
+# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
+filesonline =   begin
+	loadem
+	xmlfiles_df(editorsrepo)
+end
+
+# ╔═╡ 2de2b626-4ff4-11eb-0ee5-75016c78cb4b
+markupschemes = begin
+	loadem
+	citation_df(editorsrepo)
+end
+
+# ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
+md"""## 1. Summary of text cataloging
+
+- **$(nrow(catalogedtexts))** text(s) cataloged
+- **$(nrow(markupschemes))** text(s) with a defined markup scheme
+- **$(nrow(filesonline))** file(s) found in editing directory
+"""
+
+
+# ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
+
+function mdForRow(row::DataFrameRow)
+	citation = "**" * passagecomponent(row.passage)  * "** "
+	txt = "(Text for " * row.passage.urn * ")"
+	img = "(Image embedded from " * row.image.urn * ")"
+	
+	record = """$(citation) $(txt)
+
+$(img)
+	
+	
+---	
+"""	
+   record
+end
+
+# ╔═╡ e2c40ec2-539c-11eb-1d17-39d16591d367
+uniquesurfs = begin 
+	surfurns = EditorsRepo.surfaces(editorsrepo)
+	surflist = map(u -> u.urn, surfurns)
+end
+
+# ╔═╡ 284a9468-539d-11eb-0e2b-a97ac09eca48
+md"""
+*Choose a surface to verify*: 
+$(@bind surface Select(uniquesurfs))
+"""
+
+# ╔═╡ 66385382-53dc-11eb-25da-cd1777daba5f
+surfurn = Cite2Urn(surface)
+
 # ╔═╡ 7d83b94a-5392-11eb-0dd0-fb894692e19d
 alldse = begin
 	loadem
@@ -236,9 +238,6 @@ begin
 	end
 	Markdown.parse(join(cellout,"\n"))
 end
-
-# ╔═╡ ac0cbc28-53e0-11eb-0e8a-bbf5e64bcc97
-mdForRow(surfaceDse[1,:])
 
 # ╔═╡ 8988790a-537a-11eb-1acb-ef423c2b6096
 html"""
@@ -358,17 +357,9 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
 # ╟─a7acabd8-502b-11eb-326f-2725d64c5b85
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
-# ╟─8a426414-502d-11eb-1e7d-357a363bb627
-# ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
-# ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
 # ╟─284a9468-539d-11eb-0e2b-a97ac09eca48
-# ╠═5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
-# ╟─b209e56e-53dc-11eb-3939-9f5fef5aa7e0
-# ╟─66385382-53dc-11eb-25da-cd1777daba5f
-# ╟─e2c40ec2-539c-11eb-1d17-39d16591d367
-# ╠═ac0cbc28-53e0-11eb-0e8a-bbf5e64bcc97
-# ╠═a65cdab0-53e0-11eb-120f-f16fae76e54f
+# ╟─5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
 # ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
@@ -383,7 +374,14 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
-# ╠═7d83b94a-5392-11eb-0dd0-fb894692e19d
+# ╟─8a426414-502d-11eb-1e7d-357a363bb627
+# ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
+# ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
+# ╟─b209e56e-53dc-11eb-3939-9f5fef5aa7e0
+# ╟─66385382-53dc-11eb-25da-cd1777daba5f
+# ╟─a65cdab0-53e0-11eb-120f-f16fae76e54f
+# ╟─e2c40ec2-539c-11eb-1d17-39d16591d367
+# ╟─7d83b94a-5392-11eb-0dd0-fb894692e19d
 # ╟─8988790a-537a-11eb-1acb-ef423c2b6096
 # ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
