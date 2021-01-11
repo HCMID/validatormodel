@@ -34,6 +34,9 @@ begin
 	using DataFrames
 	using HTTP
 	using EditorsRepo
+	
+	using Markdown
+	using DataFramesMeta
 end
 
 # ╔═╡ c37ed214-502b-11eb-284e-31588e9de7c4
@@ -151,16 +154,8 @@ Choose a surface:
 $(@bind surface Select(uniquesurfs))
 """
 
-# ╔═╡ 6757d470-539d-11eb-0ec4-f7e86a6c652f
-md"""
-Here go records for **$(surface)**
-"""
-
-# ╔═╡ 7d83b94a-5392-11eb-0dd0-fb894692e19d
-alldse = begin
-	loadem
-	dse_df(editorsrepo)
-end
+# ╔═╡ 66385382-53dc-11eb-25da-cd1777daba5f
+surfurn = Cite2Urn(surface)
 
 # ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
 nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
@@ -206,6 +201,15 @@ text-align: center;
  }
 </style>
 """
+
+# ╔═╡ 7d83b94a-5392-11eb-0dd0-fb894692e19d
+alldse = begin
+	loadem
+	dse_df(editorsrepo)
+end
+
+# ╔═╡ b209e56e-53dc-11eb-3939-9f5fef5aa7e0
+surfaceDse = filter(row -> row.surface == surfurn, alldse)
 
 # ╔═╡ 8988790a-537a-11eb-1acb-ef423c2b6096
 html"""
@@ -319,7 +323,7 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 """
 
 # ╔═╡ Cell order:
-# ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
+# ╠═9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
@@ -330,9 +334,9 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
 # ╟─284a9468-539d-11eb-0e2b-a97ac09eca48
-# ╟─6757d470-539d-11eb-0ec4-f7e86a6c652f
+# ╟─b209e56e-53dc-11eb-3939-9f5fef5aa7e0
+# ╟─66385382-53dc-11eb-25da-cd1777daba5f
 # ╟─e2c40ec2-539c-11eb-1d17-39d16591d367
-# ╟─7d83b94a-5392-11eb-0dd0-fb894692e19d
 # ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
@@ -347,6 +351,7 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
 # ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
+# ╟─7d83b94a-5392-11eb-0dd0-fb894692e19d
 # ╟─8988790a-537a-11eb-1acb-ef423c2b6096
 # ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
