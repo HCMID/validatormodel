@@ -20,6 +20,7 @@ begin
 	Pkg.add("PlutoUI")
 	Pkg.add("CitableText")
 	Pkg.add("CitableObject")
+	Pkg.add("CitableImage")
 	Pkg.add("CitableTeiReaders")
 	Pkg.add("CSV")
 	Pkg.add("HTTP")
@@ -29,6 +30,7 @@ begin
 	using PlutoUI
 	using CitableText
 	using CitableObject
+	using CitableImage
 	using CitableTeiReaders
 	using CSV
 	using DataFrames
@@ -48,6 +50,9 @@ md"Use the `Load/reload data` button to update your notebook."
 # ╔═╡ 6beaff5a-502b-11eb-0225-cbc0aadf69fa
 md"""## 2. Indexing in DSE tables
 """
+
+# ╔═╡ 2a0b33b4-55c5-11eb-2ce9-4f3084c73087
+md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
 
 # ╔═╡ abbf895a-51b3-11eb-1bc3-f932be13133f
 md"""## 3. Orthography and tokenization
@@ -81,19 +86,28 @@ md"""Delimiter for DSE tables:
 $(@bind delimiter TextField(default="|"))
 """
 
-# ╔═╡ 6ada2e5a-5397-11eb-292a-e5908dfc2e04
-md"**Digital image services**"
+# ╔═╡ 4c389840-55c4-11eb-3f26-b5d3da2cbe58
+md"**IIIF image service**:"
 
 # ╔═╡ 09e397b2-5397-11eb-0b66-1f5d1966ba9d
 md"""
-IIIF image service: 
+URL: 
 $(@bind iiif TextField((55,1), default="http://www.homermultitext.org/iipsrv"))
 """
 
+# ╔═╡ 5f722eda-55c4-11eb-09f6-db15e1b43cc1
+md"""
+Path to image root: $(@bind iiifroot TextField((55,1), default="/project/homer/pyramidal/deepzoom"))
+
+"""
+
+# ╔═╡ 6c6514a4-55c4-11eb-2477-df16e584a994
+md"**Image citation tool**:"
+
 # ╔═╡ 87a8daf4-5397-11eb-17cc-d9da3cc3acfa
 md"""
-Image Citation Tool: 
-$(@bind ict TextField((55,1), default="http://www.homermultitext.org/ict2/"))
+URL: 
+$(@bind ict TextField((55,1), default="http://www.homermultitext.org/ict2/?"))
 """
 
 # ╔═╡ 88b55824-503f-11eb-101f-a12e4725f738
@@ -189,22 +203,32 @@ md"""## 1. Summary of text cataloging
 """
 
 
-# ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
+# ╔═╡ 1f3bac4a-55c4-11eb-3c50-71a593a6a676
+# CitableImage access to a IIIF service
+iiifsvc = begin
+	baseurl = iiif
+	root = iiifroot
+	IIIFservice(baseurl, root)
+end
 
+# ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
 function mdForRow(row::DataFrameRow)
 	citation = "**" * passagecomponent(row.passage)  * "** "
 	txt = "(Text for " * row.passage.urn * ")"
-	img = "(Image embedded from " * row.image.urn * ")"
+	caption = "image"
+	
+	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
+	
 	
 	record = """$(citation) $(txt)
-
+	
 $(img)
 	
-	
----	
-"""	
-   record
+---
+"""
+	record
 end
+
 
 # ╔═╡ e2c40ec2-539c-11eb-1d17-39d16591d367
 uniquesurfs = begin 
@@ -241,6 +265,12 @@ begin
 	end
 	Markdown.parse(join(cellout,"\n"))
 end
+
+# ╔═╡ b1f35860-55c3-11eb-036d-7bdb8984973c
+demorow = surfaceDse[1, :]
+
+# ╔═╡ e3d9580c-55c3-11eb-3adb-4b4d436c33df
+demorow.image
 
 # ╔═╡ 8988790a-537a-11eb-1acb-ef423c2b6096
 html"""
@@ -363,15 +393,18 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
 # ╟─284a9468-539d-11eb-0e2b-a97ac09eca48
 # ╟─ed36fb6e-5430-11eb-3be1-1f7bf17384d8
+# ╟─2a0b33b4-55c5-11eb-2ce9-4f3084c73087
 # ╟─5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
 # ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
 # ╟─8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
 # ╟─98d7a57a-5064-11eb-328c-2d922aecc642
-# ╟─6ada2e5a-5397-11eb-292a-e5908dfc2e04
+# ╟─4c389840-55c4-11eb-3f26-b5d3da2cbe58
 # ╟─09e397b2-5397-11eb-0b66-1f5d1966ba9d
-# ╟─87a8daf4-5397-11eb-17cc-d9da3cc3acfa
+# ╟─5f722eda-55c4-11eb-09f6-db15e1b43cc1
+# ╟─6c6514a4-55c4-11eb-2477-df16e584a994
+# ╠═87a8daf4-5397-11eb-17cc-d9da3cc3acfa
 # ╟─88b55824-503f-11eb-101f-a12e4725f738
 # ╟─46213fee-50fa-11eb-3a43-6b8a464b8043
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
@@ -382,8 +415,11 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
 # ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╟─b209e56e-53dc-11eb-3939-9f5fef5aa7e0
+# ╟─1f3bac4a-55c4-11eb-3c50-71a593a6a676
 # ╟─66385382-53dc-11eb-25da-cd1777daba5f
-# ╟─a65cdab0-53e0-11eb-120f-f16fae76e54f
+# ╟─b1f35860-55c3-11eb-036d-7bdb8984973c
+# ╟─e3d9580c-55c3-11eb-3adb-4b4d436c33df
+# ╠═a65cdab0-53e0-11eb-120f-f16fae76e54f
 # ╟─e2c40ec2-539c-11eb-1d17-39d16591d367
 # ╟─7d83b94a-5392-11eb-0dd0-fb894692e19d
 # ╟─8988790a-537a-11eb-1acb-ef423c2b6096
