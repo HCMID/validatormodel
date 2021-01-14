@@ -361,10 +361,45 @@ ohco2readers = begin
 	x
 end
 
-# ╔═╡ e6e1d182-537a-11eb-0bca-01b7966e4d19
+# ╔═╡ 833b7cd2-564f-11eb-3854-87851657e4df
+# dummy
+
+diplomaticstring = """LiteralTextBuilder("Literal text builder","rawtext")"""
+
+# ╔═╡ 98112bde-564f-11eb-128c-39561db77b9d
+diplomaticbuilder = eval(Meta.parse(diplomaticstring))
+
+# ╔═╡ b5dae646-564f-11eb-3cce-d34ea511189a
+typeof(diplomaticbuilder)
+
+# ╔═╡ dd02b55a-564f-11eb-0098-4b4e0fe3f3bd
 md"""
-The following one is ready to add to `EditorsRepo`:
+
+Now to edit a single node:
+
+```julia
+edited = editednode(builder, c.corpus[1])
+```
+
+And the `EditionsBuilder` module needs a function that does this to edit a corpus:
+
+
+```julia
+CitableCorpus(map(cn -> editednode(builder,cn), c.corpus))
+```
+
+
 """
+
+# ╔═╡ 211fe762-5650-11eb-2e92-3d662be4d282
+md"""
+
+> ## THIS IS BROKEN
+
+"""
+
+# ╔═╡ 37f16b64-5650-11eb-3a69-218bc9450249
+md"This needs to be fixed in `EditorsRepo` model"
 
 # ╔═╡ f4312ab2-51cd-11eb-3b0e-91c03f39cda4
 # Read orthography configuration into a DataFrame
@@ -463,7 +498,12 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
 # ╟─6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 # ╟─83cac370-5063-11eb-3654-2be7d823652c
-# ╟─e6e1d182-537a-11eb-0bca-01b7966e4d19
+# ╠═833b7cd2-564f-11eb-3854-87851657e4df
+# ╠═98112bde-564f-11eb-128c-39561db77b9d
+# ╠═b5dae646-564f-11eb-3cce-d34ea511189a
+# ╟─dd02b55a-564f-11eb-0098-4b4e0fe3f3bd
+# ╟─211fe762-5650-11eb-2e92-3d662be4d282
+# ╟─37f16b64-5650-11eb-3a69-218bc9450249
 # ╠═23c832b6-51ce-11eb-16b1-07c702944fda
 # ╟─f4312ab2-51cd-11eb-3b0e-91c03f39cda4
 # ╟─cb30618c-537b-11eb-01ca-3f7ca0fe2869
