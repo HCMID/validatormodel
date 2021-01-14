@@ -33,25 +33,35 @@ git-tree-sha1 = "1e53c511de1a6169abbc43fce0d2a0e8da23cd89"
 uuid = "d6f014bd-995c-41bd-9893-703339864534"
 version = "1.1.0"
 
+[[CitableImage]]
+deps = ["CitableBase", "CitableObject", "DocStringExtensions", "Documenter", "Test"]
+git-tree-sha1 = "781fc39d59b0931693f32727857ca343323007c3"
+uuid = "17ccb2e5-db19-44b3-b354-4fd16d92c74e"
+version = "0.1.0"
+
 [[CitableObject]]
 deps = ["CitableBase", "DocStringExtensions", "Documenter", "Test"]
-git-tree-sha1 = "292648bb72c1dff248a99e5e8445570380f251df"
+git-tree-sha1 = "74ffdeb078a9b21667168c59bab9446a57c1fba7"
 uuid = "e2b2f5ea-1cd8-4ce8-9b2b-05dad64c2a57"
-version = "0.1.1"
+version = "0.2.1"
+
+[[CitablePhysicalText]]
+deps = ["CitableObject", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "Test"]
+git-tree-sha1 = "bb6cea258c75fc0066ca595e85c14072c8582cfb"
+uuid = "e38a874e-a7c2-4ff3-8dea-81ae2e5c9b07"
+version = "0.2.0"
 
 [[CitableTeiReaders]]
 deps = ["CitableText", "DocStringExtensions", "Documenter", "EzXML", "Test"]
-git-tree-sha1 = "2c3616d13149d1dcb39f8c2263c6a51e1ca28b59"
-repo-rev = "main"
-repo-url = "https://github.com/HCMID/CitableTeiReaders.jl"
+git-tree-sha1 = "bc4e88adcef8ab7f681c906b96883dca6548e547"
 uuid = "b4325aa9-906c-402e-9c3f-19ab8a88308e"
-version = "0.1.0"
+version = "0.2.1"
 
 [[CitableText]]
 deps = ["BenchmarkTools", "CSV", "CitableBase", "DataFrames", "DocStringExtensions", "Documenter", "HTTP", "Test"]
-git-tree-sha1 = "54c48c38b94f614f784602c1e92dcb9695eebb16"
+git-tree-sha1 = "11a3280b4361b4bbde4136256225c7b51f6c67f2"
 uuid = "41e66566-473b-49d4-85b7-da83b66615d8"
-version = "0.3.1"
+version = "0.4.0"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
@@ -111,12 +121,10 @@ uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 version = "0.26.1"
 
 [[EditorsRepo]]
-deps = ["CSV", "CitableBase", "CitableObject", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "Test"]
-git-tree-sha1 = "3f03e22ec0c248d4780ee00a2e9746e82e54d289"
-repo-rev = "main"
-repo-url = "https://github.com/HCMID/EditorsRepo.jl"
+deps = ["CSV", "CitableBase", "CitableObject", "CitablePhysicalText", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "Test"]
+git-tree-sha1 = "e22ad66d218f092853f21c09e8001ac7ce3e43ce"
 uuid = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
-version = "0.1.0"
+version = "0.3.2"
 
 [[EzXML]]
 deps = ["Printf", "XML2_jll"]
@@ -174,9 +182,9 @@ uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
 
 [[JLLWrappers]]
-git-tree-sha1 = "04b49c556240b62d5a799e94c63d5fc14d3c07cd"
+git-tree-sha1 = "a431f5f2ca3f4feef3bd7a5e94b8b8d4f2f647a0"
 uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
-version = "1.1.4"
+version = "1.2.0"
 
 [[JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
