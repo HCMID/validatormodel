@@ -142,11 +142,15 @@ nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
 # ╔═╡ d0218ccc-5040-11eb-2249-755b68e24f4b
 md"This is version **$(nbversion)** of MID validation notebook"
 
+# ╔═╡ 590e90b4-55ed-11eb-1760-53dc7fbd4cfe
+projectname = Pkg.TOML.parse(read("Project.toml", String))["project"]
+
 # ╔═╡ db26554c-5029-11eb-0627-cf019fae0e9b
 # Format HTML header for notebook.
 function hdr() 
 	HTML("<blockquote  class='center'><h1>MID validation notebook</h1>" *
-		"<p>Using repository in directory:</p><h4><i>" * reporoot * "</i></h4></blockquote>")
+		"<h3>" * projectname * "</h3>" 		*
+		"<p>Editing project from repository in:</p><h4><i>" * reporoot * "</i></h4></blockquote>")
 end
 
 # ╔═╡ d9fae7aa-5029-11eb-3061-89361e04f904
@@ -413,8 +417,9 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─88b55824-503f-11eb-101f-a12e4725f738
 # ╠═46213fee-50fa-11eb-3a43-6b8a464b8043
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
-# ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
-# ╟─db26554c-5029-11eb-0627-cf019fae0e9b
+# ╠═8df925ee-5040-11eb-0e16-291bc3f0f23d
+# ╟─590e90b4-55ed-11eb-1760-53dc7fbd4cfe
+# ╠═db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
 # ╟─8a426414-502d-11eb-1e7d-357a363bb627
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
@@ -433,7 +438,7 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 # ╟─83cac370-5063-11eb-3654-2be7d823652c
 # ╟─e6e1d182-537a-11eb-0bca-01b7966e4d19
-# ╠═23c832b6-51ce-11eb-16b1-07c702944fda
+# ╟─23c832b6-51ce-11eb-16b1-07c702944fda
 # ╟─f4312ab2-51cd-11eb-3b0e-91c03f39cda4
 # ╟─cb30618c-537b-11eb-01ca-3f7ca0fe2869
 # ╟─d4ffdf08-537b-11eb-0f66-71fc864661b3
