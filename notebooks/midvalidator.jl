@@ -27,6 +27,9 @@ begin
 	Pkg.add("DataFrames")
 	Pkg.add("EditorsRepo")
 	
+	# Waiting for packages to clear Julia Registry
+	Pkg.add(url="https://github.com/HCMID/EditionBuilders.jl")
+	
 	using PlutoUI
 	using CitableText
 	using CitableObject
@@ -38,6 +41,8 @@ begin
 	using EditorsRepo
 	
 	using Markdown
+	
+	using EditionBuilders
 
 end
 
@@ -184,6 +189,9 @@ text-align: center;
 </style>
 """
 
+# ╔═╡ 4abcbad6-564e-11eb-3a2b-b346cc4359fd
+md"**Text cataloging**"
+
 # ╔═╡ 8a426414-502d-11eb-1e7d-357a363bb627
 catalogedtexts = begin
 	loadem
@@ -211,6 +219,9 @@ md"""## 1. Summary of text cataloging
 """
 
 
+# ╔═╡ 6724260a-564e-11eb-0d01-25ab20a9d11c
+md"**IIIF image service**"
+
 # ╔═╡ 1f3bac4a-55c4-11eb-3c50-71a593a6a676
 # CitableImage access to a IIIF service
 iiifsvc = begin
@@ -218,6 +229,9 @@ iiifsvc = begin
 	root = iiifroot
 	IIIFservice(baseurl, root)
 end
+
+# ╔═╡ fee6a296-564d-11eb-2733-59bb1e480d2f
+md"**DSE tables**"
 
 # ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
 function mdForRow(row::DataFrameRow)
@@ -274,12 +288,6 @@ begin
 	Markdown.parse(join(cellout,"\n"))
 end
 
-# ╔═╡ b1f35860-55c3-11eb-036d-7bdb8984973c
-demorow = surfaceDse[1, :]
-
-# ╔═╡ e3d9580c-55c3-11eb-3adb-4b4d436c33df
-demorow.image
-
 # ╔═╡ 8988790a-537a-11eb-1acb-ef423c2b6096
 html"""
 <hr/>
@@ -290,6 +298,20 @@ Prototyping for <code>EditorsRepo</code>
 
 
 """
+
+# ╔═╡ 7d78b4f0-564e-11eb-3562-9f18ea745b41
+md"**Archival XML corpus**"
+
+# ╔═╡ 85b11a4a-564e-11eb-2bcc-9db7302feffb
+md"""
+
+- [ ] convert each XML source text to a Corpus
+- [ ] combine corpora
+
+"""
+
+# ╔═╡ 9e85cade-564e-11eb-0797-8f10f31af2eb
+md"**Diplomatic and normalized editions**"
 
 # ╔═╡ 6166ecb6-5057-11eb-19cd-59100a749001
 # Fake experiment.
@@ -415,30 +437,34 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─6c6514a4-55c4-11eb-2477-df16e584a994
 # ╟─87a8daf4-5397-11eb-17cc-d9da3cc3acfa
 # ╟─88b55824-503f-11eb-101f-a12e4725f738
-# ╠═46213fee-50fa-11eb-3a43-6b8a464b8043
+# ╟─46213fee-50fa-11eb-3a43-6b8a464b8043
 # ╟─527f86ea-4d0f-11eb-1440-293fc241c198
-# ╠═8df925ee-5040-11eb-0e16-291bc3f0f23d
+# ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
 # ╟─590e90b4-55ed-11eb-1760-53dc7fbd4cfe
-# ╠═db26554c-5029-11eb-0627-cf019fae0e9b
+# ╟─db26554c-5029-11eb-0627-cf019fae0e9b
 # ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
+# ╟─4abcbad6-564e-11eb-3a2b-b346cc4359fd
 # ╟─8a426414-502d-11eb-1e7d-357a363bb627
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
 # ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
-# ╟─b209e56e-53dc-11eb-3939-9f5fef5aa7e0
+# ╟─6724260a-564e-11eb-0d01-25ab20a9d11c
 # ╟─1f3bac4a-55c4-11eb-3c50-71a593a6a676
+# ╟─fee6a296-564d-11eb-2733-59bb1e480d2f
 # ╟─66385382-53dc-11eb-25da-cd1777daba5f
-# ╟─b1f35860-55c3-11eb-036d-7bdb8984973c
-# ╟─e3d9580c-55c3-11eb-3adb-4b4d436c33df
 # ╟─a65cdab0-53e0-11eb-120f-f16fae76e54f
 # ╟─e2c40ec2-539c-11eb-1d17-39d16591d367
+# ╟─b209e56e-53dc-11eb-3939-9f5fef5aa7e0
 # ╟─7d83b94a-5392-11eb-0dd0-fb894692e19d
 # ╟─8988790a-537a-11eb-1acb-ef423c2b6096
-# ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
+# ╟─7d78b4f0-564e-11eb-3562-9f18ea745b41
+# ╟─85b11a4a-564e-11eb-2bcc-9db7302feffb
+# ╟─9e85cade-564e-11eb-0797-8f10f31af2eb
+# ╠═bc9f40a4-5068-11eb-38dd-7bbb330383ab
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
 # ╟─6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 # ╟─83cac370-5063-11eb-3654-2be7d823652c
 # ╟─e6e1d182-537a-11eb-0bca-01b7966e4d19
-# ╟─23c832b6-51ce-11eb-16b1-07c702944fda
+# ╠═23c832b6-51ce-11eb-16b1-07c702944fda
 # ╟─f4312ab2-51cd-11eb-3b0e-91c03f39cda4
 # ╟─cb30618c-537b-11eb-01ca-3f7ca0fe2869
 # ╟─d4ffdf08-537b-11eb-0f66-71fc864661b3

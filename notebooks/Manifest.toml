@@ -120,6 +120,14 @@ git-tree-sha1 = "b7715ae18be02110a8cf9cc8ed2ccdb1e3e3aba2"
 uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 version = "0.26.1"
 
+[[EditionBuilders]]
+deps = ["CitableText", "DocStringExtensions", "Documenter", "EzXML", "Test"]
+git-tree-sha1 = "1dc7d14c300afeadc7fd5489069a6203bb73d7e6"
+repo-rev = "main"
+repo-url = "https://github.com/HCMID/EditionBuilders.jl"
+uuid = "2fb66cca-c1f8-4a32-85dd-1a01a9e8cd8f"
+version = "0.1.0"
+
 [[EditorsRepo]]
 deps = ["CSV", "CitableBase", "CitableObject", "CitablePhysicalText", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "Test"]
 git-tree-sha1 = "e22ad66d218f092853f21c09e8001ac7ce3e43ce"
