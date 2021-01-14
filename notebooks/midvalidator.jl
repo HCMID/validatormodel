@@ -57,7 +57,7 @@ md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
 # ╔═╡ abbf895a-51b3-11eb-1bc3-f932be13133f
 md"""## 3. Orthography and tokenization
 
-> Validation and verification of orthography: **TBA** in version 1.1.
+> Validation and verification of orthography: **TBA** in a following version.
 
 """
 
