@@ -29,6 +29,7 @@ begin
 	
 	# Waiting for packages to clear Julia Registry
 	Pkg.add(url="https://github.com/HCMID/EditionBuilders.jl")
+	Pkg.add(url="https://github.com/HCMID/Orthography.jl")
 	
 	using PlutoUI
 	using CitableText
@@ -43,6 +44,7 @@ begin
 	using Markdown
 	
 	using EditionBuilders
+	using Orthography
 
 end
 
@@ -391,33 +393,26 @@ CitableCorpus(map(cn -> editednode(builder,cn), c.corpus))
 
 """
 
-# ╔═╡ 211fe762-5650-11eb-2e92-3d662be4d282
-md"""
+# ╔═╡ c18fd378-5651-11eb-3034-bff8295db6cc
 
-> ## THIS IS BROKEN
-
-"""
-
-# ╔═╡ 37f16b64-5650-11eb-3a69-218bc9450249
-md"This needs to be fixed in `EditorsRepo` model"
-
-# ╔═╡ f4312ab2-51cd-11eb-3b0e-91c03f39cda4
-# Read orthography configuration into a DataFrame
+# Read all text manipulating functions into a DataFrame
 #
-function orthography_df(repo::EditingRepository)
-	arr = CSV.File(repo.root * "/" * repo.configs * "/orthography.cex", skipto=2, delim="|") |> Array
+function text_functions(repo::EditingRepository)
+	arr = CSV.File(repo.root * "/" * repo.configs * "/citation.cex", skipto=2, delim="|") |> Array
+	
 	urns = map(row -> CtsUrn(row[1]), arr)
-	dipl = map(row -> eval(Meta.parse(row[2])), arr)
-	normed = map(row -> eval(Meta.parse(row[3])), arr)
-	DataFrame(urn = urns, diplomatic = dipl, normalized = normed)
+	filenames = map(row -> row[2], arr)
+	ohco2converters = map(row -> eval(Meta.parse(row[3])), arr)
+	diplomatics = map(row -> eval(Meta.parse(row[4])), arr)
+	normalizers = map(row -> eval(Meta.parse(row[5])), arr)	
+	orthographies = map(row -> eval(Meta.parse(row[6])), arr)		
+	
+	DataFrame(urn = urns, filename = filenames, ohco2converter = ohco2converters, diplomatic = diplomatics, normalized = normalizers, orthography = orthographies)
 end
 
 
-# ╔═╡ 23c832b6-51ce-11eb-16b1-07c702944fda
-orthography = begin
-	loadem
-	orthography_df(editorsrepo)
-end
+# ╔═╡ 2814a2ec-5652-11eb-2c11-95e981bee27e
+text_functions(editorsrepo)
 
 # ╔═╡ cb30618c-537b-11eb-01ca-3f7ca0fe2869
 html"""
@@ -481,7 +476,7 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─4abcbad6-564e-11eb-3a2b-b346cc4359fd
 # ╟─8a426414-502d-11eb-1e7d-357a363bb627
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
-# ╟─2de2b626-4ff4-11eb-0ee5-75016c78cb4b
+# ╠═2de2b626-4ff4-11eb-0ee5-75016c78cb4b
 # ╟─6724260a-564e-11eb-0d01-25ab20a9d11c
 # ╟─1f3bac4a-55c4-11eb-3c50-71a593a6a676
 # ╟─fee6a296-564d-11eb-2733-59bb1e480d2f
@@ -494,7 +489,7 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─7d78b4f0-564e-11eb-3562-9f18ea745b41
 # ╟─85b11a4a-564e-11eb-2bcc-9db7302feffb
 # ╟─9e85cade-564e-11eb-0797-8f10f31af2eb
-# ╠═bc9f40a4-5068-11eb-38dd-7bbb330383ab
+# ╟─bc9f40a4-5068-11eb-38dd-7bbb330383ab
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
 # ╟─6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 # ╟─83cac370-5063-11eb-3654-2be7d823652c
@@ -502,10 +497,8 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╠═98112bde-564f-11eb-128c-39561db77b9d
 # ╠═b5dae646-564f-11eb-3cce-d34ea511189a
 # ╟─dd02b55a-564f-11eb-0098-4b4e0fe3f3bd
-# ╟─211fe762-5650-11eb-2e92-3d662be4d282
-# ╟─37f16b64-5650-11eb-3a69-218bc9450249
-# ╠═23c832b6-51ce-11eb-16b1-07c702944fda
-# ╟─f4312ab2-51cd-11eb-3b0e-91c03f39cda4
+# ╠═2814a2ec-5652-11eb-2c11-95e981bee27e
+# ╠═c18fd378-5651-11eb-3034-bff8295db6cc
 # ╟─cb30618c-537b-11eb-01ca-3f7ca0fe2869
 # ╟─d4ffdf08-537b-11eb-0f66-71fc864661b3
 # ╟─f3f7e432-537b-11eb-0d2b-57a426b595e2
