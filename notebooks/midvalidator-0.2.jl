@@ -296,6 +296,9 @@ begin
 	Markdown.parse(join(cellout,"\n"))
 end
 
+# ╔═╡ 3ac917e6-56b5-11eb-03a8-e54d140c17a4
+
+
 # ╔═╡ 8988790a-537a-11eb-1acb-ef423c2b6096
 html"""
 <hr/>
@@ -408,6 +411,18 @@ Prototyping for <code>CitablePhysicalText</code> (DSE)
 
 """
 
+# ╔═╡ 4a3f3020-56b5-11eb-389a-b78a58771ecf
+# For selected surface, find *set* of texts, and make a menu selection
+selectedworks = begin
+	rows = filter(r -> r[:surface] == surfurn, alldse)
+	psgs = rows[:, :passage]
+	works = unique(map(p -> droppassage(p), psgs))
+	map(u -> u.urn, works)
+end
+
+# ╔═╡ 64748ff2-56b6-11eb-2d85-c96ebef9b57e
+selectedworks
+
 # ╔═╡ d4ffdf08-537b-11eb-0f66-71fc864661b3
 md"See checklist in issues for `CitablePhysicalText` repo."
 
@@ -427,7 +442,7 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 """
 
 # ╔═╡ Cell order:
-# ╠═9b7d76ac-4faf-11eb-17de-69db047d5f91
+# ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
@@ -470,6 +485,7 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─e2c40ec2-539c-11eb-1d17-39d16591d367
 # ╟─b209e56e-53dc-11eb-3939-9f5fef5aa7e0
 # ╟─7d83b94a-5392-11eb-0dd0-fb894692e19d
+# ╠═3ac917e6-56b5-11eb-03a8-e54d140c17a4
 # ╟─8988790a-537a-11eb-1acb-ef423c2b6096
 # ╟─7d78b4f0-564e-11eb-3562-9f18ea745b41
 # ╟─85b11a4a-564e-11eb-2bcc-9db7302feffb
@@ -483,5 +499,7 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─dd02b55a-564f-11eb-0098-4b4e0fe3f3bd
 # ╠═adde948c-5664-11eb-144f-c78a99902156
 # ╟─cb30618c-537b-11eb-01ca-3f7ca0fe2869
+# ╠═4a3f3020-56b5-11eb-389a-b78a58771ecf
+# ╠═64748ff2-56b6-11eb-2d85-c96ebef9b57e
 # ╟─d4ffdf08-537b-11eb-0f66-71fc864661b3
 # ╟─f3f7e432-537b-11eb-0d2b-57a426b595e2
