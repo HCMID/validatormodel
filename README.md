@@ -10,7 +10,7 @@ Template repository illustrating HC MID validation and verification using an int
 - `editions` XML editions, cataloged in `catalog.cex`, with information about how to parse the citation scheme of each file in `citation.cex`
 - `dse` Delimite-text files indexing edited passages to physical surfaces and documentary images.
 - `notebooks` Pluto notebooks you can run to validate and verify your work.
-- `configs` Configuration files.
+- `config` Configuration files.
 
 ## Installing Pluto notebook server
 
