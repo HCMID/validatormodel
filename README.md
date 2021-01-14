@@ -31,10 +31,14 @@ using Pluto
 Pluto.run()
 ```
 
-Within Pluto, open the generic `midvalidator.jl` notebook.  If your project has additional project-specific tests, they should be managed in `projectvalidator.jl`, so you can open that notebook as well.
+Within Pluto, open the generic `midvalidator.jl` notebook.  If your project has additional project-specific tests, they can be managed in a second, separate notebook, so you can open that notebook as well.
 
 The notebook will take a long time to start up, since it basically has to download and build a validating app in your browser, but once it has started, it has very responsive on everyday machines.
 
 ## Configuration files
 
-TBA
+Documentation TBA.
+
+- `catalog.cex`
+- `citation.cex`
+- `orthography.cex`
