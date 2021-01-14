@@ -1,6 +1,5 @@
-project = "Model of validation"
-
 name = "MID validator notebook"
+project = "Model of validation"
 version = "0.0.1"
 
 [deps]
