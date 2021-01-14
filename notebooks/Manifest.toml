@@ -130,9 +130,9 @@ version = "0.1.0"
 
 [[EditorsRepo]]
 deps = ["CSV", "CitableBase", "CitableObject", "CitablePhysicalText", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "Test"]
-git-tree-sha1 = "e22ad66d218f092853f21c09e8001ac7ce3e43ce"
+git-tree-sha1 = "8ee674bb9a4a6f401777b6185c8b18a57a6a4e0b"
 uuid = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
-version = "0.3.2"
+version = "0.4.0"
 
 [[EzXML]]
 deps = ["Printf", "XML2_jll"]
@@ -377,9 +377,9 @@ deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[URIs]]
-git-tree-sha1 = "bc331715463c41d601cf8bfd38ca70a490af5c5b"
+git-tree-sha1 = "7855809b88d7b16e9b029afd17880930626f54a2"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
-version = "1.1.0"
+version = "1.2.0"
 
 [[UUIDs]]
 deps = ["Random", "SHA"]

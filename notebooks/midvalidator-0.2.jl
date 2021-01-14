@@ -221,6 +221,12 @@ md"""## 1. Summary of text cataloging
 """
 
 
+# ╔═╡ d5bbe1fa-569b-11eb-31ad-8b5cac7a0da3
+LiteralTextBuilder
+
+# ╔═╡ e7878824-569b-11eb-1791-9b9a1c13bca4
+citation_df(editorsrepo)
+
 # ╔═╡ 6724260a-564e-11eb-0d01-25ab20a9d11c
 md"**IIIF image service**"
 
@@ -355,14 +361,6 @@ function editedfiles()
 end
 
 
-# ╔═╡ bc9f40a4-5068-11eb-38dd-7bbb330383ab
-ohco2readers = begin
-	allfiles = editedfiles()
-	triples = allfiles[:, [:urn, :converter, :file]]
-	x = triples[1,:]
-	x
-end
-
 # ╔═╡ 833b7cd2-564f-11eb-3854-87851657e4df
 # dummy
 
@@ -393,70 +391,10 @@ CitableCorpus(map(cn -> editednode(builder,cn), c.corpus))
 
 """
 
-# ╔═╡ c18fd378-5651-11eb-3034-bff8295db6cc
-
-# Read all text manipulating functions into a DataFrame
-#
-function text_functions(repo::EditingRepository)
-	arr = CSV.File(repo.root * "/" * repo.configs * "/citation.cex", skipto=2, delim="|") |> Array
-	
-	urns = map(row -> CtsUrn(row[1]), arr)
-	filenames = map(row -> row[2], arr)
-	ohco2converters = map(row -> eval(Meta.parse(row[3])), arr)
-	diplomatics = map(row -> eval(Meta.parse(row[4])), arr)
-	normalizers = map(row -> eval(Meta.parse(row[5])), arr)	
-	orthographies = map(row -> eval(Meta.parse(row[6])), arr)		
-	
-	DataFrame(urn = urns, filename = filenames, ohco2converter = ohco2converters, diplomatic = diplomatics, normalized = normalizers, orthography = orthographies)
-end
-
-
-# ╔═╡ 2814a2ec-5652-11eb-2c11-95e981bee27e
-text_procs = text_functions(editorsrepo)
-
-# ╔═╡ a3db70ca-5661-11eb-34f9-a1b6669f24ab
-# triples = allfiles[:, [:urn, :converter, :file]]
-text_procs[:, [:ohco2converter]]
-
-# ╔═╡ 67c82d0a-5662-11eb-237a-5123c8713c44
-text_procs[1, :ohco2converter]
-
-# ╔═╡ 90d724d6-5663-11eb-0771-75d461585550
-filter(r -> r[2] == "tl3.xml",  text_procs)
-
-# ╔═╡ e5eabd00-5660-11eb-005f-3b37933ac492
-# Given a file name, find ohco2 converter functoin
-function o2forfile(f)
-	row = filter(r -> r[2] == f,  text_procs)
-	row[1,:ohco2converter]
-end
-
-# ╔═╡ 669215c2-5664-11eb-106f-4be33485e4ad
-o2 = o2forfile("tl3.xml")
-
 # ╔═╡ adde948c-5664-11eb-144f-c78a99902156
 # Create archival XML text for file
-function archival(fname)
-	converter = o2forfile(fname)
-end
-
-# ╔═╡ f0913e38-5664-11eb-38bf-cd203b716fd2
-archival("tlg25.xml")
-
-# ╔═╡ b0f9b36c-5665-11eb-112a-897b11d076ec
-filesarray = convert(Array, filesonline)
-
-# ╔═╡ 4f151952-5665-11eb-21a9-a5fd0bd2b46e
-begin 
-	for r in filesarray
-		o2forfile(r)
-	end
-end
-
-# ╔═╡ 01c8f258-5666-11eb-1c9f-8dd13d769b6c
-begin 
-	f = filesarray[1]
-	o2forfile(f)
+function archival(urn)
+	#
 end
 
 # ╔═╡ cb30618c-537b-11eb-01ca-3f7ca0fe2869
@@ -489,7 +427,7 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 """
 
 # ╔═╡ Cell order:
-# ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
+# ╠═9b7d76ac-4faf-11eb-17de-69db047d5f91
 # ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
 # ╟─d9fae7aa-5029-11eb-3061-89361e04f904
 # ╟─c37ed214-502b-11eb-284e-31588e9de7c4
@@ -522,6 +460,8 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─8a426414-502d-11eb-1e7d-357a363bb627
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
 # ╠═2de2b626-4ff4-11eb-0ee5-75016c78cb4b
+# ╠═d5bbe1fa-569b-11eb-31ad-8b5cac7a0da3
+# ╠═e7878824-569b-11eb-1791-9b9a1c13bca4
 # ╟─6724260a-564e-11eb-0d01-25ab20a9d11c
 # ╟─1f3bac4a-55c4-11eb-3c50-71a593a6a676
 # ╟─fee6a296-564d-11eb-2733-59bb1e480d2f
@@ -534,26 +474,14 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─7d78b4f0-564e-11eb-3562-9f18ea745b41
 # ╟─85b11a4a-564e-11eb-2bcc-9db7302feffb
 # ╟─9e85cade-564e-11eb-0797-8f10f31af2eb
-# ╠═bc9f40a4-5068-11eb-38dd-7bbb330383ab
 # ╟─6166ecb6-5057-11eb-19cd-59100a749001
 # ╟─6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 # ╟─83cac370-5063-11eb-3654-2be7d823652c
-# ╠═833b7cd2-564f-11eb-3854-87851657e4df
+# ╟─833b7cd2-564f-11eb-3854-87851657e4df
 # ╠═98112bde-564f-11eb-128c-39561db77b9d
 # ╠═b5dae646-564f-11eb-3cce-d34ea511189a
 # ╟─dd02b55a-564f-11eb-0098-4b4e0fe3f3bd
-# ╠═a3db70ca-5661-11eb-34f9-a1b6669f24ab
-# ╠═67c82d0a-5662-11eb-237a-5123c8713c44
-# ╠═90d724d6-5663-11eb-0771-75d461585550
-# ╠═2814a2ec-5652-11eb-2c11-95e981bee27e
-# ╟─c18fd378-5651-11eb-3034-bff8295db6cc
-# ╠═669215c2-5664-11eb-106f-4be33485e4ad
-# ╠═e5eabd00-5660-11eb-005f-3b37933ac492
-# ╠═f0913e38-5664-11eb-38bf-cd203b716fd2
 # ╠═adde948c-5664-11eb-144f-c78a99902156
-# ╠═4f151952-5665-11eb-21a9-a5fd0bd2b46e
-# ╠═01c8f258-5666-11eb-1c9f-8dd13d769b6c
-# ╠═b0f9b36c-5665-11eb-112a-897b11d076ec
 # ╟─cb30618c-537b-11eb-01ca-3f7ca0fe2869
 # ╟─d4ffdf08-537b-11eb-0f66-71fc864661b3
 # ╟─f3f7e432-537b-11eb-0d2b-57a426b595e2
