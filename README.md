@@ -1,4 +1,4 @@
-# HC MID template repository, version` 0.1.0`
+# HC MID template repository, version` 0.2.0`
 
 
 
