@@ -41,4 +41,3 @@ Documentation TBA.
 
 - `catalog.cex`
 - `citation.cex`
-- `orthography.cex`
