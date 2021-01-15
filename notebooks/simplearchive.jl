@@ -64,12 +64,6 @@ md"### Interactive DSE verification"
 md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
 
 
-# ╔═╡ 2d218414-573e-11eb-33dc-af1f2df86cf7
-# Select a node from list of diplomatic nodes
-function diplnode(urn)
-	
-end
-
 # ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
 md"""
 
@@ -114,6 +108,14 @@ md"""
 
 # ╔═╡ 7a347506-5737-11eb-03bb-ef6dfa90d9c8
 md"These functions compile diplomatic and normalized texts for the repository."
+
+# ╔═╡ 1de9aa2a-573f-11eb-1d87-cda4db7c6c4d
+md"""
+
+> Function to format one DSE record for verification
+
+
+"""
 
 # ╔═╡ 0cabc908-5737-11eb-2ef9-d51aedfbbe5f
 md"""
@@ -246,6 +248,14 @@ diplomaticnodes = begin
 	reduce(vcat, diplomaticarrays)
 end
 
+# ╔═╡ 2d218414-573e-11eb-33dc-af1f2df86cf7
+# Select a node from list of diplomatic nodes
+function diplnode(urn)
+	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticnodes)
+	filtered[1].text
+	#"Found stuffs " * le
+end
+
 # ╔═╡ 70ac0236-573e-11eb-1efd-c3be076018aa
 md"""
 
@@ -271,13 +281,24 @@ Image Citation Tool URL:
 $(@bind ict TextField((55,1), default="http://www.homermultitext.org/ict2/?"))
 """
 
+# ╔═╡ c3efd710-573e-11eb-1251-75295cced219
+md"IIIF Service built from this configuration:"
+
+# ╔═╡ bd95307c-573e-11eb-3325-ad08ee392a2f
+# CitableImage access to a IIIF service
+iiifsvc = begin
+	baseurl = iiif
+	root = iiifroot
+	IIIFservice(baseurl, root)
+end
+
 # ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
 function mdForRow(row::DataFrameRow)
 	citation = "**" * passagecomponent(row.passage)  * "** "
 
 	
 	txt = diplnode(row.passage)
-	
+	caption = passagecomponent(row.passage)
 	
 	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
 	
@@ -293,6 +314,7 @@ end
 
 
 # ╔═╡ 00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# display DSE records for verification
 begin
 	cellout = []
 	for r in eachrow(surfaceDse)
@@ -311,10 +333,10 @@ end
 # ╟─558e587a-573c-11eb-3364-632f0b0703da
 # ╟─e08d5418-573b-11eb-2375-35a717b36a30
 # ╟─c9a3bd8c-573d-11eb-2034-6f608e8bf414
-# ╠═f1f5643c-573d-11eb-1fd1-99c111eb523f
-# ╠═2d218414-573e-11eb-33dc-af1f2df86cf7
-# ╠═bf77d456-573d-11eb-05b6-e51fd2be98fe
-# ╠═00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
+# ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
+# ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
 # ╟─901ae238-573c-11eb-15e2-3f7611dacab7
 # ╟─e57c9326-573b-11eb-100c-ed7f37414d79
@@ -335,7 +357,8 @@ end
 # ╟─a24430ec-573a-11eb-188d-e52c79291fcf
 # ╟─b7dae7a0-573a-11eb-2c76-15974f79daf8
 # ╟─b815025a-5737-11eb-3b68-0df9e43b534d
-# ╠═75ca5ad0-5737-11eb-1a4a-17beafff6a96
+# ╟─75ca5ad0-5737-11eb-1a4a-17beafff6a96
+# ╟─1de9aa2a-573f-11eb-1d87-cda4db7c6c4d
 # ╟─0cabc908-5737-11eb-2ef9-d51aedfbbe5f
 # ╟─e3578474-573c-11eb-057f-27fc9eb9b519
 # ╟─7829a5ac-5736-11eb-13d1-6f5430595193
@@ -345,3 +368,5 @@ end
 # ╟─77a302c4-573e-11eb-311c-7102e8b377fa
 # ╟─8afeacec-573e-11eb-3da5-6b6d6bd764f8
 # ╟─97415fa4-573e-11eb-03df-81e1567ec34e
+# ╟─c3efd710-573e-11eb-1251-75295cced219
+# ╟─bd95307c-573e-11eb-3325-ad08ee392a2f
