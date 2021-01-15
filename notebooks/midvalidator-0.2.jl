@@ -221,9 +221,6 @@ md"""## 1. Summary of text cataloging
 """
 
 
-# ╔═╡ d5bbe1fa-569b-11eb-31ad-8b5cac7a0da3
-LiteralTextBuilder
-
 # ╔═╡ e7878824-569b-11eb-1791-9b9a1c13bca4
 citation_df(editorsrepo)
 
@@ -417,7 +414,19 @@ selectedworks = begin
 	rows = filter(r -> r[:surface] == surfurn, alldse)
 	psgs = rows[:, :passage]
 	works = unique(map(p -> droppassage(p), psgs))
-	map(u -> u.urn, works)
+	pushfirst!( map(u -> u.urn, works) , "")
+end
+
+# ╔═╡ a53d9692-56c4-11eb-0f6f-73572abc00bb
+md"Texts on surface **$(objectcomponent(surfurn))** $(@bind chosentext Select(selectedworks))"
+
+# ╔═╡ 4b920d66-56c5-11eb-0017-55d407d6cd19
+archivalxml = begin
+	if chosentext == ""
+		"NONE"
+	else
+		"some"
+	end
 end
 
 # ╔═╡ 64748ff2-56b6-11eb-2d85-c96ebef9b57e
@@ -450,10 +459,12 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
 # ╟─284a9468-539d-11eb-0e2b-a97ac09eca48
-# ╟─ed36fb6e-5430-11eb-3be1-1f7bf17384d8
+# ╠═ed36fb6e-5430-11eb-3be1-1f7bf17384d8
 # ╟─2a0b33b4-55c5-11eb-2ce9-4f3084c73087
 # ╟─5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
 # ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
+# ╟─a53d9692-56c4-11eb-0f6f-73572abc00bb
+# ╟─4b920d66-56c5-11eb-0017-55d407d6cd19
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
 # ╟─8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
@@ -475,7 +486,6 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─8a426414-502d-11eb-1e7d-357a363bb627
 # ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
 # ╠═2de2b626-4ff4-11eb-0ee5-75016c78cb4b
-# ╠═d5bbe1fa-569b-11eb-31ad-8b5cac7a0da3
 # ╠═e7878824-569b-11eb-1791-9b9a1c13bca4
 # ╟─6724260a-564e-11eb-0d01-25ab20a9d11c
 # ╟─1f3bac4a-55c4-11eb-3c50-71a593a6a676
