@@ -61,9 +61,6 @@ md"""## 2. Indexing in DSE tables
 # ╔═╡ b092d89a-5714-11eb-18e7-cd492e83cff4
 # need to read text from disk
 
-# ╔═╡ 2e893254-5714-11eb-1cc3-5b5bba439ce1
-
-
 # ╔═╡ 2a0b33b4-55c5-11eb-2ce9-4f3084c73087
 md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
 
@@ -397,17 +394,24 @@ Prototyping for <code>CitablePhysicalText</code> (DSE)
 markupschemes
 
 # ╔═╡ b36c1ade-5711-11eb-34f5-bf2374a16e79
+# Eval string value of ocho2converter for a URN
 function o2foru(urn)
 	row = filter(r -> droppassage(urn) == r[:urn], markupschemes)
 	eval(Meta.parse(row[1,:o2converter]))
-	
 end
 
 # ╔═╡ 1a3cc6b6-5715-11eb-21dc-0f9b242b1462
+# Read text contents of file for URN
 function fileforu(urn)
 	row = filter(r -> droppassage(urn) == r[:urn], markupschemes)
 	f= editorsrepo.root * "/" * editorsrepo.editions * "/" *	row[1,:file]
 	xml = read(f, String)
+end
+
+# ╔═╡ 69f6c62e-5716-11eb-3ffb-25de0faff46e
+function diplforu(urn)
+	row = filter(r -> droppassage(urn) == r[:urn], markupschemes)
+	eval(Meta.parse(row[1,:diplomatic]))
 end
 
 # ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
@@ -419,7 +423,10 @@ function mdForRow(row::DataFrameRow)
 	reader = o2foru(row.passage)
 	xml =  fileforu(row.passage)
 	txt = reader(xml, row.passage)
-	#txt = "(Read text from disk " * "xml" * ")"
+	dipl = diplforu(row.passage)
+	
+	#editednode(dipl, c.corpus[1])
+
 	caption = "image"
 	
 	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
@@ -444,8 +451,20 @@ begin
 	Markdown.parse(join(cellout,"\n"))
 end
 
+# ╔═╡ 2e893254-5714-11eb-1cc3-5b5bba439ce1
+begin
+	psg = surfaceDse[1,:]
+	reader = o2foru(psg.passage)
+	xml =  fileforu(psg.passage)
+	corpus = reader(xml, psg.passage)
+	dipl = diplforu(psg.passage)
+	editednode(dipl,corpus.corpus[1])
+	
+end
+
 # ╔═╡ 4a3f3020-56b5-11eb-389a-b78a58771ecf
-# For selected surface, find *set* of texts, and make a menu selection
+# For selected surface, find *set* of texts
+# Separately, make a menu selection
 # including an empty first entry
 selectedworks = begin
 	rows = filter(r -> r[:surface] == surfurn, alldse)
@@ -461,7 +480,23 @@ o2converters = map(wk -> o2foru(wk), selectedworks)
 o2converters[1]
 
 # ╔═╡ 7734da8a-5712-11eb-1e53-1b47aa50c8aa
-o2foru(selectedworks[1])
+diplforu(selectedworks[1])
+
+
+# ╔═╡ 47d6d768-5717-11eb-00bd-53e2ecaa5c6a
+function corpusforu(urn)
+	
+	reader = o2foru(urn)
+	xml =  fileforu(urn)
+	corpus = reader(xml, urn)
+	dipl = diplforu(urn)
+	diplnodes = map(cn -> editednode(dipl, cn), corpus.corpus)
+	CitableCorpus(diplnodes)
+	#editednode(dipl,corpus.corpus[1])
+end
+
+# ╔═╡ 6e690ae0-5717-11eb-2676-7bf25267d75d
+corpusforu(selectedworks[1])
 
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
@@ -526,7 +561,10 @@ o2foru(selectedworks[1])
 # ╠═4520a700-5713-11eb-2f6c-6d94bbc7bf9b
 # ╠═242e7810-5713-11eb-1ed0-3b1ea963ade5
 # ╠═8eb757fc-5712-11eb-10b2-67a1a128a564
-# ╠═7734da8a-5712-11eb-1e53-1b47aa50c8aa
-# ╠═b36c1ade-5711-11eb-34f5-bf2374a16e79
+# ╟─7734da8a-5712-11eb-1e53-1b47aa50c8aa
+# ╟─b36c1ade-5711-11eb-34f5-bf2374a16e79
 # ╠═1a3cc6b6-5715-11eb-21dc-0f9b242b1462
-# ╟─4a3f3020-56b5-11eb-389a-b78a58771ecf
+# ╠═69f6c62e-5716-11eb-3ffb-25de0faff46e
+# ╠═4a3f3020-56b5-11eb-389a-b78a58771ecf
+# ╠═6e690ae0-5717-11eb-2676-7bf25267d75d
+# ╠═47d6d768-5717-11eb-00bd-53e2ecaa5c6a
