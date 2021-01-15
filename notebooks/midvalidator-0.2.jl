@@ -58,6 +58,12 @@ md"Use the `Load/reload data` button to update your notebook."
 md"""## 2. Indexing in DSE tables
 """
 
+# ╔═╡ b092d89a-5714-11eb-18e7-cd492e83cff4
+# need to read text from disk
+
+# ╔═╡ 2e893254-5714-11eb-1cc3-5b5bba439ce1
+
+
 # ╔═╡ 2a0b33b4-55c5-11eb-2ce9-4f3084c73087
 md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
 
@@ -67,6 +73,19 @@ md"""## 3. Orthography and tokenization
 > Validation and verification of orthography: **TBA** in a following version.
 
 """
+
+# ╔═╡ a53d9692-56c4-11eb-0f6f-73572abc00bb
+#md"Texts on surface **$(objectcomponent(surfurn))** $(@bind chosentext Select(selectedworks))"
+
+# ╔═╡ 4b920d66-56c5-11eb-0017-55d407d6cd19
+#= archivalxml = begin
+	if chosentext == ""
+		"NONE"
+	else
+		"some"
+	end
+end
+=#
 
 # ╔═╡ 72ae34b0-4d0b-11eb-2aa2-5121099491db
 html"""<blockquote>
@@ -238,25 +257,6 @@ end
 # ╔═╡ fee6a296-564d-11eb-2733-59bb1e480d2f
 md"**DSE tables**"
 
-# ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
-function mdForRow(row::DataFrameRow)
-	citation = "**" * passagecomponent(row.passage)  * "** "
-	txt = "(Text for " * row.passage.urn * ")"
-	caption = "image"
-	
-	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
-	
-	
-	record = """$(citation) $(txt)
-	
-$(img)
-	
----
-"""
-	record
-end
-
-
 # ╔═╡ e2c40ec2-539c-11eb-1d17-39d16591d367
 uniquesurfs = begin 
 	surfurns = EditorsRepo.surfaces(editorsrepo)
@@ -283,18 +283,6 @@ surfaceDse = filter(row -> row.surface == surfurn, alldse)
 
 # ╔═╡ ed36fb6e-5430-11eb-3be1-1f7bf17384d8
 md"*Found **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(surfurn))*"
-
-# ╔═╡ 5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
-begin
-	cellout = []
-	for r in eachrow(surfaceDse)
-		push!(cellout, mdForRow(r))
-	end
-	Markdown.parse(join(cellout,"\n"))
-end
-
-# ╔═╡ 3ac917e6-56b5-11eb-03a8-e54d140c17a4
-
 
 # ╔═╡ 8988790a-537a-11eb-1acb-ef423c2b6096
 html"""
@@ -391,12 +379,6 @@ CitableCorpus(map(cn -> editednode(builder,cn), c.corpus))
 
 """
 
-# ╔═╡ adde948c-5664-11eb-144f-c78a99902156
-# Create archival XML text for file
-function archival(urn)
-	#
-end
-
 # ╔═╡ cb30618c-537b-11eb-01ca-3f7ca0fe2869
 html"""
 <hr/>
@@ -408,47 +390,76 @@ Prototyping for <code>CitablePhysicalText</code> (DSE)
 
 """
 
+# ╔═╡ c9e145dc-5711-11eb-1b07-c56a8a8f807f
+#o2foru(selectedworks[1])
+
+# ╔═╡ 8eb757fc-5712-11eb-10b2-67a1a128a564
+markupschemes
+
+# ╔═╡ b36c1ade-5711-11eb-34f5-bf2374a16e79
+function o2foru(urn)
+	row = filter(r -> droppassage(urn) == r[:urn], markupschemes)
+	eval(Meta.parse(row[1,:o2converter]))
+	
+end
+
+# ╔═╡ 1a3cc6b6-5715-11eb-21dc-0f9b242b1462
+function fileforu(urn)
+	row = filter(r -> droppassage(urn) == r[:urn], markupschemes)
+	row[1,:file]
+end
+
+# ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
+function mdForRow(row::DataFrameRow)
+	citation = "**" * passagecomponent(row.passage)  * "** "
+	
+	
+	
+	reader = o2foru(row.passage)
+	#txt = reader("<p>XML TEXT</p>", row.passage)
+	txt = "(Read text from disk " *  fileforu(row.passage) * ")"
+	caption = "image"
+	
+	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
+	
+	#urn
+	record = """$(citation) $(txt)
+	
+$(img)
+	
+---
+"""
+	record
+end
+
+
+# ╔═╡ 5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
+begin
+	cellout = []
+	for r in eachrow(surfaceDse)
+		push!(cellout, mdForRow(r))
+	end
+	Markdown.parse(join(cellout,"\n"))
+end
+
 # ╔═╡ 4a3f3020-56b5-11eb-389a-b78a58771ecf
 # For selected surface, find *set* of texts, and make a menu selection
+# including an empty first entry
 selectedworks = begin
 	rows = filter(r -> r[:surface] == surfurn, alldse)
 	psgs = rows[:, :passage]
 	works = unique(map(p -> droppassage(p), psgs))
-	pushfirst!( map(u -> u.urn, works) , "")
+	#pushfirst!( map(u -> u.urn, works) , "")
 end
 
-# ╔═╡ a53d9692-56c4-11eb-0f6f-73572abc00bb
-md"Texts on surface **$(objectcomponent(surfurn))** $(@bind chosentext Select(selectedworks))"
+# ╔═╡ 242e7810-5713-11eb-1ed0-3b1ea963ade5
+o2converters = map(wk -> o2foru(wk), selectedworks)
 
-# ╔═╡ 4b920d66-56c5-11eb-0017-55d407d6cd19
-archivalxml = begin
-	if chosentext == ""
-		"NONE"
-	else
-		"some"
-	end
-end
+# ╔═╡ 4520a700-5713-11eb-2f6c-6d94bbc7bf9b
+o2converters[1]
 
-# ╔═╡ 64748ff2-56b6-11eb-2d85-c96ebef9b57e
-selectedworks
-
-# ╔═╡ d4ffdf08-537b-11eb-0f66-71fc864661b3
-md"See checklist in issues for `CitablePhysicalText` repo."
-
-# ╔═╡ f3f7e432-537b-11eb-0d2b-57a426b595e2
-html"""
-<hr/>
-
-<blockquote>
-<i>Content below here is already tested in next dev branch of <code>EditorsRepo</code></i>. 
-
-<p>
-Delete when updating version of <code>EditorsRepo</code></i>.
-</p>
-</blockquote>
-
-
-"""
+# ╔═╡ 7734da8a-5712-11eb-1e53-1b47aa50c8aa
+o2foru(selectedworks[1])
 
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
@@ -460,11 +471,14 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
 # ╟─284a9468-539d-11eb-0e2b-a97ac09eca48
 # ╠═ed36fb6e-5430-11eb-3be1-1f7bf17384d8
+# ╠═b092d89a-5714-11eb-18e7-cd492e83cff4
+# ╠═a65cdab0-53e0-11eb-120f-f16fae76e54f
+# ╠═2e893254-5714-11eb-1cc3-5b5bba439ce1
 # ╟─2a0b33b4-55c5-11eb-2ce9-4f3084c73087
-# ╟─5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
+# ╠═5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
 # ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
-# ╟─a53d9692-56c4-11eb-0f6f-73572abc00bb
-# ╟─4b920d66-56c5-11eb-0017-55d407d6cd19
+# ╠═a53d9692-56c4-11eb-0f6f-73572abc00bb
+# ╠═4b920d66-56c5-11eb-0017-55d407d6cd19
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
 # ╟─8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
@@ -491,25 +505,26 @@ Delete when updating version of <code>EditorsRepo</code></i>.
 # ╟─1f3bac4a-55c4-11eb-3c50-71a593a6a676
 # ╟─fee6a296-564d-11eb-2733-59bb1e480d2f
 # ╟─66385382-53dc-11eb-25da-cd1777daba5f
-# ╟─a65cdab0-53e0-11eb-120f-f16fae76e54f
 # ╟─e2c40ec2-539c-11eb-1d17-39d16591d367
 # ╟─b209e56e-53dc-11eb-3939-9f5fef5aa7e0
 # ╟─7d83b94a-5392-11eb-0dd0-fb894692e19d
-# ╠═3ac917e6-56b5-11eb-03a8-e54d140c17a4
 # ╟─8988790a-537a-11eb-1acb-ef423c2b6096
 # ╟─7d78b4f0-564e-11eb-3562-9f18ea745b41
 # ╟─85b11a4a-564e-11eb-2bcc-9db7302feffb
 # ╟─9e85cade-564e-11eb-0797-8f10f31af2eb
-# ╟─6166ecb6-5057-11eb-19cd-59100a749001
+# ╠═6166ecb6-5057-11eb-19cd-59100a749001
 # ╟─6330e4ce-50f8-11eb-24ce-a1b013abf7e6
 # ╟─83cac370-5063-11eb-3654-2be7d823652c
 # ╟─833b7cd2-564f-11eb-3854-87851657e4df
 # ╠═98112bde-564f-11eb-128c-39561db77b9d
 # ╠═b5dae646-564f-11eb-3cce-d34ea511189a
 # ╟─dd02b55a-564f-11eb-0098-4b4e0fe3f3bd
-# ╠═adde948c-5664-11eb-144f-c78a99902156
 # ╟─cb30618c-537b-11eb-01ca-3f7ca0fe2869
+# ╠═c9e145dc-5711-11eb-1b07-c56a8a8f807f
+# ╠═4520a700-5713-11eb-2f6c-6d94bbc7bf9b
+# ╠═242e7810-5713-11eb-1ed0-3b1ea963ade5
+# ╠═8eb757fc-5712-11eb-10b2-67a1a128a564
+# ╠═7734da8a-5712-11eb-1e53-1b47aa50c8aa
+# ╠═b36c1ade-5711-11eb-34f5-bf2374a16e79
+# ╠═1a3cc6b6-5715-11eb-21dc-0f9b242b1462
 # ╠═4a3f3020-56b5-11eb-389a-b78a58771ecf
-# ╠═64748ff2-56b6-11eb-2d85-c96ebef9b57e
-# ╟─d4ffdf08-537b-11eb-0f66-71fc864661b3
-# ╟─f3f7e432-537b-11eb-0d2b-57a426b595e2
