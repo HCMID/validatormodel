@@ -164,6 +164,8 @@ editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
 uniquesurfs = begin 
 	surfurns = EditorsRepo.surfaces(editorsrepo)
 	surflist = map(u -> u.urn, surfurns)
+	# Add a blank entry so popup menu can come up without a selection
+	pushfirst!( surflist, "")
 end
 
 # ╔═╡ e08d5418-573b-11eb-2375-35a717b36a30
@@ -171,9 +173,6 @@ md"""
 *Choose a surface to verify*: 
 $(@bind surface Select(uniquesurfs))
 """
-
-# ╔═╡ 901ae238-573c-11eb-15e2-3f7611dacab7
-surfurn = Cite2Urn(surface)
 
 # ╔═╡ 175f2e58-573c-11eb-3a36-f3142c341d93
 alldse = begin
@@ -237,11 +236,26 @@ md"""
 
 """
 
+# ╔═╡ 901ae238-573c-11eb-15e2-3f7611dacab7
+surfurn = begin
+	if surface == ""
+		""
+	else
+		Cite2Urn(surface)
+	end
+end
+
 # ╔═╡ e57c9326-573b-11eb-100c-ed7f37414d79
 surfaceDse = filter(row -> row.surface == surfurn, alldse)
 
 # ╔═╡ c9a3bd8c-573d-11eb-2034-6f608e8bf414
-md"*Found **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(surfurn))*"
+begin
+	if surface == ""
+		md""
+	else
+		md"*Found **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(surfurn))*"
+	end
+end
 
 # ╔═╡ 94a7db86-573b-11eb-0eec-8f845bec5995
 md"""
@@ -319,7 +333,11 @@ end
 # Select a node from list of diplomatic nodes
 function diplnode(urn)
 	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticnodes)
-	filtered[1].text
+	if length(filtered) > 0
+		filtered[1].text
+	else 
+		""
+	end
 	#"Found stuffs " * le
 end
 
@@ -347,11 +365,15 @@ end
 # ╔═╡ 00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # display DSE records for verification
 begin
-	cellout = []
-	for r in eachrow(surfaceDse)
-		push!(cellout, mdForRow(r))
+	if surface == ""
+		md""
+	else
+		cellout = []
+		for r in eachrow(surfaceDse)
+			push!(cellout, mdForRow(r))
+		end
+		Markdown.parse(join(cellout,"\n"))
 	end
-	Markdown.parse(join(cellout,"\n"))
 end
 
 # ╔═╡ Cell order:
@@ -367,9 +389,7 @@ end
 # ╟─e08d5418-573b-11eb-2375-35a717b36a30
 # ╟─c9a3bd8c-573d-11eb-2034-6f608e8bf414
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
-# ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
-# ╟─901ae238-573c-11eb-15e2-3f7611dacab7
 # ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
 # ╟─562b460a-573a-11eb-321b-678429a06c0c
@@ -398,8 +418,10 @@ end
 # ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
+# ╟─901ae238-573c-11eb-15e2-3f7611dacab7
 # ╟─e57c9326-573b-11eb-100c-ed7f37414d79
 # ╟─94a7db86-573b-11eb-0eec-8f845bec5995
+# ╠═2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─7a347506-5737-11eb-03bb-ef6dfa90d9c8
 # ╟─8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
 # ╟─a7b6f2f6-5737-11eb-1a43-2fa2909d0240
