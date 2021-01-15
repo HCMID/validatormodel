@@ -26,10 +26,11 @@ begin
 	Pkg.add("HTTP")
 	Pkg.add("DataFrames")
 	Pkg.add("EditorsRepo")
+	Pkg.add("Orthography")
 	
 	# Waiting for packages to clear Julia Registry
 	Pkg.add(url="https://github.com/HCMID/EditionBuilders.jl")
-	Pkg.add(url="https://github.com/HCMID/Orthography.jl")
+
 	
 	using PlutoUI
 	using CitableText

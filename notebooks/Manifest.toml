@@ -259,8 +259,6 @@ version = "1.3.2"
 [[Orthography]]
 deps = ["DocStringExtensions", "Documenter", "Test"]
 git-tree-sha1 = "f2352aacf8076a42f135a756cbfab1fe4ae5c4bd"
-repo-rev = "main"
-repo-url = "https://github.com/HCMID/Orthography.jl"
 uuid = "0b4c9448-09b0-4e78-95ea-3eb3328be36d"
 version = "0.1.0"
 
