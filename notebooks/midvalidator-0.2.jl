@@ -406,7 +406,8 @@ end
 # ╔═╡ 1a3cc6b6-5715-11eb-21dc-0f9b242b1462
 function fileforu(urn)
 	row = filter(r -> droppassage(urn) == r[:urn], markupschemes)
-	row[1,:file]
+	f= editorsrepo.root * "/" * editorsrepo.editions * "/" *	row[1,:file]
+	xml = read(f, String)
 end
 
 # ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
@@ -416,8 +417,9 @@ function mdForRow(row::DataFrameRow)
 	
 	
 	reader = o2foru(row.passage)
-	#txt = reader("<p>XML TEXT</p>", row.passage)
-	txt = "(Read text from disk " *  fileforu(row.passage) * ")"
+	xml =  fileforu(row.passage)
+	txt = reader(xml, row.passage)
+	#txt = "(Read text from disk " * "xml" * ")"
 	caption = "image"
 	
 	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
@@ -527,4 +529,4 @@ o2foru(selectedworks[1])
 # ╠═7734da8a-5712-11eb-1e53-1b47aa50c8aa
 # ╠═b36c1ade-5711-11eb-34f5-bf2374a16e79
 # ╠═1a3cc6b6-5715-11eb-21dc-0f9b242b1462
-# ╠═4a3f3020-56b5-11eb-389a-b78a58771ecf
+# ╟─4a3f3020-56b5-11eb-389a-b78a58771ecf
