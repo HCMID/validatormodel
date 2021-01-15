@@ -51,18 +51,11 @@ end
 # ╔═╡ 7ee4b3a6-573d-11eb-1470-67a241783b23
 @bind loadem Button("Load/reload data")
 
-# ╔═╡ 22ab24bc-5749-11eb-04fc-898b43aa426f
-md"""
-
-> Overview of contents
-
-"""
-
 # ╔═╡ 6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
-md"**URNs of all cataloged texts**"
+md"**CTS URNs of all cataloged texts**"
 
 # ╔═╡ 4010cf78-573c-11eb-03cf-b7dd1ae23b60
-md"**URNS (as Strings) of all indexed surfaces**"
+md"**CITE2 URNS of all indexed surfaces**"
 
 # ╔═╡ 558e587a-573c-11eb-3364-632f0b0703da
 md"""
@@ -75,12 +68,25 @@ md"""
 md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
 
 
+# ╔═╡ 13e8b16c-574c-11eb-13a6-61c5f05dfca2
+md"""
+
+> ## Verification:  orthography
+
+"""
+
+# ╔═╡ 1fde0332-574c-11eb-1baf-01d335b27912
+md"**TBA** in a future release of this notebook."
+
 # ╔═╡ a7903abe-5747-11eb-310e-ffe2ee128f1b
 md"""
 
 > ## Data sets
 
 """
+
+# ╔═╡ 37258038-574c-11eb-3acd-fb67db0bf1c8
+md"Full details of the repository's contents."
 
 # ╔═╡ 61bf76b0-573c-11eb-1d23-855b40e06c02
 md"""
@@ -106,7 +112,7 @@ md"""
 md"""
 
 
-> Full details of text catalog and configuration
+> Text catalog and configuration
 
 """
 
@@ -160,19 +166,8 @@ md"This is the `EditingRepository` built from these settings:"
 # ╔═╡ 7829a5ac-5736-11eb-13d1-6f5430595193
 editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
 
-# ╔═╡ 356f7236-573c-11eb-18b5-2f5a6bfc545d
-uniquesurfs = begin 
-	surfurns = EditorsRepo.surfaces(editorsrepo)
-	surflist = map(u -> u.urn, surfurns)
-	# Add a blank entry so popup menu can come up without a selection
-	pushfirst!( surflist, "")
-end
-
-# ╔═╡ e08d5418-573b-11eb-2375-35a717b36a30
-md"""
-*Choose a surface to verify*: 
-$(@bind surface Select(uniquesurfs))
-"""
+# ╔═╡ 547c4ffa-574b-11eb-3b6e-69fa417421fc
+uniquesurfaces = EditorsRepo.surfaces(editorsrepo)
 
 # ╔═╡ 175f2e58-573c-11eb-3a36-f3142c341d93
 alldse = begin
@@ -274,9 +269,29 @@ text-align: center;
 # ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
 md"""
 
-> DSE selections from popup menu:
+> Formatting DSE selections for verification
 
 """
+
+# ╔═╡ b899d304-574b-11eb-1d50-5b7813ea201e
+md"Menu choices for popup menu of all unique surface URNs:"
+
+# ╔═╡ 356f7236-573c-11eb-18b5-2f5a6bfc545d
+surfacemenu = begin 
+	surfurns = EditorsRepo.surfaces(editorsrepo)
+	surflist = map(u -> u.urn, surfurns)
+	# Add a blank entry so popup menu can come up without a selection
+	pushfirst!( surflist, "")
+end
+
+# ╔═╡ e08d5418-573b-11eb-2375-35a717b36a30
+md"""
+*Choose a surface to verify*: 
+$(@bind surface Select(surfacemenu))
+"""
+
+# ╔═╡ cb954628-574b-11eb-29e3-a7f277852b45
+md"Currently selected surface:"
 
 # ╔═╡ 901ae238-573c-11eb-15e2-3f7611dacab7
 surfurn = begin
@@ -286,6 +301,9 @@ surfurn = begin
 		Cite2Urn(surface)
 	end
 end
+
+# ╔═╡ d9495f98-574b-11eb-2ee9-a38e09af22e6
+md"DSE records for selected surface:"
 
 # ╔═╡ e57c9326-573b-11eb-100c-ed7f37414d79
 surfaceDse = filter(row -> row.surface == surfurn, alldse)
@@ -423,17 +441,19 @@ end
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
-# ╟─22ab24bc-5749-11eb-04fc-898b43aa426f
 # ╟─6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
 # ╟─0bd05af4-573b-11eb-1b90-31d469940e5b
 # ╟─4010cf78-573c-11eb-03cf-b7dd1ae23b60
-# ╟─356f7236-573c-11eb-18b5-2f5a6bfc545d
+# ╟─547c4ffa-574b-11eb-3b6e-69fa417421fc
 # ╟─558e587a-573c-11eb-3364-632f0b0703da
 # ╟─e08d5418-573b-11eb-2375-35a717b36a30
 # ╟─c9a3bd8c-573d-11eb-2034-6f608e8bf414
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
 # ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
+# ╟─1fde0332-574c-11eb-1baf-01d335b27912
 # ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
+# ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
 # ╟─562b460a-573a-11eb-321b-678429a06c0c
 # ╟─2a84a042-5739-11eb-13f1-1d881f215521
@@ -465,7 +485,11 @@ end
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─0c025f44-574b-11eb-3049-33ad523ec6e4
 # ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
+# ╟─b899d304-574b-11eb-1d50-5b7813ea201e
+# ╟─356f7236-573c-11eb-18b5-2f5a6bfc545d
+# ╟─cb954628-574b-11eb-29e3-a7f277852b45
 # ╟─901ae238-573c-11eb-15e2-3f7611dacab7
+# ╟─d9495f98-574b-11eb-2ee9-a38e09af22e6
 # ╟─e57c9326-573b-11eb-100c-ed7f37414d79
 # ╟─94a7db86-573b-11eb-0eec-8f845bec5995
 # ╟─7a347506-5737-11eb-03bb-ef6dfa90d9c8
