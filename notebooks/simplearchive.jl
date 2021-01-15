@@ -54,17 +54,41 @@ md"**The repository**"
 # ╔═╡ 6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
 md"**URNs of cataloged texts**"
 
+# ╔═╡ 4010cf78-573c-11eb-03cf-b7dd1ae23b60
+md"**URNS (as Strings) of all indexed surfaces**"
+
+# ╔═╡ 558e587a-573c-11eb-3364-632f0b0703da
+md"### Interactive DSE verification"
+
+# ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
+md"DSE selections from popup menu:"
+
+# ╔═╡ 61bf76b0-573c-11eb-1d23-855b40e06c02
+md"""
+
+> Text corpora built from repository
+
+"""
+
 # ╔═╡ 562b460a-573a-11eb-321b-678429a06c0c
 md"All citable nodes in **diplomatic** form."
 
 # ╔═╡ 9118b6d0-573a-11eb-323b-0347fef8d3e6
 md"All citable nodes in **normalized** form."
 
+# ╔═╡ 100a1942-573c-11eb-211e-371998789bfa
+md"""
+
+> DSE tables
+
+"""
+
 # ╔═╡ 43f724c6-573b-11eb-28d6-f9ec8adebb8a
 md"""
 ---
 
-Full deatils of text catalog and configuration
+> Full details of text catalog and configuration
+
 """
 
 # ╔═╡ 94a7db86-573b-11eb-0eec-8f845bec5995
@@ -101,6 +125,29 @@ Subdirectores in repository:
 
 # ╔═╡ 7829a5ac-5736-11eb-13d1-6f5430595193
 editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
+
+# ╔═╡ 356f7236-573c-11eb-18b5-2f5a6bfc545d
+uniquesurfs = begin 
+	surfurns = EditorsRepo.surfaces(editorsrepo)
+	surflist = map(u -> u.urn, surfurns)
+end
+
+# ╔═╡ e08d5418-573b-11eb-2375-35a717b36a30
+md"""
+*Choose a surface to verify*: 
+$(@bind surface Select(uniquesurfs))
+"""
+
+# ╔═╡ 901ae238-573c-11eb-15e2-3f7611dacab7
+surfurn = Cite2Urn(surface)
+
+# ╔═╡ 175f2e58-573c-11eb-3a36-f3142c341d93
+alldse = begin
+	dse_df(editorsrepo)
+end
+
+# ╔═╡ e57c9326-573b-11eb-100c-ed7f37414d79
+surfaceDse = filter(row -> row.surface == surfurn, alldse)
 
 # ╔═╡ 4fa5738a-5737-11eb-0e78-0155bfc12112
 textconfig = begin
@@ -182,10 +229,20 @@ end
 # ╟─7829a5ac-5736-11eb-13d1-6f5430595193
 # ╟─6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
 # ╟─0bd05af4-573b-11eb-1b90-31d469940e5b
+# ╟─4010cf78-573c-11eb-03cf-b7dd1ae23b60
+# ╟─356f7236-573c-11eb-18b5-2f5a6bfc545d
+# ╟─558e587a-573c-11eb-3364-632f0b0703da
+# ╟─e08d5418-573b-11eb-2375-35a717b36a30
+# ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
+# ╟─901ae238-573c-11eb-15e2-3f7611dacab7
+# ╟─e57c9326-573b-11eb-100c-ed7f37414d79
+# ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
 # ╟─562b460a-573a-11eb-321b-678429a06c0c
 # ╟─2a84a042-5739-11eb-13f1-1d881f215521
 # ╟─9118b6d0-573a-11eb-323b-0347fef8d3e6
 # ╟─9974fadc-573a-11eb-10c4-13c589f5810b
+# ╟─100a1942-573c-11eb-211e-371998789bfa
+# ╟─175f2e58-573c-11eb-3a36-f3142c341d93
 # ╟─43f724c6-573b-11eb-28d6-f9ec8adebb8a
 # ╟─2fdc8988-5736-11eb-262d-9b8d44c2e2cc
 # ╟─4fa5738a-5737-11eb-0e78-0155bfc12112
