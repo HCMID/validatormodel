@@ -51,6 +51,13 @@ end
 # ╔═╡ 7ee4b3a6-573d-11eb-1470-67a241783b23
 @bind loadem Button("Load/reload data")
 
+# ╔═╡ 22ab24bc-5749-11eb-04fc-898b43aa426f
+md"""
+
+> Overview of contents
+
+"""
+
 # ╔═╡ 6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
 md"**URNs of all cataloged texts**"
 
@@ -110,12 +117,25 @@ md"""
 
 """
 
+# ╔═╡ 6876c1d6-5749-11eb-39fe-29ef948bec69
+md"Automatically computed values:"
+
+# ╔═╡ 1053c2d8-5749-11eb-13c1-71943988978f
+nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
+
+
+# ╔═╡ fef09e62-5748-11eb-0944-c983eef98e1b
+md"This is version **$(nbversion)** of the MID validation notebook."
+
+# ╔═╡ 6182ebc0-5749-11eb-01b3-e35b891381ae
+projectname = Pkg.TOML.parse(read("Project.toml", String))["project"]
+
 # ╔═╡ a7142d7e-5736-11eb-037b-5540068734e6
 reporoot = dirname(pwd())
 
 # ╔═╡ 59301396-5736-11eb-22d3-3d6538b5228c
 md"""
-Subdirectores in the repository:
+Subdirectories in the repository:
 
 | Content | Subdirectory |
 |--- | --- |
@@ -227,7 +247,7 @@ md"*Found **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(su
 md"""
 
 > ## Temporary content
-> Functions to migrate to `EditorsRepo` module
+> Functions to migrate to the next release of the `EditorsRepo` module.
 
 """
 
@@ -336,7 +356,9 @@ end
 
 # ╔═╡ Cell order:
 # ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
+# ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
+# ╟─22ab24bc-5749-11eb-04fc-898b43aa426f
 # ╟─6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
 # ╟─0bd05af4-573b-11eb-1b90-31d469940e5b
 # ╟─4010cf78-573c-11eb-03cf-b7dd1ae23b60
@@ -360,6 +382,9 @@ end
 # ╟─2fdc8988-5736-11eb-262d-9b8d44c2e2cc
 # ╟─4fa5738a-5737-11eb-0e78-0155bfc12112
 # ╟─0cabc908-5737-11eb-2ef9-d51aedfbbe5f
+# ╟─6876c1d6-5749-11eb-39fe-29ef948bec69
+# ╟─1053c2d8-5749-11eb-13c1-71943988978f
+# ╟─6182ebc0-5749-11eb-01b3-e35b891381ae
 # ╟─a7142d7e-5736-11eb-037b-5540068734e6
 # ╟─59301396-5736-11eb-22d3-3d6538b5228c
 # ╟─e3578474-573c-11eb-057f-27fc9eb9b519
