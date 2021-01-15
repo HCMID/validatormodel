@@ -58,16 +58,20 @@ md"**URNs of all cataloged texts**"
 md"**URNS (as Strings) of all indexed surfaces**"
 
 # ╔═╡ 558e587a-573c-11eb-3364-632f0b0703da
-md"### Interactive DSE verification"
+md"""
+
+> ## Verification: DSE indexing
+
+"""
 
 # ╔═╡ f1f5643c-573d-11eb-1fd1-99c111eb523f
 md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
 
 
-# ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
+# ╔═╡ a7903abe-5747-11eb-310e-ffe2ee128f1b
 md"""
 
-> DSE selections from popup menu:
+> ## Data sets
 
 """
 
@@ -93,46 +97,25 @@ md"""
 
 # ╔═╡ 43f724c6-573b-11eb-28d6-f9ec8adebb8a
 md"""
----
+
 
 > Full details of text catalog and configuration
-
-"""
-
-# ╔═╡ 94a7db86-573b-11eb-0eec-8f845bec5995
-md"""
-
-> Functions to migrate to `EditorsRepo` module
-
-"""
-
-# ╔═╡ 7a347506-5737-11eb-03bb-ef6dfa90d9c8
-md"These functions compile diplomatic and normalized texts for the repository."
-
-# ╔═╡ 1de9aa2a-573f-11eb-1d87-cda4db7c6c4d
-md"""
-
-> Function to format one DSE record for verification
-
 
 """
 
 # ╔═╡ 0cabc908-5737-11eb-2ef9-d51aedfbbe5f
 md"""
 
-> Configuring the repository
+> ## Configuring the repository
 
 """
-
-# ╔═╡ e3578474-573c-11eb-057f-27fc9eb9b519
-md"This is the `EditingRepository` built from these settings:"
 
 # ╔═╡ a7142d7e-5736-11eb-037b-5540068734e6
 reporoot = dirname(pwd())
 
 # ╔═╡ 59301396-5736-11eb-22d3-3d6538b5228c
 md"""
-Subdirectores in repository:
+Subdirectores in the repository:
 
 | Content | Subdirectory |
 |--- | --- |
@@ -150,6 +133,9 @@ end
 
 # ╔═╡ 0bd05af4-573b-11eb-1b90-31d469940e5b
 urnlist = catalogedtexts[:, :urn]
+
+# ╔═╡ e3578474-573c-11eb-057f-27fc9eb9b519
+md"This is the `EditingRepository` built from these settings:"
 
 # ╔═╡ 7829a5ac-5736-11eb-13d1-6f5430595193
 editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
@@ -175,16 +161,85 @@ alldse = begin
 	dse_df(editorsrepo)
 end
 
+# ╔═╡ 4fa5738a-5737-11eb-0e78-0155bfc12112
+textconfig = begin
+	loadem
+	citation_df(editorsrepo)
+end
+
+# ╔═╡ 70ac0236-573e-11eb-1efd-c3be076018aa
+md"""
+
+> Configuring image services
+
+"""
+
+# ╔═╡ 97415fa4-573e-11eb-03df-81e1567ec34e
+md"""
+Image Citation Tool URL: 
+$(@bind ict TextField((55,1), default="http://www.homermultitext.org/ict2/?"))
+"""
+
+# ╔═╡ 77a302c4-573e-11eb-311c-7102e8b377fa
+md"""
+IIIF URL: 
+$(@bind iiif TextField((55,1), default="http://www.homermultitext.org/iipsrv"))
+"""
+
+# ╔═╡ 8afeacec-573e-11eb-3da5-6b6d6bd764f8
+md"""
+IIIF image root: $(@bind iiifroot TextField((55,1), default="/project/homer/pyramidal/deepzoom"))
+
+"""
+
+# ╔═╡ c3efd710-573e-11eb-1251-75295cced219
+md"This is the IIIF Service built from these settings:"
+
+# ╔═╡ bd95307c-573e-11eb-3325-ad08ee392a2f
+# CitableImage access to a IIIF service
+iiifsvc = begin
+	baseurl = iiif
+	root = iiifroot
+	IIIFservice(baseurl, root)
+end
+
+# ╔═╡ 1fbce92e-5748-11eb-3417-579ae03a8d76
+md"""
+
+> ## Formatting the notebook
+
+"""
+
+# ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
+md"""
+
+> DSE selections from popup menu:
+
+"""
+
 # ╔═╡ e57c9326-573b-11eb-100c-ed7f37414d79
 surfaceDse = filter(row -> row.surface == surfurn, alldse)
 
 # ╔═╡ c9a3bd8c-573d-11eb-2034-6f608e8bf414
 md"*Found **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(surfurn))*"
 
-# ╔═╡ 4fa5738a-5737-11eb-0e78-0155bfc12112
-textconfig = begin
-	loadem
-	citation_df(editorsrepo)
+# ╔═╡ 94a7db86-573b-11eb-0eec-8f845bec5995
+md"""
+
+> ## Temporary content
+> Functions to migrate to `EditorsRepo` module
+
+"""
+
+# ╔═╡ 7a347506-5737-11eb-03bb-ef6dfa90d9c8
+md"These functions compile diplomatic and normalized texts for the repository."
+
+# ╔═╡ 8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
+# Read text contents of file for URN
+function fileforu(urn)
+	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
+	f= editorsrepo.root * "/" * editorsrepo.editions * "/" *	row[1,:file]
+	xml = read(f, String)
 end
 
 # ╔═╡ a7b6f2f6-5737-11eb-1a43-2fa2909d0240
@@ -198,20 +253,6 @@ end
 function normforu(urn)
 	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
 	eval(Meta.parse(row[1,:normalized]))
-end
-
-# ╔═╡ b815025a-5737-11eb-3b68-0df9e43b534d
-function diplforu(urn)
-	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
-	eval(Meta.parse(row[1,:diplomatic]))
-end
-
-# ╔═╡ 8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
-# Read text contents of file for URN
-function fileforu(urn)
-	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
-	f= editorsrepo.root * "/" * editorsrepo.editions * "/" *	row[1,:file]
-	xml = read(f, String)
 end
 
 # ╔═╡ b7dae7a0-573a-11eb-2c76-15974f79daf8
@@ -229,6 +270,12 @@ end
 normalizednodes =  begin
 	normalizedarrays = map(u -> normalizedcns(u), urnlist)
 	reduce(vcat, normalizedarrays)
+end
+
+# ╔═╡ b815025a-5737-11eb-3b68-0df9e43b534d
+function diplforu(urn)
+	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
+	eval(Meta.parse(row[1,:diplomatic]))
 end
 
 # ╔═╡ 75ca5ad0-5737-11eb-1a4a-17beafff6a96
@@ -254,42 +301,6 @@ function diplnode(urn)
 	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticnodes)
 	filtered[1].text
 	#"Found stuffs " * le
-end
-
-# ╔═╡ 70ac0236-573e-11eb-1efd-c3be076018aa
-md"""
-
-> Configuring image services
-
-"""
-
-# ╔═╡ 77a302c4-573e-11eb-311c-7102e8b377fa
-md"""
-IIIF URL: 
-$(@bind iiif TextField((55,1), default="http://www.homermultitext.org/iipsrv"))
-"""
-
-# ╔═╡ 8afeacec-573e-11eb-3da5-6b6d6bd764f8
-md"""
-IIIF image root: $(@bind iiifroot TextField((55,1), default="/project/homer/pyramidal/deepzoom"))
-
-"""
-
-# ╔═╡ 97415fa4-573e-11eb-03df-81e1567ec34e
-md"""
-Image Citation Tool URL: 
-$(@bind ict TextField((55,1), default="http://www.homermultitext.org/ict2/?"))
-"""
-
-# ╔═╡ c3efd710-573e-11eb-1251-75295cced219
-md"IIIF Service built from this configuration:"
-
-# ╔═╡ bd95307c-573e-11eb-3325-ad08ee392a2f
-# CitableImage access to a IIIF service
-iiifsvc = begin
-	baseurl = iiif
-	root = iiifroot
-	IIIFservice(baseurl, root)
 end
 
 # ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
@@ -336,10 +347,8 @@ end
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
-# ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
-# ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
 # ╟─901ae238-573c-11eb-15e2-3f7611dacab7
-# ╟─e57c9326-573b-11eb-100c-ed7f37414d79
+# ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
 # ╟─562b460a-573a-11eb-321b-678429a06c0c
 # ╟─2a84a042-5739-11eb-13f1-1d881f215521
@@ -350,6 +359,21 @@ end
 # ╟─43f724c6-573b-11eb-28d6-f9ec8adebb8a
 # ╟─2fdc8988-5736-11eb-262d-9b8d44c2e2cc
 # ╟─4fa5738a-5737-11eb-0e78-0155bfc12112
+# ╟─0cabc908-5737-11eb-2ef9-d51aedfbbe5f
+# ╟─a7142d7e-5736-11eb-037b-5540068734e6
+# ╟─59301396-5736-11eb-22d3-3d6538b5228c
+# ╟─e3578474-573c-11eb-057f-27fc9eb9b519
+# ╟─7829a5ac-5736-11eb-13d1-6f5430595193
+# ╟─70ac0236-573e-11eb-1efd-c3be076018aa
+# ╟─97415fa4-573e-11eb-03df-81e1567ec34e
+# ╟─77a302c4-573e-11eb-311c-7102e8b377fa
+# ╟─8afeacec-573e-11eb-3da5-6b6d6bd764f8
+# ╟─c3efd710-573e-11eb-1251-75295cced219
+# ╟─bd95307c-573e-11eb-3325-ad08ee392a2f
+# ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
+# ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
+# ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
+# ╟─e57c9326-573b-11eb-100c-ed7f37414d79
 # ╟─94a7db86-573b-11eb-0eec-8f845bec5995
 # ╟─7a347506-5737-11eb-03bb-ef6dfa90d9c8
 # ╟─8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
@@ -358,15 +382,3 @@ end
 # ╟─b7dae7a0-573a-11eb-2c76-15974f79daf8
 # ╟─b815025a-5737-11eb-3b68-0df9e43b534d
 # ╟─75ca5ad0-5737-11eb-1a4a-17beafff6a96
-# ╟─1de9aa2a-573f-11eb-1d87-cda4db7c6c4d
-# ╟─0cabc908-5737-11eb-2ef9-d51aedfbbe5f
-# ╟─e3578474-573c-11eb-057f-27fc9eb9b519
-# ╟─7829a5ac-5736-11eb-13d1-6f5430595193
-# ╟─a7142d7e-5736-11eb-037b-5540068734e6
-# ╟─59301396-5736-11eb-22d3-3d6538b5228c
-# ╟─70ac0236-573e-11eb-1efd-c3be076018aa
-# ╟─77a302c4-573e-11eb-311c-7102e8b377fa
-# ╟─8afeacec-573e-11eb-3da5-6b6d6bd764f8
-# ╟─97415fa4-573e-11eb-03df-81e1567ec34e
-# ╟─c3efd710-573e-11eb-1251-75295cced219
-# ╟─bd95307c-573e-11eb-3325-ad08ee392a2f
