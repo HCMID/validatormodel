@@ -58,9 +58,6 @@ md"Use the `Load/reload data` button to update your notebook."
 md"""## 2. Indexing in DSE tables
 """
 
-# ╔═╡ b092d89a-5714-11eb-18e7-cd492e83cff4
-# need to read text from disk
-
 # ╔═╡ 2a0b33b4-55c5-11eb-2ce9-4f3084c73087
 md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
 
@@ -70,19 +67,6 @@ md"""## 3. Orthography and tokenization
 > Validation and verification of orthography: **TBA** in a following version.
 
 """
-
-# ╔═╡ a53d9692-56c4-11eb-0f6f-73572abc00bb
-#md"Texts on surface **$(objectcomponent(surfurn))** $(@bind chosentext Select(selectedworks))"
-
-# ╔═╡ 4b920d66-56c5-11eb-0017-55d407d6cd19
-#= archivalxml = begin
-	if chosentext == ""
-		"NONE"
-	else
-		"some"
-	end
-end
-=#
 
 # ╔═╡ 72ae34b0-4d0b-11eb-2aa2-5121099491db
 html"""<blockquote>
@@ -414,19 +398,77 @@ function diplforu(urn)
 	eval(Meta.parse(row[1,:diplomatic]))
 end
 
+# ╔═╡ 4a3f3020-56b5-11eb-389a-b78a58771ecf
+# For selected surface, find *set* of texts
+# Separately, make a menu selection
+# including an empty first entry
+selectedworks = begin
+	rows = filter(r -> r[:surface] == surfurn, alldse)
+	psgs = rows[:, :passage]
+	works = unique(map(p -> droppassage(p), psgs))
+	#pushfirst!( map(u -> u.urn, works) , "")
+end
+
+# ╔═╡ 242e7810-5713-11eb-1ed0-3b1ea963ade5
+o2converters = map(wk -> o2foru(wk), selectedworks)
+
+# ╔═╡ 4520a700-5713-11eb-2f6c-6d94bbc7bf9b
+o2converters[1]
+
+# ╔═╡ 7734da8a-5712-11eb-1e53-1b47aa50c8aa
+diplforu(selectedworks[1])
+
+
+# ╔═╡ fc185638-5718-11eb-0969-83f222a1cbad
+demodse = surfaceDse[1,:passage]
+
+# ╔═╡ 090fb1d2-571a-11eb-1ca0-4d7380f72067
+debug = CtsUrn("urn:cts:trmilli:tl.25.v1:4")
+
+# ╔═╡ 7ac3363a-571a-11eb-28d6-5321ff53554f
+psglist = surfaceDse[:,:passage]
+
+# ╔═╡ 12caf10c-571a-11eb-1d89-2fd07f684e87
+begin
+	urn = debug
+	reader = o2foru(urn)
+	xml =  fileforu(urn)
+	corpus = reader(xml, urn)
+	dipl = diplforu(urn)
+	diplnodes = map(cn -> editednode(dipl, cn), corpus.corpus)
+	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplnodes)
+	filtered[1]
+end
+
+# ╔═╡ 47d6d768-5717-11eb-00bd-53e2ecaa5c6a
+# given a node URN, 
+function diplomaticnode(urn)
+	
+	reader = o2foru(urn)
+	xml =  fileforu(urn)
+	corpus = reader(xml, urn)
+	dipl = diplforu(urn)
+	diplnodes = map(cn -> editednode(dipl, cn), corpus.corpus)
+	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplnodes)
+	filtered[1]
+	#editednode(dipl,corpus.corpus[1])
+end
+
 # ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
 function mdForRow(row::DataFrameRow)
 	citation = "**" * passagecomponent(row.passage)  * "** "
 	
 	
-	
+	#=
 	reader = o2foru(row.passage)
 	xml =  fileforu(row.passage)
-	txt = reader(xml, row.passage)
+	rdr = reader(xml, row.passage)
 	dipl = diplforu(row.passage)
+	=#
 	
-	#editednode(dipl, c.corpus[1])
-
+	
+	cn = diplomaticnode(row.passage)
+	txt = cn.text #"debug " * row.passage.urn
 	caption = "image"
 	
 	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
@@ -451,52 +493,11 @@ begin
 	Markdown.parse(join(cellout,"\n"))
 end
 
-# ╔═╡ 2e893254-5714-11eb-1cc3-5b5bba439ce1
-begin
-	psg = surfaceDse[1,:]
-	reader = o2foru(psg.passage)
-	xml =  fileforu(psg.passage)
-	corpus = reader(xml, psg.passage)
-	dipl = diplforu(psg.passage)
-	editednode(dipl,corpus.corpus[1])
-	
-end
-
-# ╔═╡ 4a3f3020-56b5-11eb-389a-b78a58771ecf
-# For selected surface, find *set* of texts
-# Separately, make a menu selection
-# including an empty first entry
-selectedworks = begin
-	rows = filter(r -> r[:surface] == surfurn, alldse)
-	psgs = rows[:, :passage]
-	works = unique(map(p -> droppassage(p), psgs))
-	#pushfirst!( map(u -> u.urn, works) , "")
-end
-
-# ╔═╡ 242e7810-5713-11eb-1ed0-3b1ea963ade5
-o2converters = map(wk -> o2foru(wk), selectedworks)
-
-# ╔═╡ 4520a700-5713-11eb-2f6c-6d94bbc7bf9b
-o2converters[1]
-
-# ╔═╡ 7734da8a-5712-11eb-1e53-1b47aa50c8aa
-diplforu(selectedworks[1])
-
-
-# ╔═╡ 47d6d768-5717-11eb-00bd-53e2ecaa5c6a
-function corpusforu(urn)
-	
-	reader = o2foru(urn)
-	xml =  fileforu(urn)
-	corpus = reader(xml, urn)
-	dipl = diplforu(urn)
-	diplnodes = map(cn -> editednode(dipl, cn), corpus.corpus)
-	CitableCorpus(diplnodes)
-	#editednode(dipl,corpus.corpus[1])
-end
-
 # ╔═╡ 6e690ae0-5717-11eb-2676-7bf25267d75d
-corpusforu(selectedworks[1])
+diplomaticnode(demodse)
+
+# ╔═╡ 8fe3b032-571a-11eb-2063-fb35ff46062d
+map(p -> diplomaticnode(p), psglist)
 
 # ╔═╡ Cell order:
 # ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
@@ -507,15 +508,11 @@ corpusforu(selectedworks[1])
 # ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
 # ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
 # ╟─284a9468-539d-11eb-0e2b-a97ac09eca48
-# ╠═ed36fb6e-5430-11eb-3be1-1f7bf17384d8
-# ╠═b092d89a-5714-11eb-18e7-cd492e83cff4
-# ╠═a65cdab0-53e0-11eb-120f-f16fae76e54f
-# ╠═2e893254-5714-11eb-1cc3-5b5bba439ce1
+# ╟─ed36fb6e-5430-11eb-3be1-1f7bf17384d8
+# ╟─a65cdab0-53e0-11eb-120f-f16fae76e54f
 # ╟─2a0b33b4-55c5-11eb-2ce9-4f3084c73087
-# ╠═5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
+# ╟─5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
 # ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
-# ╠═a53d9692-56c4-11eb-0f6f-73572abc00bb
-# ╠═4b920d66-56c5-11eb-0017-55d407d6cd19
 # ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
 # ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
 # ╟─8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
@@ -567,4 +564,9 @@ corpusforu(selectedworks[1])
 # ╠═69f6c62e-5716-11eb-3ffb-25de0faff46e
 # ╠═4a3f3020-56b5-11eb-389a-b78a58771ecf
 # ╠═6e690ae0-5717-11eb-2676-7bf25267d75d
+# ╠═fc185638-5718-11eb-0969-83f222a1cbad
+# ╠═090fb1d2-571a-11eb-1ca0-4d7380f72067
+# ╠═7ac3363a-571a-11eb-28d6-5321ff53554f
+# ╠═8fe3b032-571a-11eb-2063-fb35ff46062d
+# ╠═12caf10c-571a-11eb-1d89-2fd07f684e87
 # ╠═47d6d768-5717-11eb-00bd-53e2ecaa5c6a
