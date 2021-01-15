@@ -229,6 +229,48 @@ md"""
 
 """
 
+# ╔═╡ 17d926a4-574b-11eb-1180-9376c363f71c
+# Format HTML header for notebook.
+function hdr() 
+	HTML("<blockquote  class='center'><h1>MID validation notebook</h1>" *
+		"<h3>" * projectname * "</h3>" 		*
+		"<p>Editing project from repository in:</p><h4><i>" * reporoot * "</i></h4></blockquote>")
+end
+
+# ╔═╡ 22980f4c-574b-11eb-171b-170c4a68b30b
+hdr()
+
+# ╔═╡ 0da08ada-574b-11eb-3d9a-11226200f537
+css = html"""
+<style>
+ .center {
+text-align: center;
+}
+.highlight {
+  background: yellow;  
+}
+.urn {
+	color: silver;
+}
+  .note { -moz-border-radius: 6px;
+     -webkit-border-radius: 6px;
+     background-color: #eee;
+     background-image: url(../Images/icons/Pencil-48.png);
+     background-position: 9px 0px;
+     background-repeat: no-repeat;
+     border: solid 1px black;
+     border-radius: 6px;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+    font-style: italic;
+ }
+</style>
+"""
+
+# ╔═╡ 0c025f44-574b-11eb-3049-33ad523ec6e4
+
+
 # ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
 md"""
 
@@ -379,6 +421,7 @@ end
 # ╔═╡ Cell order:
 # ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
+# ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
 # ╟─22ab24bc-5749-11eb-04fc-898b43aa426f
 # ╟─6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
@@ -416,8 +459,11 @@ end
 # ╟─c3efd710-573e-11eb-1251-75295cced219
 # ╟─bd95307c-573e-11eb-3325-ad08ee392a2f
 # ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
+# ╟─17d926a4-574b-11eb-1180-9376c363f71c
+# ╟─0da08ada-574b-11eb-3d9a-11226200f537
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
+# ╟─0c025f44-574b-11eb-3049-33ad523ec6e4
 # ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
 # ╟─901ae238-573c-11eb-15e2-3f7611dacab7
 # ╟─e57c9326-573b-11eb-100c-ed7f37414d79
