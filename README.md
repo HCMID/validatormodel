@@ -1,16 +1,15 @@
 # HC MID template repository, version` 0.2.0`
 
 
-
-Template repository illustrating HC MID validation and verification using an interactive Pluto notebook.
+This is a template repository illustrating HC MID validation and verification using an interactive Pluto notebook.
 
 
 ## Organization of repository
 
-- `editions` XML editions, cataloged in `catalog.cex`, with information about how to parse the citation scheme of each file in `citation.cex`
-- `dse` Delimite-text files indexing edited passages to physical surfaces and documentary images.
+- `editions` XML editions
+- `dse` Delimited-text files indexing edited passages to physical surfaces and documentary images.
 - `notebooks` Pluto notebooks you can run to validate and verify your work.
-- `config` Configuration files.
+- `config` Configuration files.  You should have corresponding entries for each text in `catalog.cex` (basic information about the text)  and `citation.cex` (information about how to parse and process each file)
 
 ## Installing Pluto notebook server
 
@@ -33,7 +32,7 @@ Pluto.run()
 
 Within Pluto, open the generic `midvalidator-VERSION.jl` notebook.  If your project has additional project-specific tests, they can be managed in a second, separate notebook, so you can open that notebook as well in a separate browser tab.
 
-The notebook will take a long time to start up, since it basically has to download and build a validating app in your browser, but once it has started, it has very responsive on everyday machines.
+To minimize the setup you have to do, the notebook is configured to download and build the entire app each time you start it.  This means you don't need to have anything else preinstalled, but it also means that startup time is slow. (It can take up to 2 minutes on an older laptop.)  Once the notebook has started, it is very responsive even on older personal machines.
 
 ## Configuration files
 
