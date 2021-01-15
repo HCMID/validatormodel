@@ -13,7 +13,7 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 9b7d76ac-4faf-11eb-17de-69db047d5f91
+# ╔═╡ 0589b23a-5736-11eb-2cb7-8b122e101c35
 begin
 	import Pkg
 	Pkg.activate(".")
@@ -48,38 +48,101 @@ begin
 
 end
 
-# ╔═╡ c37ed214-502b-11eb-284e-31588e9de7c4
-md"Use the `Load/reload data` button to update your notebook."
-
-# ╔═╡ a7acabd8-502b-11eb-326f-2725d64c5b85
+# ╔═╡ 7ee4b3a6-573d-11eb-1470-67a241783b23
 @bind loadem Button("Load/reload data")
 
-# ╔═╡ 6beaff5a-502b-11eb-0225-cbc0aadf69fa
-md"""## 2. Indexing in DSE tables
+# ╔═╡ 6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
+md"**CTS URNs of all cataloged texts**"
+
+# ╔═╡ 4010cf78-573c-11eb-03cf-b7dd1ae23b60
+md"**CITE2 URNS of all indexed surfaces**"
+
+# ╔═╡ 558e587a-573c-11eb-3364-632f0b0703da
+md"""
+
+> ## Verification: DSE indexing
+
 """
 
-# ╔═╡ 2a0b33b4-55c5-11eb-2ce9-4f3084c73087
+# ╔═╡ f1f5643c-573d-11eb-1fd1-99c111eb523f
 md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
 
-# ╔═╡ abbf895a-51b3-11eb-1bc3-f932be13133f
-md"""## 3. Orthography and tokenization
 
-> Validation and verification of orthography: **TBA** in a following version.
-
-"""
-
-# ╔═╡ 72ae34b0-4d0b-11eb-2aa2-5121099491db
-html"""<blockquote>
-<h3>Adjustable settings for this repository</h3>
-</blockquote>
-
-"""
-
-# ╔═╡ 851842f4-51b5-11eb-1ed9-ad0a6eb633d2
-md"**Organization of your repository**"
-
-# ╔═╡ 8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
+# ╔═╡ 13e8b16c-574c-11eb-13a6-61c5f05dfca2
 md"""
+
+> ## Verification:  orthography
+
+"""
+
+# ╔═╡ 1fde0332-574c-11eb-1baf-01d335b27912
+md"**TBA** in a future release of this notebook."
+
+# ╔═╡ a7903abe-5747-11eb-310e-ffe2ee128f1b
+md"""
+
+> ## Data sets
+
+"""
+
+# ╔═╡ 37258038-574c-11eb-3acd-fb67db0bf1c8
+md"Full details of the repository's contents."
+
+# ╔═╡ 61bf76b0-573c-11eb-1d23-855b40e06c02
+md"""
+
+> Text corpora built from repository
+
+"""
+
+# ╔═╡ 562b460a-573a-11eb-321b-678429a06c0c
+md"All citable nodes in **diplomatic** form."
+
+# ╔═╡ 9118b6d0-573a-11eb-323b-0347fef8d3e6
+md"All citable nodes in **normalized** form."
+
+# ╔═╡ 100a1942-573c-11eb-211e-371998789bfa
+md"""
+
+> DSE tables
+
+"""
+
+# ╔═╡ 43f724c6-573b-11eb-28d6-f9ec8adebb8a
+md"""
+
+
+> Text catalog and configuration
+
+"""
+
+# ╔═╡ 0cabc908-5737-11eb-2ef9-d51aedfbbe5f
+md"""
+
+> ## Configuring the repository
+
+"""
+
+# ╔═╡ 6876c1d6-5749-11eb-39fe-29ef948bec69
+md"Automatically computed values:"
+
+# ╔═╡ 1053c2d8-5749-11eb-13c1-71943988978f
+nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
+
+
+# ╔═╡ fef09e62-5748-11eb-0944-c983eef98e1b
+md"This is version **$(nbversion)** of the MID validation notebook."
+
+# ╔═╡ 6182ebc0-5749-11eb-01b3-e35b891381ae
+projectname = Pkg.TOML.parse(read("Project.toml", String))["project"]
+
+# ╔═╡ a7142d7e-5736-11eb-037b-5540068734e6
+reporoot = dirname(pwd())
+
+# ╔═╡ 59301396-5736-11eb-22d3-3d6538b5228c
+md"""
+Subdirectories in the repository:
+
 | Content | Subdirectory |
 |--- | --- |
 | Configuration files are in | $(@bind configdir TextField(default="config")) |
@@ -88,71 +151,80 @@ md"""
 
 """
 
-# ╔═╡ 98d7a57a-5064-11eb-328c-2d922aecc642
-delimiter = "|"
+# ╔═╡ 2fdc8988-5736-11eb-262d-9b8d44c2e2cc
+catalogedtexts = begin
+	loadem
+	fromfile(CatalogedText, reporoot * "/" * configdir * "/catalog.cex")
+end
 
-# ╔═╡ 322f276e-55eb-11eb-3cce-2fc0dc0bc95e
-md"""**Delimited text files**
+# ╔═╡ 0bd05af4-573b-11eb-1b90-31d469940e5b
+urnlist = catalogedtexts[:, :urn]
 
-Delimiter set to: **$(delimiter)**   (`Edit the following cell to change the delimiter setting.`)
+# ╔═╡ e3578474-573c-11eb-057f-27fc9eb9b519
+md"This is the `EditingRepository` built from these settings:"
+
+# ╔═╡ 7829a5ac-5736-11eb-13d1-6f5430595193
+editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
+
+# ╔═╡ 547c4ffa-574b-11eb-3b6e-69fa417421fc
+uniquesurfaces = EditorsRepo.surfaces(editorsrepo)
+
+# ╔═╡ 175f2e58-573c-11eb-3a36-f3142c341d93
+alldse = begin
+	loadem
+	dse_df(editorsrepo)
+end
+
+# ╔═╡ 4fa5738a-5737-11eb-0e78-0155bfc12112
+textconfig = begin
+	loadem
+	citation_df(editorsrepo)
+end
+
+# ╔═╡ 70ac0236-573e-11eb-1efd-c3be076018aa
+md"""
+
+> Configuring image services
+
 """
 
-# ╔═╡ 4c389840-55c4-11eb-3f26-b5d3da2cbe58
-md"**IIIF image service**"
-
-# ╔═╡ 09e397b2-5397-11eb-0b66-1f5d1966ba9d
+# ╔═╡ 97415fa4-573e-11eb-03df-81e1567ec34e
 md"""
-URL: 
-$(@bind iiif TextField((55,1), default="http://www.homermultitext.org/iipsrv"))
-"""
-
-# ╔═╡ 5f722eda-55c4-11eb-09f6-db15e1b43cc1
-md"""
-Path to image root: $(@bind iiifroot TextField((55,1), default="/project/homer/pyramidal/deepzoom"))
-
-"""
-
-# ╔═╡ 6c6514a4-55c4-11eb-2477-df16e584a994
-md"**Image citation tool**"
-
-# ╔═╡ 87a8daf4-5397-11eb-17cc-d9da3cc3acfa
-md"""
-URL: 
+Image Citation Tool URL: 
 $(@bind ict TextField((55,1), default="http://www.homermultitext.org/ict2/?"))
 """
 
-# ╔═╡ 88b55824-503f-11eb-101f-a12e4725f738
-html"""<hr/><p/>
+# ╔═╡ 77a302c4-573e-11eb-311c-7102e8b377fa
+md"""
+IIIF URL: 
+$(@bind iiif TextField((55,1), default="http://www.homermultitext.org/iipsrv"))
+"""
 
-<hr/><p/>
-
-
-<blockquote>
-<h3>Cells for loading and formatting data</h3>
-</blockquote>
-
-<p>You should not normally edit contents of these cells.
-
+# ╔═╡ 8afeacec-573e-11eb-3da5-6b6d6bd764f8
+md"""
+IIIF image root: $(@bind iiifroot TextField((55,1), default="/project/homer/pyramidal/deepzoom"))
 
 """
 
-# ╔═╡ 527f86ea-4d0f-11eb-1440-293fc241c198
-reporoot = dirname(pwd())
+# ╔═╡ c3efd710-573e-11eb-1251-75295cced219
+md"This is the IIIF Service built from these settings:"
 
-# ╔═╡ 46213fee-50fa-11eb-3a43-6b8a464b8043
-editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
+# ╔═╡ bd95307c-573e-11eb-3325-ad08ee392a2f
+# CitableImage access to a IIIF service
+iiifsvc = begin
+	baseurl = iiif
+	root = iiifroot
+	IIIFservice(baseurl, root)
+end
 
-# ╔═╡ 8df925ee-5040-11eb-0e16-291bc3f0f23d
-nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
+# ╔═╡ 1fbce92e-5748-11eb-3417-579ae03a8d76
+md"""
 
+> ## Formatting the notebook
 
-# ╔═╡ d0218ccc-5040-11eb-2249-755b68e24f4b
-md"This is version **$(nbversion)** of MID validation notebook"
+"""
 
-# ╔═╡ 590e90b4-55ed-11eb-1760-53dc7fbd4cfe
-projectname = Pkg.TOML.parse(read("Project.toml", String))["project"]
-
-# ╔═╡ db26554c-5029-11eb-0627-cf019fae0e9b
+# ╔═╡ 17d926a4-574b-11eb-1180-9376c363f71c
 # Format HTML header for notebook.
 function hdr() 
 	HTML("<blockquote  class='center'><h1>MID validation notebook</h1>" *
@@ -160,10 +232,10 @@ function hdr()
 		"<p>Editing project from repository in:</p><h4><i>" * reporoot * "</i></h4></blockquote>")
 end
 
-# ╔═╡ d9fae7aa-5029-11eb-3061-89361e04f904
+# ╔═╡ 22980f4c-574b-11eb-171b-170c4a68b30b
 hdr()
 
-# ╔═╡ 0fea289c-4d0c-11eb-0eda-f767b124aa57
+# ╔═╡ 0da08ada-574b-11eb-3d9a-11226200f537
 css = html"""
 <style>
  .center {
@@ -191,285 +263,151 @@ text-align: center;
 </style>
 """
 
-# ╔═╡ 4abcbad6-564e-11eb-3a2b-b346cc4359fd
-md"**Text cataloging**"
+# ╔═╡ 0c025f44-574b-11eb-3049-33ad523ec6e4
 
-# ╔═╡ 8a426414-502d-11eb-1e7d-357a363bb627
-catalogedtexts = begin
-	loadem
-	fromfile(CatalogedText, reporoot * "/" * configdir * "/catalog.cex")
-end
 
-# ╔═╡ 62458454-502e-11eb-2a88-5ffcdf640e6b
-filesonline =   begin
-	loadem
-	xmlfiles_df(editorsrepo)
-end
+# ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
+md"""
 
-# ╔═╡ 2de2b626-4ff4-11eb-0ee5-75016c78cb4b
-markupschemes = begin
-	loadem
-	citation_df(editorsrepo)
-end
+> Formatting DSE selections for verification
 
-# ╔═╡ 1afc652c-4d13-11eb-1488-0bd8c3f60414
-md"""## 1. Summary of text cataloging
-
-- **$(nrow(catalogedtexts))** text(s) cataloged
-- **$(nrow(markupschemes))** text(s) with a defined markup scheme
-- **$(nrow(filesonline))** file(s) found in editing directory
 """
 
+# ╔═╡ b899d304-574b-11eb-1d50-5b7813ea201e
+md"Menu choices for popup menu of all unique surface URNs:"
 
-# ╔═╡ e7878824-569b-11eb-1791-9b9a1c13bca4
-citation_df(editorsrepo)
-
-# ╔═╡ 6724260a-564e-11eb-0d01-25ab20a9d11c
-md"**IIIF image service**"
-
-# ╔═╡ 1f3bac4a-55c4-11eb-3c50-71a593a6a676
-# CitableImage access to a IIIF service
-iiifsvc = begin
-	baseurl = iiif
-	root = iiifroot
-	IIIFservice(baseurl, root)
-end
-
-# ╔═╡ fee6a296-564d-11eb-2733-59bb1e480d2f
-md"**DSE tables**"
-
-# ╔═╡ e2c40ec2-539c-11eb-1d17-39d16591d367
-uniquesurfs = begin 
+# ╔═╡ 356f7236-573c-11eb-18b5-2f5a6bfc545d
+surfacemenu = begin 
 	surfurns = EditorsRepo.surfaces(editorsrepo)
 	surflist = map(u -> u.urn, surfurns)
+	# Add a blank entry so popup menu can come up without a selection
+	pushfirst!( surflist, "")
 end
 
-# ╔═╡ 284a9468-539d-11eb-0e2b-a97ac09eca48
+# ╔═╡ e08d5418-573b-11eb-2375-35a717b36a30
 md"""
 *Choose a surface to verify*: 
-$(@bind surface Select(uniquesurfs))
+$(@bind surface Select(surfacemenu))
 """
 
-# ╔═╡ 66385382-53dc-11eb-25da-cd1777daba5f
-surfurn = Cite2Urn(surface)
+# ╔═╡ cb954628-574b-11eb-29e3-a7f277852b45
+md"Currently selected surface:"
 
-# ╔═╡ 7d83b94a-5392-11eb-0dd0-fb894692e19d
-alldse = begin
-	loadem
-	dse_df(editorsrepo)
+# ╔═╡ 901ae238-573c-11eb-15e2-3f7611dacab7
+surfurn = begin
+	if surface == ""
+		""
+	else
+		Cite2Urn(surface)
+	end
 end
 
-# ╔═╡ b209e56e-53dc-11eb-3939-9f5fef5aa7e0
+# ╔═╡ d9495f98-574b-11eb-2ee9-a38e09af22e6
+md"DSE records for selected surface:"
+
+# ╔═╡ e57c9326-573b-11eb-100c-ed7f37414d79
 surfaceDse = filter(row -> row.surface == surfurn, alldse)
 
-# ╔═╡ ed36fb6e-5430-11eb-3be1-1f7bf17384d8
-md"*Found **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(surfurn))*"
-
-# ╔═╡ 8988790a-537a-11eb-1acb-ef423c2b6096
-html"""
-<hr/>
-
-<blockquote>
-Prototyping for <code>EditorsRepo</code>
-</blockquote>
-
-
-"""
-
-# ╔═╡ 7d78b4f0-564e-11eb-3562-9f18ea745b41
-md"**Archival XML corpus**"
-
-# ╔═╡ 85b11a4a-564e-11eb-2bcc-9db7302feffb
-md"""
-
-- [ ] convert each XML source text to a Corpus
-- [ ] combine corpora
-
-"""
-
-# ╔═╡ 9e85cade-564e-11eb-0797-8f10f31af2eb
-md"**Diplomatic and normalized editions**"
-
-# ╔═╡ 6166ecb6-5057-11eb-19cd-59100a749001
-# Fake experiment.
-# in reality:
-# 1. match document URNs with file names, and with parser function.
-# 2. cycle those triplets, and turn into a corpus.
-# 3. could then recursively concat corpora
-
-#=
-begin 
-	docurn = CtsUrn("urn:cts:lycian:tl.tl56.v1:")
-	fname = reporoot * "/" * editions * "/" * xmlfilenames()[1]
-
-	xml = open(fname) do file
-	    read(file, String)
+# ╔═╡ c9a3bd8c-573d-11eb-2034-6f608e8bf414
+begin
+	if surface == ""
+		md""
+	else
+		md"*Found **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(surfurn))*"
 	end
-    c = simpleAbReader(xml, docurn)
-
-end
-=#
-
-# ╔═╡ 6330e4ce-50f8-11eb-24ce-a1b013abf7e6
-# catalogedtexts is defined above by using the `CitableText` library's
-# type-parameterized `fromfile` function
-catalogedtexts[:,:urn]
-
-# ╔═╡ 83cac370-5063-11eb-3654-2be7d823652c
-#=
-match document URNs with file names, and with parser function.
-
-* catalogedtexts is defined above by using the `CitableText` library's
-	type-parameterized `fromfile` function
-* markupschemes is defined above using the `EditorsRepo` module's `cite_df` function
-=# 
-
-function editedfiles()
-	configedall = innerjoin(catalogedtexts, markupschemes, on = :urn)
-	configedall
 end
 
-
-# ╔═╡ 833b7cd2-564f-11eb-3854-87851657e4df
-# dummy
-
-diplomaticstring = """LiteralTextBuilder("Literal text builder","rawtext")"""
-
-# ╔═╡ 98112bde-564f-11eb-128c-39561db77b9d
-diplomaticbuilder = eval(Meta.parse(diplomaticstring))
-
-# ╔═╡ b5dae646-564f-11eb-3cce-d34ea511189a
-typeof(diplomaticbuilder)
-
-# ╔═╡ dd02b55a-564f-11eb-0098-4b4e0fe3f3bd
+# ╔═╡ 94a7db86-573b-11eb-0eec-8f845bec5995
 md"""
 
-Now to edit a single node:
-
-```julia
-edited = editednode(builder, c.corpus[1])
-```
-
-And the `EditionsBuilder` module needs a function that does this to edit a corpus:
-
-
-```julia
-CitableCorpus(map(cn -> editednode(builder,cn), c.corpus))
-```
-
+> ## Temporary content
+> Functions to migrate to the next release of the `EditorsRepo` module.
 
 """
 
-# ╔═╡ cb30618c-537b-11eb-01ca-3f7ca0fe2869
-html"""
-<hr/>
+# ╔═╡ 7a347506-5737-11eb-03bb-ef6dfa90d9c8
+md"These functions compile diplomatic and normalized texts for the repository."
 
-<blockquote>
-Prototyping for <code>CitablePhysicalText</code> (DSE)
-</blockquote>
-
-
-"""
-
-# ╔═╡ c9e145dc-5711-11eb-1b07-c56a8a8f807f
-#o2foru(selectedworks[1])
-
-# ╔═╡ 8eb757fc-5712-11eb-10b2-67a1a128a564
-markupschemes
-
-# ╔═╡ b36c1ade-5711-11eb-34f5-bf2374a16e79
-# Eval string value of ocho2converter for a URN
-function o2foru(urn)
-	row = filter(r -> droppassage(urn) == r[:urn], markupschemes)
-	eval(Meta.parse(row[1,:o2converter]))
-end
-
-# ╔═╡ 1a3cc6b6-5715-11eb-21dc-0f9b242b1462
+# ╔═╡ 8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
 # Read text contents of file for URN
 function fileforu(urn)
-	row = filter(r -> droppassage(urn) == r[:urn], markupschemes)
+	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
 	f= editorsrepo.root * "/" * editorsrepo.editions * "/" *	row[1,:file]
 	xml = read(f, String)
 end
 
-# ╔═╡ 69f6c62e-5716-11eb-3ffb-25de0faff46e
+# ╔═╡ a7b6f2f6-5737-11eb-1a43-2fa2909d0240
+# Eval string value of ocho2converter for a URN
+function o2foru(urn)
+	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
+	eval(Meta.parse(row[1,:o2converter]))
+end
+
+# ╔═╡ a24430ec-573a-11eb-188d-e52c79291fcf
+function normforu(urn)
+	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
+	eval(Meta.parse(row[1,:normalized]))
+end
+
+# ╔═╡ b7dae7a0-573a-11eb-2c76-15974f79daf8
+# given a node URN, 
+function normalizedcns(urn)
+	
+	reader = o2foru(urn)
+	xml =  fileforu(urn)
+	corpus = reader(xml, urn)
+	normalizer = normforu(urn)
+	map(cn -> editednode(normalizer, cn), corpus.corpus)
+end
+
+# ╔═╡ 9974fadc-573a-11eb-10c4-13c589f5810b
+normalizednodes =  begin
+	normalizedarrays = map(u -> normalizedcns(u), urnlist)
+	reduce(vcat, normalizedarrays)
+end
+
+# ╔═╡ b815025a-5737-11eb-3b68-0df9e43b534d
 function diplforu(urn)
-	row = filter(r -> droppassage(urn) == r[:urn], markupschemes)
+	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
 	eval(Meta.parse(row[1,:diplomatic]))
 end
 
-# ╔═╡ 4a3f3020-56b5-11eb-389a-b78a58771ecf
-# For selected surface, find *set* of texts
-# Separately, make a menu selection
-# including an empty first entry
-selectedworks = begin
-	rows = filter(r -> r[:surface] == surfurn, alldse)
-	psgs = rows[:, :passage]
-	works = unique(map(p -> droppassage(p), psgs))
-	#pushfirst!( map(u -> u.urn, works) , "")
-end
-
-# ╔═╡ 242e7810-5713-11eb-1ed0-3b1ea963ade5
-o2converters = map(wk -> o2foru(wk), selectedworks)
-
-# ╔═╡ 4520a700-5713-11eb-2f6c-6d94bbc7bf9b
-o2converters[1]
-
-# ╔═╡ 7734da8a-5712-11eb-1e53-1b47aa50c8aa
-diplforu(selectedworks[1])
-
-
-# ╔═╡ fc185638-5718-11eb-0969-83f222a1cbad
-demodse = surfaceDse[1,:passage]
-
-# ╔═╡ 090fb1d2-571a-11eb-1ca0-4d7380f72067
-debug = CtsUrn("urn:cts:trmilli:tl.25.v1:4")
-
-# ╔═╡ 7ac3363a-571a-11eb-28d6-5321ff53554f
-psglist = surfaceDse[:,:passage]
-
-# ╔═╡ 12caf10c-571a-11eb-1d89-2fd07f684e87
-begin
-	urn = debug
-	reader = o2foru(urn)
-	xml =  fileforu(urn)
-	corpus = reader(xml, urn)
-	dipl = diplforu(urn)
-	diplnodes = map(cn -> editednode(dipl, cn), corpus.corpus)
-	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplnodes)
-	filtered[1]
-end
-
-# ╔═╡ 47d6d768-5717-11eb-00bd-53e2ecaa5c6a
+# ╔═╡ 75ca5ad0-5737-11eb-1a4a-17beafff6a96
 # given a node URN, 
-function diplomaticnode(urn)
+function diplomaticcns(urn)
 	
 	reader = o2foru(urn)
 	xml =  fileforu(urn)
 	corpus = reader(xml, urn)
 	dipl = diplforu(urn)
 	diplnodes = map(cn -> editednode(dipl, cn), corpus.corpus)
-	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplnodes)
-	filtered[1]
-	#editednode(dipl,corpus.corpus[1])
 end
 
-# ╔═╡ a65cdab0-53e0-11eb-120f-f16fae76e54f
+# ╔═╡ 2a84a042-5739-11eb-13f1-1d881f215521
+diplomaticnodes = begin
+	diplomaticarrays = map(u -> diplomaticcns(u), urnlist)
+	reduce(vcat, diplomaticarrays)
+end
+
+# ╔═╡ 2d218414-573e-11eb-33dc-af1f2df86cf7
+# Select a node from list of diplomatic nodes
+function diplnode(urn)
+	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticnodes)
+	if length(filtered) > 0
+		filtered[1].text
+	else 
+		""
+	end
+	#"Found stuffs " * le
+end
+
+# ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
 function mdForRow(row::DataFrameRow)
 	citation = "**" * passagecomponent(row.passage)  * "** "
+
 	
-	
-	#=
-	reader = o2foru(row.passage)
-	xml =  fileforu(row.passage)
-	rdr = reader(xml, row.passage)
-	dipl = diplforu(row.passage)
-	=#
-	
-	
-	cn = diplomaticnode(row.passage)
-	txt = cn.text #"debug " * row.passage.urn
-	caption = "image"
+	txt = diplnode(row.passage)
+	caption = passagecomponent(row.passage)
 	
 	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
 	
@@ -484,89 +422,80 @@ $(img)
 end
 
 
-# ╔═╡ 5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
+# ╔═╡ 00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# display DSE records for verification
 begin
-	cellout = []
-	for r in eachrow(surfaceDse)
-		push!(cellout, mdForRow(r))
+	if surface == ""
+		md""
+	else
+		cellout = []
+		for r in eachrow(surfaceDse)
+			push!(cellout, mdForRow(r))
+		end
+		Markdown.parse(join(cellout,"\n"))
 	end
-	Markdown.parse(join(cellout,"\n"))
 end
 
-# ╔═╡ 6e690ae0-5717-11eb-2676-7bf25267d75d
-diplomaticnode(demodse)
-
-# ╔═╡ 8fe3b032-571a-11eb-2063-fb35ff46062d
-map(p -> diplomaticnode(p), psglist)
-
 # ╔═╡ Cell order:
-# ╟─9b7d76ac-4faf-11eb-17de-69db047d5f91
-# ╟─d0218ccc-5040-11eb-2249-755b68e24f4b
-# ╟─d9fae7aa-5029-11eb-3061-89361e04f904
-# ╟─c37ed214-502b-11eb-284e-31588e9de7c4
-# ╟─a7acabd8-502b-11eb-326f-2725d64c5b85
-# ╟─1afc652c-4d13-11eb-1488-0bd8c3f60414
-# ╟─6beaff5a-502b-11eb-0225-cbc0aadf69fa
-# ╟─284a9468-539d-11eb-0e2b-a97ac09eca48
-# ╟─ed36fb6e-5430-11eb-3be1-1f7bf17384d8
-# ╟─a65cdab0-53e0-11eb-120f-f16fae76e54f
-# ╟─2a0b33b4-55c5-11eb-2ce9-4f3084c73087
-# ╟─5ee4622e-53e1-11eb-0f30-dfa1133a5f5a
-# ╟─abbf895a-51b3-11eb-1bc3-f932be13133f
-# ╟─72ae34b0-4d0b-11eb-2aa2-5121099491db
-# ╟─851842f4-51b5-11eb-1ed9-ad0a6eb633d2
-# ╟─8fb3ae84-51b4-11eb-18c9-b5eb9e4604ed
-# ╟─322f276e-55eb-11eb-3cce-2fc0dc0bc95e
-# ╟─98d7a57a-5064-11eb-328c-2d922aecc642
-# ╟─4c389840-55c4-11eb-3f26-b5d3da2cbe58
-# ╟─09e397b2-5397-11eb-0b66-1f5d1966ba9d
-# ╟─5f722eda-55c4-11eb-09f6-db15e1b43cc1
-# ╟─6c6514a4-55c4-11eb-2477-df16e584a994
-# ╟─87a8daf4-5397-11eb-17cc-d9da3cc3acfa
-# ╟─88b55824-503f-11eb-101f-a12e4725f738
-# ╟─46213fee-50fa-11eb-3a43-6b8a464b8043
-# ╟─527f86ea-4d0f-11eb-1440-293fc241c198
-# ╟─8df925ee-5040-11eb-0e16-291bc3f0f23d
-# ╟─590e90b4-55ed-11eb-1760-53dc7fbd4cfe
-# ╟─db26554c-5029-11eb-0627-cf019fae0e9b
-# ╟─0fea289c-4d0c-11eb-0eda-f767b124aa57
-# ╟─4abcbad6-564e-11eb-3a2b-b346cc4359fd
-# ╟─8a426414-502d-11eb-1e7d-357a363bb627
-# ╟─62458454-502e-11eb-2a88-5ffcdf640e6b
-# ╠═2de2b626-4ff4-11eb-0ee5-75016c78cb4b
-# ╠═e7878824-569b-11eb-1791-9b9a1c13bca4
-# ╟─6724260a-564e-11eb-0d01-25ab20a9d11c
-# ╟─1f3bac4a-55c4-11eb-3c50-71a593a6a676
-# ╟─fee6a296-564d-11eb-2733-59bb1e480d2f
-# ╟─66385382-53dc-11eb-25da-cd1777daba5f
-# ╟─e2c40ec2-539c-11eb-1d17-39d16591d367
-# ╟─b209e56e-53dc-11eb-3939-9f5fef5aa7e0
-# ╟─7d83b94a-5392-11eb-0dd0-fb894692e19d
-# ╟─8988790a-537a-11eb-1acb-ef423c2b6096
-# ╟─7d78b4f0-564e-11eb-3562-9f18ea745b41
-# ╟─85b11a4a-564e-11eb-2bcc-9db7302feffb
-# ╟─9e85cade-564e-11eb-0797-8f10f31af2eb
-# ╠═6166ecb6-5057-11eb-19cd-59100a749001
-# ╟─6330e4ce-50f8-11eb-24ce-a1b013abf7e6
-# ╟─83cac370-5063-11eb-3654-2be7d823652c
-# ╟─833b7cd2-564f-11eb-3854-87851657e4df
-# ╠═98112bde-564f-11eb-128c-39561db77b9d
-# ╠═b5dae646-564f-11eb-3cce-d34ea511189a
-# ╟─dd02b55a-564f-11eb-0098-4b4e0fe3f3bd
-# ╟─cb30618c-537b-11eb-01ca-3f7ca0fe2869
-# ╠═c9e145dc-5711-11eb-1b07-c56a8a8f807f
-# ╠═4520a700-5713-11eb-2f6c-6d94bbc7bf9b
-# ╠═242e7810-5713-11eb-1ed0-3b1ea963ade5
-# ╠═8eb757fc-5712-11eb-10b2-67a1a128a564
-# ╟─7734da8a-5712-11eb-1e53-1b47aa50c8aa
-# ╟─b36c1ade-5711-11eb-34f5-bf2374a16e79
-# ╠═1a3cc6b6-5715-11eb-21dc-0f9b242b1462
-# ╠═69f6c62e-5716-11eb-3ffb-25de0faff46e
-# ╠═4a3f3020-56b5-11eb-389a-b78a58771ecf
-# ╠═6e690ae0-5717-11eb-2676-7bf25267d75d
-# ╠═fc185638-5718-11eb-0969-83f222a1cbad
-# ╠═090fb1d2-571a-11eb-1ca0-4d7380f72067
-# ╠═7ac3363a-571a-11eb-28d6-5321ff53554f
-# ╠═8fe3b032-571a-11eb-2063-fb35ff46062d
-# ╠═12caf10c-571a-11eb-1d89-2fd07f684e87
-# ╠═47d6d768-5717-11eb-00bd-53e2ecaa5c6a
+# ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
+# ╟─fef09e62-5748-11eb-0944-c983eef98e1b
+# ╟─22980f4c-574b-11eb-171b-170c4a68b30b
+# ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
+# ╟─6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
+# ╟─0bd05af4-573b-11eb-1b90-31d469940e5b
+# ╟─4010cf78-573c-11eb-03cf-b7dd1ae23b60
+# ╟─547c4ffa-574b-11eb-3b6e-69fa417421fc
+# ╟─558e587a-573c-11eb-3364-632f0b0703da
+# ╟─e08d5418-573b-11eb-2375-35a717b36a30
+# ╟─c9a3bd8c-573d-11eb-2034-6f608e8bf414
+# ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
+# ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
+# ╟─1fde0332-574c-11eb-1baf-01d335b27912
+# ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
+# ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
+# ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
+# ╟─562b460a-573a-11eb-321b-678429a06c0c
+# ╟─2a84a042-5739-11eb-13f1-1d881f215521
+# ╟─9118b6d0-573a-11eb-323b-0347fef8d3e6
+# ╟─9974fadc-573a-11eb-10c4-13c589f5810b
+# ╟─100a1942-573c-11eb-211e-371998789bfa
+# ╟─175f2e58-573c-11eb-3a36-f3142c341d93
+# ╟─43f724c6-573b-11eb-28d6-f9ec8adebb8a
+# ╟─2fdc8988-5736-11eb-262d-9b8d44c2e2cc
+# ╟─4fa5738a-5737-11eb-0e78-0155bfc12112
+# ╟─0cabc908-5737-11eb-2ef9-d51aedfbbe5f
+# ╟─6876c1d6-5749-11eb-39fe-29ef948bec69
+# ╟─1053c2d8-5749-11eb-13c1-71943988978f
+# ╟─6182ebc0-5749-11eb-01b3-e35b891381ae
+# ╟─a7142d7e-5736-11eb-037b-5540068734e6
+# ╟─59301396-5736-11eb-22d3-3d6538b5228c
+# ╟─e3578474-573c-11eb-057f-27fc9eb9b519
+# ╟─7829a5ac-5736-11eb-13d1-6f5430595193
+# ╟─70ac0236-573e-11eb-1efd-c3be076018aa
+# ╟─97415fa4-573e-11eb-03df-81e1567ec34e
+# ╟─77a302c4-573e-11eb-311c-7102e8b377fa
+# ╟─8afeacec-573e-11eb-3da5-6b6d6bd764f8
+# ╟─c3efd710-573e-11eb-1251-75295cced219
+# ╟─bd95307c-573e-11eb-3325-ad08ee392a2f
+# ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
+# ╟─17d926a4-574b-11eb-1180-9376c363f71c
+# ╟─0da08ada-574b-11eb-3d9a-11226200f537
+# ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
+# ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
+# ╟─0c025f44-574b-11eb-3049-33ad523ec6e4
+# ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
+# ╟─b899d304-574b-11eb-1d50-5b7813ea201e
+# ╟─356f7236-573c-11eb-18b5-2f5a6bfc545d
+# ╟─cb954628-574b-11eb-29e3-a7f277852b45
+# ╟─901ae238-573c-11eb-15e2-3f7611dacab7
+# ╟─d9495f98-574b-11eb-2ee9-a38e09af22e6
+# ╟─e57c9326-573b-11eb-100c-ed7f37414d79
+# ╟─94a7db86-573b-11eb-0eec-8f845bec5995
+# ╟─7a347506-5737-11eb-03bb-ef6dfa90d9c8
+# ╟─8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
+# ╟─a7b6f2f6-5737-11eb-1a43-2fa2909d0240
+# ╟─a24430ec-573a-11eb-188d-e52c79291fcf
+# ╟─b7dae7a0-573a-11eb-2c76-15974f79daf8
+# ╟─b815025a-5737-11eb-3b68-0df9e43b534d
+# ╟─75ca5ad0-5737-11eb-1a4a-17beafff6a96
