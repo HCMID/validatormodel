@@ -79,14 +79,17 @@ md"""
 # ╔═╡ 1fde0332-574c-11eb-1baf-01d335b27912
 md"**TBA** in a future release of this notebook."
 
+# ╔═╡ 81852ae0-5821-11eb-09fd-d5c2932959f1
+HTML("<i>Emphasize</i> some things and <span class=\"invalid\">invaldiate</span> others." )
+
+# ╔═╡ 8176fd80-5821-11eb-3bf3-7352726b8218
+
+
 # ╔═╡ 5c57181a-5816-11eb-2839-655ad1d45094
 supertype(GenericOrthography)
 
 # ╔═╡ a97474a8-5816-11eb-1071-47ba307accad
  tokenstart::Array{OrthographicToken} = []
-
-# ╔═╡ be417822-5816-11eb-014c-d5502bd720f6
-sentence = "Now is the time for all long sentences to end."
 
 # ╔═╡ cee14a90-5816-11eb-199e-a3663bc9160b
 ortho = GenericOrthography("abc", [Orthography.AlphabeticToken])
@@ -251,6 +254,11 @@ hdr()
 # ╔═╡ 0da08ada-574b-11eb-3d9a-11226200f537
 css = html"""
 <style>
+ .invalid {
+	text-decoration-line: underline;
+  	text-decoration-style: wavy;
+  	text-decoration-color: red;
+}
  .center {
 text-align: center;
 }
@@ -362,6 +370,9 @@ end
 # ╔═╡ e116555c-580c-11eb-12fd-99f29e1b4ad3
 testortho = orthoforu(testu1)
 
+# ╔═╡ 2a9b0474-5818-11eb-0ea0-398cef3de331
+supertype(testortho)
+
 # ╔═╡ a7b6f2f6-5737-11eb-1a43-2fa2909d0240
 # Eval string value of ocho2converter for a URN
 function o2foru(urn)
@@ -434,7 +445,7 @@ testtxt1 = diplnode(testu1)
 typeof(testtxt1)
 
 # ╔═╡ d6924bc2-5816-11eb-0b40-57adb1fa7066
-tokens = tokenize(ortho, testtxt1,tokenstart)
+tokens = tokenize(testortho, testtxt1,tokenstart)
 
 # ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
 function mdForRow(row::DataFrameRow)
@@ -487,14 +498,16 @@ end
 # ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
+# ╟─81852ae0-5821-11eb-09fd-d5c2932959f1
+# ╠═8176fd80-5821-11eb-3bf3-7352726b8218
 # ╠═4864f574-580d-11eb-09fe-edc1b682d6f3
 # ╠═e116555c-580c-11eb-12fd-99f29e1b4ad3
 # ╠═2ce6c228-580d-11eb-1b89-7f522f189d6a
 # ╠═5c57181a-5816-11eb-2839-655ad1d45094
 # ╠═694a096a-5816-11eb-2a98-e9616d135fda
 # ╠═a97474a8-5816-11eb-1071-47ba307accad
-# ╠═be417822-5816-11eb-014c-d5502bd720f6
 # ╠═cee14a90-5816-11eb-199e-a3663bc9160b
+# ╠═2a9b0474-5818-11eb-0ea0-398cef3de331
 # ╠═d6924bc2-5816-11eb-0b40-57adb1fa7066
 # ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
 # ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
@@ -524,7 +537,7 @@ end
 # ╟─bd95307c-573e-11eb-3325-ad08ee392a2f
 # ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
 # ╟─17d926a4-574b-11eb-1180-9376c363f71c
-# ╟─0da08ada-574b-11eb-3d9a-11226200f537
+# ╠═0da08ada-574b-11eb-3d9a-11226200f537
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─0c025f44-574b-11eb-3049-33ad523ec6e4
