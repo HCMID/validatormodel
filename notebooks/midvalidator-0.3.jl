@@ -91,9 +91,6 @@ sentence = "Now is the time for all long sentences to end."
 # ╔═╡ cee14a90-5816-11eb-199e-a3663bc9160b
 ortho = GenericOrthography("abc", [Orthography.AlphabeticToken])
 
-# ╔═╡ d6924bc2-5816-11eb-0b40-57adb1fa7066
-tokens = tokenize(ortho, sentence,tokenstart)
-
 # ╔═╡ a7903abe-5747-11eb-310e-ffe2ee128f1b
 md"""
 
@@ -435,6 +432,9 @@ testtxt1 = diplnode(testu1)
 
 # ╔═╡ 694a096a-5816-11eb-2a98-e9616d135fda
 typeof(testtxt1)
+
+# ╔═╡ d6924bc2-5816-11eb-0b40-57adb1fa7066
+tokens = tokenize(ortho, testtxt1,tokenstart)
 
 # ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
 function mdForRow(row::DataFrameRow)
