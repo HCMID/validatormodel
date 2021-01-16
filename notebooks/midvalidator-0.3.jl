@@ -76,24 +76,6 @@ md"""
 
 """
 
-# ╔═╡ 1fde0332-574c-11eb-1baf-01d335b27912
-md"**TBA** in a future release of this notebook."
-
-# ╔═╡ 81852ae0-5821-11eb-09fd-d5c2932959f1
-HTML("<i>Emphasize</i> some things and <span class=\"invalid\">invaldiate</span> others." )
-
-# ╔═╡ 8176fd80-5821-11eb-3bf3-7352726b8218
-
-
-# ╔═╡ 5c57181a-5816-11eb-2839-655ad1d45094
-supertype(GenericOrthography)
-
-# ╔═╡ a97474a8-5816-11eb-1071-47ba307accad
- tokenstart::Array{OrthographicToken} = []
-
-# ╔═╡ cee14a90-5816-11eb-199e-a3663bc9160b
-ortho = GenericOrthography("abc", [Orthography.AlphabeticToken])
-
 # ╔═╡ a7903abe-5747-11eb-310e-ffe2ee128f1b
 md"""
 
@@ -311,6 +293,19 @@ md"""
 $(@bind surface Select(surfacemenu))
 """
 
+# ╔═╡ 1fde0332-574c-11eb-1baf-01d335b27912
+begin
+	if surface == ""
+		md""
+	else
+
+	html"""
+	<blockquote>Tokens including invalid characters are highlighted
+	like <span class='invalid'>this</span>.</blockquote>
+"""
+	end
+end
+
 # ╔═╡ cb954628-574b-11eb-29e3-a7f277852b45
 md"Currently selected surface:"
 
@@ -338,8 +333,30 @@ begin
 	end
 end
 
-# ╔═╡ 4864f574-580d-11eb-09fe-edc1b682d6f3
-testu1 = surfaceDse[1,:passage]
+# ╔═╡ 926873c8-5829-11eb-300d-b34796359491
+begin
+	if surface == ""
+		md""
+	else
+		md"*Verifying orthography of **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(surfurn) )*"
+	end
+end
+
+# ╔═╡ aac2d102-5829-11eb-2e89-ad4510c25f28
+md"""
+
+> Formatting tokenized text for verifying orthography
+
+"""
+
+# ╔═╡ 6dd532e6-5827-11eb-1dea-696e884652ac
+function formatToken(ortho, s)
+	if validstring(ortho, s)
+			s
+	else
+		"""<span class='invalid'>$(s)</span>"""
+	end
+end
 
 # ╔═╡ 94a7db86-573b-11eb-0eec-8f845bec5995
 md"""
@@ -366,12 +383,6 @@ function orthoforu(urn)
 	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
 	eval(Meta.parse(row[1,:orthography]))
 end
-
-# ╔═╡ e116555c-580c-11eb-12fd-99f29e1b4ad3
-testortho = orthoforu(testu1)
-
-# ╔═╡ 2a9b0474-5818-11eb-0ea0-398cef3de331
-supertype(testortho)
 
 # ╔═╡ a7b6f2f6-5737-11eb-1a43-2fa2909d0240
 # Eval string value of ocho2converter for a URN
@@ -438,15 +449,6 @@ function diplnode(urn)
 	#"Found stuffs " * le
 end
 
-# ╔═╡ 2ce6c228-580d-11eb-1b89-7f522f189d6a
-testtxt1 = diplnode(testu1)
-
-# ╔═╡ 694a096a-5816-11eb-2a98-e9616d135fda
-typeof(testtxt1)
-
-# ╔═╡ d6924bc2-5816-11eb-0b40-57adb1fa7066
-tokens = tokenize(testortho, testtxt1,tokenstart)
-
 # ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
 function mdForRow(row::DataFrameRow)
 	citation = "**" * passagecomponent(row.passage)  * "** "
@@ -482,6 +484,35 @@ begin
 	end
 end
 
+# ╔═╡ bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
+# Compose string of HTML for a tokenized row including
+# tagging of invalid tokens
+function tokenizeRow(row)
+	ortho = orthoforu(row.passage)
+	citation = "<b>" * passagecomponent(row.passage)  * "</b> "
+	txt = diplnode(row.passage)
+	tokenstart::Array{OrthographicToken} = []
+	tokens = tokenize(ortho, txt,tokenstart)
+	highlighted = map(t -> formatToken(ortho, t.text), tokens)
+	html = join(highlighted, " ")
+	"<p>$(citation) $(html)</p>"
+	
+end
+
+# ╔═╡ aa385f1a-5827-11eb-2319-6f84d3201a7e
+# display highlighted tokens for verification
+begin
+	if surface == ""
+		md""
+	else
+		htmlout = []
+		for r in eachrow(surfaceDse)
+			push!(htmlout, tokenizeRow(r))
+		end
+		HTML(join(htmlout,"\n"))
+	end
+end
+
 # ╔═╡ Cell order:
 # ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
@@ -497,18 +528,9 @@ end
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
 # ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
+# ╟─926873c8-5829-11eb-300d-b34796359491
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
-# ╟─81852ae0-5821-11eb-09fd-d5c2932959f1
-# ╠═8176fd80-5821-11eb-3bf3-7352726b8218
-# ╠═4864f574-580d-11eb-09fe-edc1b682d6f3
-# ╠═e116555c-580c-11eb-12fd-99f29e1b4ad3
-# ╠═2ce6c228-580d-11eb-1b89-7f522f189d6a
-# ╠═5c57181a-5816-11eb-2839-655ad1d45094
-# ╠═694a096a-5816-11eb-2a98-e9616d135fda
-# ╠═a97474a8-5816-11eb-1071-47ba307accad
-# ╠═cee14a90-5816-11eb-199e-a3663bc9160b
-# ╠═2a9b0474-5818-11eb-0ea0-398cef3de331
-# ╠═d6924bc2-5816-11eb-0b40-57adb1fa7066
+# ╟─aa385f1a-5827-11eb-2319-6f84d3201a7e
 # ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
 # ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
@@ -537,7 +559,7 @@ end
 # ╟─bd95307c-573e-11eb-3325-ad08ee392a2f
 # ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
 # ╟─17d926a4-574b-11eb-1180-9376c363f71c
-# ╠═0da08ada-574b-11eb-3d9a-11226200f537
+# ╟─0da08ada-574b-11eb-3d9a-11226200f537
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─0c025f44-574b-11eb-3049-33ad523ec6e4
@@ -548,6 +570,9 @@ end
 # ╟─901ae238-573c-11eb-15e2-3f7611dacab7
 # ╟─d9495f98-574b-11eb-2ee9-a38e09af22e6
 # ╟─e57c9326-573b-11eb-100c-ed7f37414d79
+# ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
+# ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
+# ╟─6dd532e6-5827-11eb-1dea-696e884652ac
 # ╟─94a7db86-573b-11eb-0eec-8f845bec5995
 # ╟─7a347506-5737-11eb-03bb-ef6dfa90d9c8
 # ╟─8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
