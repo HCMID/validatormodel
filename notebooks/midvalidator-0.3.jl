@@ -41,11 +41,11 @@ begin
 	using DataFrames
 	using HTTP
 	using EditorsRepo
-	
+	using Orthography	
 	using Markdown
 	
 	using EditionBuilders
-	using Orthography
+
 
 end
 
@@ -75,9 +75,6 @@ md"""
 > ## Verification:  orthography
 
 """
-
-# ╔═╡ 1fde0332-574c-11eb-1baf-01d335b27912
-md"**TBA** in a future release of this notebook."
 
 # ╔═╡ a7903abe-5747-11eb-310e-ffe2ee128f1b
 md"""
@@ -239,6 +236,11 @@ hdr()
 # ╔═╡ 0da08ada-574b-11eb-3d9a-11226200f537
 css = html"""
 <style>
+ .invalid {
+	text-decoration-line: underline;
+  	text-decoration-style: wavy;
+  	text-decoration-color: red;
+}
  .center {
 text-align: center;
 }
@@ -291,6 +293,19 @@ md"""
 $(@bind surface Select(surfacemenu))
 """
 
+# ╔═╡ 1fde0332-574c-11eb-1baf-01d335b27912
+begin
+	if surface == ""
+		md""
+	else
+
+	html"""
+	<blockquote>Tokens including invalid characters are highlighted
+	like <span class='invalid'>this</span>.</blockquote>
+"""
+	end
+end
+
 # ╔═╡ cb954628-574b-11eb-29e3-a7f277852b45
 md"Currently selected surface:"
 
@@ -318,6 +333,31 @@ begin
 	end
 end
 
+# ╔═╡ 926873c8-5829-11eb-300d-b34796359491
+begin
+	if surface == ""
+		md""
+	else
+		md"*Verifying orthography of **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(surfurn) )*"
+	end
+end
+
+# ╔═╡ aac2d102-5829-11eb-2e89-ad4510c25f28
+md"""
+
+> Formatting tokenized text for verifying orthography
+
+"""
+
+# ╔═╡ 6dd532e6-5827-11eb-1dea-696e884652ac
+function formatToken(ortho, s)
+	if validstring(ortho, s)
+			s
+	else
+		"""<span class='invalid'>$(s)</span>"""
+	end
+end
+
 # ╔═╡ 94a7db86-573b-11eb-0eec-8f845bec5995
 md"""
 
@@ -335,6 +375,13 @@ function fileforu(urn)
 	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
 	f= editorsrepo.root * "/" * editorsrepo.editions * "/" *	row[1,:file]
 	xml = read(f, String)
+end
+
+# ╔═╡ d279148a-580c-11eb-1d5e-77470b9b3672
+# Eval string value of ocho2converter for a URN
+function orthoforu(urn)
+	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
+	eval(Meta.parse(row[1,:orthography]))
 end
 
 # ╔═╡ a7b6f2f6-5737-11eb-1a43-2fa2909d0240
@@ -437,6 +484,35 @@ begin
 	end
 end
 
+# ╔═╡ bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
+# Compose string of HTML for a tokenized row including
+# tagging of invalid tokens
+function tokenizeRow(row)
+	ortho = orthoforu(row.passage)
+	citation = "<b>" * passagecomponent(row.passage)  * "</b> "
+	txt = diplnode(row.passage)
+	tokenstart::Array{OrthographicToken} = []
+	tokens = tokenize(ortho, txt,tokenstart)
+	highlighted = map(t -> formatToken(ortho, t.text), tokens)
+	html = join(highlighted, " ")
+	"<p>$(citation) $(html)</p>"
+	
+end
+
+# ╔═╡ aa385f1a-5827-11eb-2319-6f84d3201a7e
+# display highlighted tokens for verification
+begin
+	if surface == ""
+		md""
+	else
+		htmlout = []
+		for r in eachrow(surfaceDse)
+			push!(htmlout, tokenizeRow(r))
+		end
+		HTML(join(htmlout,"\n"))
+	end
+end
+
 # ╔═╡ Cell order:
 # ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
@@ -452,7 +528,9 @@ end
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
 # ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
+# ╟─926873c8-5829-11eb-300d-b34796359491
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
+# ╟─aa385f1a-5827-11eb-2319-6f84d3201a7e
 # ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
 # ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
@@ -492,9 +570,13 @@ end
 # ╟─901ae238-573c-11eb-15e2-3f7611dacab7
 # ╟─d9495f98-574b-11eb-2ee9-a38e09af22e6
 # ╟─e57c9326-573b-11eb-100c-ed7f37414d79
+# ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
+# ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
+# ╟─6dd532e6-5827-11eb-1dea-696e884652ac
 # ╟─94a7db86-573b-11eb-0eec-8f845bec5995
 # ╟─7a347506-5737-11eb-03bb-ef6dfa90d9c8
 # ╟─8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
+# ╟─d279148a-580c-11eb-1d5e-77470b9b3672
 # ╟─a7b6f2f6-5737-11eb-1a43-2fa2909d0240
 # ╟─a24430ec-573a-11eb-188d-e52c79291fcf
 # ╟─b7dae7a0-573a-11eb-2c76-15974f79daf8
