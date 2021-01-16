@@ -318,6 +318,9 @@ begin
 	end
 end
 
+# ╔═╡ 4864f574-580d-11eb-09fe-edc1b682d6f3
+testu1 = surfaceDse[1,:passage]
+
 # ╔═╡ 94a7db86-573b-11eb-0eec-8f845bec5995
 md"""
 
@@ -336,6 +339,16 @@ function fileforu(urn)
 	f= editorsrepo.root * "/" * editorsrepo.editions * "/" *	row[1,:file]
 	xml = read(f, String)
 end
+
+# ╔═╡ d279148a-580c-11eb-1d5e-77470b9b3672
+# Eval string value of ocho2converter for a URN
+function orthoforu(urn)
+	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
+	eval(Meta.parse(row[1,:orthography]))
+end
+
+# ╔═╡ e116555c-580c-11eb-12fd-99f29e1b4ad3
+testortho = orthoforu(testu1)
 
 # ╔═╡ a7b6f2f6-5737-11eb-1a43-2fa2909d0240
 # Eval string value of ocho2converter for a URN
@@ -402,6 +415,12 @@ function diplnode(urn)
 	#"Found stuffs " * le
 end
 
+# ╔═╡ 2ce6c228-580d-11eb-1b89-7f522f189d6a
+testtxt1 = diplnode(testu1)
+
+# ╔═╡ 60986dd8-580d-11eb-050e-653646a7761b
+Orthography.tokenize(testortho, testtxt1)
+
 # ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
 function mdForRow(row::DataFrameRow)
 	citation = "**" * passagecomponent(row.passage)  * "** "
@@ -438,7 +457,7 @@ begin
 end
 
 # ╔═╡ Cell order:
-# ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
+# ╠═0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
@@ -453,6 +472,10 @@ end
 # ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
+# ╠═4864f574-580d-11eb-09fe-edc1b682d6f3
+# ╠═e116555c-580c-11eb-12fd-99f29e1b4ad3
+# ╠═2ce6c228-580d-11eb-1b89-7f522f189d6a
+# ╠═60986dd8-580d-11eb-050e-653646a7761b
 # ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
 # ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
@@ -482,7 +505,7 @@ end
 # ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
 # ╟─17d926a4-574b-11eb-1180-9376c363f71c
 # ╟─0da08ada-574b-11eb-3d9a-11226200f537
-# ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
+# ╠═bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─0c025f44-574b-11eb-3049-33ad523ec6e4
 # ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
@@ -495,6 +518,7 @@ end
 # ╟─94a7db86-573b-11eb-0eec-8f845bec5995
 # ╟─7a347506-5737-11eb-03bb-ef6dfa90d9c8
 # ╟─8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
+# ╟─d279148a-580c-11eb-1d5e-77470b9b3672
 # ╟─a7b6f2f6-5737-11eb-1a43-2fa2909d0240
 # ╟─a24430ec-573a-11eb-188d-e52c79291fcf
 # ╟─b7dae7a0-573a-11eb-2c76-15974f79daf8
