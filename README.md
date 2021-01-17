@@ -39,7 +39,19 @@ To minimize the setup you have to do, the notebook is configured to download and
 
 ## Configuration files
 
-Documentation TBA.
 
-- `catalog.cex`
-- `citation.cex`
+
+### Configuring the validation notebook
+
+In the file `notebooks/MID.toml`,  define a name for your project, and the URL for its github repository in this file.
+
+### Configuring citation scheme and parsing of texts
+
+The file `config/catalog.cex` is a delimited-text file with an entry for each text you are editing.  The first column identifies the text by CTS URN.  The second column lists labels for each tier of the citation scheme, separated by commas. E.g., `book,line` would be an appropriate entry to cite a text like the *Iliad* by book and line.  The next four columns are labels for the text group, work, version of the text. The following column  optionally labels a specific exemplar of that version:  for manuscript material, this will normally be empty.  The seventh column should have the value `true` if the edition is available, or `false` if the text is cataloged but no edition is available.  The final column should give the three-letter code for the language of the text in ISO 639.
+
+
+
+
+- `config/citation.cex`. *Documentation TBA*.
+
+
