@@ -124,14 +124,26 @@ md"""
 md"Automatically computed values:"
 
 # ╔═╡ 1053c2d8-5749-11eb-13c1-71943988978f
-nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
+nbversion = begin
+	loadem
+	Pkg.TOML.parse(read("Project.toml", String))["version"]
+end
 
 
 # ╔═╡ fef09e62-5748-11eb-0944-c983eef98e1b
 md"This is version **$(nbversion)** of the MID validation notebook."
 
 # ╔═╡ 6182ebc0-5749-11eb-01b3-e35b891381ae
-projectname = Pkg.TOML.parse(read("Project.toml", String))["project"]
+projectname = begin
+	loadem
+	Pkg.TOML.parse(read("MID.toml", String))["projectname"]
+end
+
+# ╔═╡ 269f23ac-58cf-11eb-2d91-3d46d28360d7
+github = begin
+	loadem
+	Pkg.TOML.parse(read("MID.toml", String))["github"]
+end
 
 # ╔═╡ a7142d7e-5736-11eb-037b-5540068734e6
 reporoot = dirname(pwd())
@@ -226,7 +238,8 @@ md"""
 function hdr() 
 	HTML("<blockquote  class='center'><h1>MID validation notebook</h1>" *
 		"<h3>" * projectname * "</h3>" 		*
-		"<p>Editing project from repository in:</p><h4><i>" * reporoot * "</i></h4></blockquote>")
+		"<p>On github at <a href=\"" * github * "\">" * github * "</a></p>" *
+		"<p>Editing project from repository in:</p><h5><i>" * reporoot * "</i></h5></blockquote>")
 end
 
 # ╔═╡ 22980f4c-574b-11eb-171b-170c4a68b30b
@@ -550,6 +563,7 @@ end
 # ╟─6876c1d6-5749-11eb-39fe-29ef948bec69
 # ╟─1053c2d8-5749-11eb-13c1-71943988978f
 # ╟─6182ebc0-5749-11eb-01b3-e35b891381ae
+# ╟─269f23ac-58cf-11eb-2d91-3d46d28360d7
 # ╟─a7142d7e-5736-11eb-037b-5540068734e6
 # ╟─59301396-5736-11eb-22d3-3d6538b5228c
 # ╟─e3578474-573c-11eb-057f-27fc9eb9b519
@@ -561,7 +575,7 @@ end
 # ╟─c3efd710-573e-11eb-1251-75295cced219
 # ╟─bd95307c-573e-11eb-3325-ad08ee392a2f
 # ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
-# ╟─17d926a4-574b-11eb-1180-9376c363f71c
+# ╠═17d926a4-574b-11eb-1180-9376c363f71c
 # ╟─0da08ada-574b-11eb-3d9a-11226200f537
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
