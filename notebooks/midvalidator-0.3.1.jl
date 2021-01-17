@@ -120,8 +120,11 @@ md"""
 
 """
 
+# ╔═╡ a7142d7e-5736-11eb-037b-5540068734e6
+reporoot = dirname(pwd())
+
 # ╔═╡ 6876c1d6-5749-11eb-39fe-29ef948bec69
-md"Automatically computed values:"
+md"Values read from `.toml` configuration files:"
 
 # ╔═╡ 1053c2d8-5749-11eb-13c1-71943988978f
 nbversion = begin
@@ -144,9 +147,6 @@ github = begin
 	loadem
 	Pkg.TOML.parse(read("MID.toml", String))["github"]
 end
-
-# ╔═╡ a7142d7e-5736-11eb-037b-5540068734e6
-reporoot = dirname(pwd())
 
 # ╔═╡ 59301396-5736-11eb-22d3-3d6538b5228c
 md"""
@@ -560,11 +560,11 @@ end
 # ╟─2fdc8988-5736-11eb-262d-9b8d44c2e2cc
 # ╟─4fa5738a-5737-11eb-0e78-0155bfc12112
 # ╟─0cabc908-5737-11eb-2ef9-d51aedfbbe5f
+# ╟─a7142d7e-5736-11eb-037b-5540068734e6
 # ╟─6876c1d6-5749-11eb-39fe-29ef948bec69
 # ╟─1053c2d8-5749-11eb-13c1-71943988978f
 # ╟─6182ebc0-5749-11eb-01b3-e35b891381ae
 # ╟─269f23ac-58cf-11eb-2d91-3d46d28360d7
-# ╟─a7142d7e-5736-11eb-037b-5540068734e6
 # ╟─59301396-5736-11eb-22d3-3d6538b5228c
 # ╟─e3578474-573c-11eb-057f-27fc9eb9b519
 # ╟─7829a5ac-5736-11eb-13d1-6f5430595193
@@ -575,7 +575,7 @@ end
 # ╟─c3efd710-573e-11eb-1251-75295cced219
 # ╟─bd95307c-573e-11eb-3325-ad08ee392a2f
 # ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
-# ╠═17d926a4-574b-11eb-1180-9376c363f71c
+# ╟─17d926a4-574b-11eb-1180-9376c363f71c
 # ╟─0da08ada-574b-11eb-3d9a-11226200f537
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
