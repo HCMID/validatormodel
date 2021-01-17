@@ -33,7 +33,7 @@ using Pluto
 Pluto.run()
 ```
 
-Within Pluto, open the generic `midvalidator-VERSION.jl` notebook.  If your project has additional project-specific tests, they can be managed in a second, separate notebook, so you can open that notebook as well in a separate browser tab.
+Within Pluto, open the generic `midvalidator-VERSION.jl` notebook in the `notebooks` directory of this repository.  If your project has additional project-specific tests, they can be managed in a second, separate notebook, so you can open that notebook as well in a separate browser tab.
 
 To minimize the setup you have to do, the notebook is configured to download and build the entire app each time you start it.  This means you don't need to have anything else preinstalled, but it also means that startup time is slow. (It can take up to 2 minutes on an older laptop.)  Once the notebook has started, it is very responsive even on older personal machines.
 
