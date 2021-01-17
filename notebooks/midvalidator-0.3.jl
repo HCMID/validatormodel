@@ -27,9 +27,8 @@ begin
 	Pkg.add("DataFrames")
 	Pkg.add("EditorsRepo")
 	Pkg.add("Orthography")
+	Pkg.add("EditionBuilders")
 	
-	# Waiting for packages to clear Julia Registry
-	Pkg.add(url="https://github.com/HCMID/EditionBuilders.jl")
 
 	
 	using PlutoUI
