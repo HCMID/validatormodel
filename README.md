@@ -43,11 +43,20 @@ To minimize the setup you have to do, the notebook is configured to download and
 
 ### Configuring the validation notebook
 
-In the file `notebooks/MID.toml`,  define a name for your project, and the URL for its github repository in this file.
+In the file `notebooks/MID.toml`, define a name for your project, and the URL for its github repository.
 
 ### Configuring citation scheme and parsing of texts
 
-The file `config/catalog.cex` is a delimited-text file with an entry for each text you are editing.  The first column identifies the text by CTS URN.  The second column lists labels for each tier of the citation scheme, separated by commas. E.g., `book,line` would be an appropriate entry to cite a text like the *Iliad* by book and line.  The next four columns are labels for the text group, work, version of the text. The following column  optionally labels a specific exemplar of that version:  for manuscript material, this will normally be empty.  The seventh column should have the value `true` if the edition is available, or `false` if the text is cataloged but no edition is available.  The final column should give the three-letter code for the language of the text in ISO 639.
+The file `config/catalog.cex` is a delimited-text file with an entry for each text you are editing.  Its columns are:
+
+1. the text identified by CTS URN
+2. labels for each tier of the citation scheme, separated by commas. E.g., `book,line` would be an appropriate entry to cite a text like the *Iliad* by book and line.  
+3. name of the text group (e.g., "Homeric poetry")
+4. title of the work (e.g., "*Iliad*")
+5. label for the version (e.g., "MID edition")
+6. optional label for  a specific exemplar of that version:  for manuscript material, this will normally be empty.  
+7. the value `true` if the edition is available, or `false` if the text is cataloged but no edition is available.  
+8. the three-letter code for the language of the text in ISO 639 (e.g., `grc` for ancient Greek).
 
 
 
