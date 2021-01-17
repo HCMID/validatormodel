@@ -1,5 +1,3 @@
-project = "Template for MID repository"
-
 name = "MID validator notebook"
 version = "0.3.1"
 
