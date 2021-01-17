@@ -120,8 +120,11 @@ md"""
 
 """
 
+# ╔═╡ a7142d7e-5736-11eb-037b-5540068734e6
+reporoot = dirname(pwd())
+
 # ╔═╡ 6876c1d6-5749-11eb-39fe-29ef948bec69
-md"Automatically computed values:"
+md"Values read from `.toml` configuration files:"
 
 # ╔═╡ 1053c2d8-5749-11eb-13c1-71943988978f
 nbversion = begin
@@ -144,9 +147,6 @@ github = begin
 	loadem
 	Pkg.TOML.parse(read("MID.toml", String))["github"]
 end
-
-# ╔═╡ a7142d7e-5736-11eb-037b-5540068734e6
-reporoot = dirname(pwd())
 
 # ╔═╡ 59301396-5736-11eb-22d3-3d6538b5228c
 md"""
@@ -177,6 +177,19 @@ editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
 
 # ╔═╡ 547c4ffa-574b-11eb-3b6e-69fa417421fc
 uniquesurfaces = EditorsRepo.surfaces(editorsrepo)
+
+# ╔═╡ 2a84a042-5739-11eb-13f1-1d881f215521
+diplomaticpassages = begin
+	#diplomaticnodes(editorsrepo, urnlist[1])
+	diplomaticarrays = map(u -> diplomaticnodes(editorsrepo, u), urnlist)
+	reduce(vcat, diplomaticarrays)
+end
+
+# ╔═╡ 9974fadc-573a-11eb-10c4-13c589f5810b
+normalizedpassages =  begin
+	normalizedarrays = map(u -> normalizednodes(editorsrepo, u), urnlist)
+	reduce(vcat, normalizedarrays)
+end
 
 # ╔═╡ 175f2e58-573c-11eb-3a36-f3142c341d93
 alldse = begin
@@ -278,6 +291,39 @@ text-align: center;
 </style>
 """
 
+# ╔═╡ 2d218414-573e-11eb-33dc-af1f2df86cf7
+# Select a node from list of diplomatic nodes
+function diplnode(urn)
+	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticpassages)
+	if length(filtered) > 0
+		filtered[1].text
+	else 
+		""
+	end
+	#"Found stuffs " * le
+end
+
+# ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
+function mdForRow(row::DataFrameRow)
+	citation = "**" * passagecomponent(row.passage)  * "** "
+
+	
+	txt = diplnode(row.passage)
+	caption = passagecomponent(row.passage)
+	
+	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
+	
+	#urn
+	record = """$(citation) $(txt)
+	
+$(img)
+	
+---
+"""
+	record
+end
+
+
 # ╔═╡ 0c025f44-574b-11eb-3049-33ad523ec6e4
 
 
@@ -346,6 +392,20 @@ begin
 	end
 end
 
+# ╔═╡ 00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# display DSE records for verification
+begin
+	if surface == ""
+		md""
+	else
+		cellout = []
+		for r in eachrow(surfaceDse)
+			push!(cellout, mdForRow(r))
+		end
+		Markdown.parse(join(cellout,"\n"))
+	end
+end
+
 # ╔═╡ 926873c8-5829-11eb-300d-b34796359491
 begin
 	if surface == ""
@@ -371,140 +431,11 @@ function formatToken(ortho, s)
 	end
 end
 
-# ╔═╡ 94a7db86-573b-11eb-0eec-8f845bec5995
-md"""
-
-> ## Temporary content
-> Functions to migrate to the next release of the `EditorsRepo` module.
-
-"""
-
-# ╔═╡ 7a347506-5737-11eb-03bb-ef6dfa90d9c8
-md"These functions compile diplomatic and normalized texts for the repository."
-
-# ╔═╡ 8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
-# Read text contents of file for URN
-function fileforu(urn)
-	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
-	f= editorsrepo.root * "/" * editorsrepo.editions * "/" *	row[1,:file]
-	contents = open(f) do file
-    	read(file, String)
-	end
-	contents
-end
-
-# ╔═╡ d279148a-580c-11eb-1d5e-77470b9b3672
-# Eval string value of ocho2converter for a URN
-function orthoforu(urn)
-	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
-	eval(Meta.parse(row[1,:orthography]))
-end
-
-# ╔═╡ a7b6f2f6-5737-11eb-1a43-2fa2909d0240
-# Eval string value of ocho2converter for a URN
-function o2foru(urn)
-	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
-	eval(Meta.parse(row[1,:o2converter]))
-end
-
-# ╔═╡ a24430ec-573a-11eb-188d-e52c79291fcf
-function normforu(urn)
-	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
-	eval(Meta.parse(row[1,:normalized]))
-end
-
-# ╔═╡ b7dae7a0-573a-11eb-2c76-15974f79daf8
-# given a node URN, 
-function normalizedcns(urn)
-	
-	reader = o2foru(urn)
-	xml =  fileforu(urn)
-	corpus = reader(xml, urn)
-	normalizer = normforu(urn)
-	map(cn -> editednode(normalizer, cn), corpus.corpus)
-end
-
-# ╔═╡ 9974fadc-573a-11eb-10c4-13c589f5810b
-normalizednodes =  begin
-	normalizedarrays = map(u -> normalizedcns(u), urnlist)
-	reduce(vcat, normalizedarrays)
-end
-
-# ╔═╡ b815025a-5737-11eb-3b68-0df9e43b534d
-function diplforu(urn)
-	row = filter(r -> droppassage(urn) == r[:urn], textconfig)
-	eval(Meta.parse(row[1,:diplomatic]))
-end
-
-# ╔═╡ 75ca5ad0-5737-11eb-1a4a-17beafff6a96
-# given a node URN, 
-function diplomaticcns(urn)
-	
-	reader = o2foru(urn)
-	xml =  fileforu(urn)
-	corpus = reader(xml, urn)
-	dipl = diplforu(urn)
-	diplnodes = map(cn -> editednode(dipl, cn), corpus.corpus)
-end
-
-# ╔═╡ 2a84a042-5739-11eb-13f1-1d881f215521
-diplomaticnodes = begin
-	diplomaticarrays = map(u -> diplomaticcns(u), urnlist)
-	reduce(vcat, diplomaticarrays)
-end
-
-# ╔═╡ 2d218414-573e-11eb-33dc-af1f2df86cf7
-# Select a node from list of diplomatic nodes
-function diplnode(urn)
-	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticnodes)
-	if length(filtered) > 0
-		filtered[1].text
-	else 
-		""
-	end
-	#"Found stuffs " * le
-end
-
-# ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
-function mdForRow(row::DataFrameRow)
-	citation = "**" * passagecomponent(row.passage)  * "** "
-
-	
-	txt = diplnode(row.passage)
-	caption = passagecomponent(row.passage)
-	
-	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
-	
-	#urn
-	record = """$(citation) $(txt)
-	
-$(img)
-	
----
-"""
-	record
-end
-
-
-# ╔═╡ 00a9347c-573e-11eb-1b25-bb15d56c1b0d
-# display DSE records for verification
-begin
-	if surface == ""
-		md""
-	else
-		cellout = []
-		for r in eachrow(surfaceDse)
-			push!(cellout, mdForRow(r))
-		end
-		Markdown.parse(join(cellout,"\n"))
-	end
-end
-
 # ╔═╡ bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
 # Compose string of HTML for a tokenized row including
 # tagging of invalid tokens
 function tokenizeRow(row)
-	ortho = orthoforu(row.passage)
+	ortho = orthographyforurn(textconfig, row.passage)
 	citation = "<b>" * passagecomponent(row.passage)  * "</b> "
 	txt = diplnode(row.passage)
 	tokenstart::Array{OrthographicToken} = []
@@ -560,11 +491,11 @@ end
 # ╟─2fdc8988-5736-11eb-262d-9b8d44c2e2cc
 # ╟─4fa5738a-5737-11eb-0e78-0155bfc12112
 # ╟─0cabc908-5737-11eb-2ef9-d51aedfbbe5f
+# ╟─a7142d7e-5736-11eb-037b-5540068734e6
 # ╟─6876c1d6-5749-11eb-39fe-29ef948bec69
 # ╟─1053c2d8-5749-11eb-13c1-71943988978f
 # ╟─6182ebc0-5749-11eb-01b3-e35b891381ae
 # ╟─269f23ac-58cf-11eb-2d91-3d46d28360d7
-# ╟─a7142d7e-5736-11eb-037b-5540068734e6
 # ╟─59301396-5736-11eb-22d3-3d6538b5228c
 # ╟─e3578474-573c-11eb-057f-27fc9eb9b519
 # ╟─7829a5ac-5736-11eb-13d1-6f5430595193
@@ -575,7 +506,7 @@ end
 # ╟─c3efd710-573e-11eb-1251-75295cced219
 # ╟─bd95307c-573e-11eb-3325-ad08ee392a2f
 # ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
-# ╠═17d926a4-574b-11eb-1180-9376c363f71c
+# ╟─17d926a4-574b-11eb-1180-9376c363f71c
 # ╟─0da08ada-574b-11eb-3d9a-11226200f537
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
@@ -590,12 +521,3 @@ end
 # ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
 # ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
 # ╟─6dd532e6-5827-11eb-1dea-696e884652ac
-# ╟─94a7db86-573b-11eb-0eec-8f845bec5995
-# ╟─7a347506-5737-11eb-03bb-ef6dfa90d9c8
-# ╟─8ebcdc8e-5737-11eb-00f2-e5529a12c4d2
-# ╟─d279148a-580c-11eb-1d5e-77470b9b3672
-# ╟─a7b6f2f6-5737-11eb-1a43-2fa2909d0240
-# ╟─a24430ec-573a-11eb-188d-e52c79291fcf
-# ╟─b7dae7a0-573a-11eb-2c76-15974f79daf8
-# ╟─b815025a-5737-11eb-3b68-0df9e43b534d
-# ╟─75ca5ad0-5737-11eb-1a4a-17beafff6a96
