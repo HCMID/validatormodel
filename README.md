@@ -26,7 +26,7 @@ To run the Pluto notebooks in the `notebooks` directory, you need the Julia lang
 
 You should start your basic validation notebook *before* beginning to edit.  
 
-From a bash terminal, `cd` into the `notebooks` directory, and start `julia`. (If you're using VS Code, you can use the `Terminal` menu to open a new terminal in VS Code.) Then at the `julia` prompt, enter these two commands:
+Start `julia`. (If you're using VS Code, you can use the `Terminal` menu to open a new terminal in VS Code.) Then at the `julia` prompt, enter these two commands:
 
 ```julia
 using Pluto
