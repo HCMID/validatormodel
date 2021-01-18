@@ -358,9 +358,6 @@ $(img)
 end
 
 
-# ╔═╡ 0c025f44-574b-11eb-3049-33ad523ec6e4
-
-
 # ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
 md"""
 
@@ -532,8 +529,8 @@ function citationonly()
 end
 
 # ╔═╡ bec00462-596a-11eb-1694-076c78f2ba95
-begin
-	loadem
+# Compose HTML reporting on status of text cataloging
+function catalogcheck()
 	if citationcomplete()
 		md"> Summary of cataloged content"
 	else
@@ -549,23 +546,86 @@ begin
 		citelist = "<p>In <code>citation.cex</code>, but not text catalog:</p><ul>" * join(citeitems,"\n") * "</ul>"
 		citehtml = isempty(citeitems) ? "" : citelist
 		
-		HTML("<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨</h1>" *  cathtml * "\n" * citehtml * "</div>")
+		cataloginghtml = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨</h1>" *  cathtml * "\n" * citehtml * "</div>"
+		
+		
+		HTML(cataloginghtml)
 	end
 end
 
-# ╔═╡ 5c34ac9c-596a-11eb-37ee-bf3c4455bc2f
-md"Experiment with css for validation reporting"
+# ╔═╡ c9652ac8-5974-11eb-2dd0-654e93786446
+begin
+	loadem
+	catalogcheck()
+end
 
-# ╔═╡ 27302dac-5968-11eb-06ed-c145c36d403f
-# Warning example
-#html"<div class='warn'><h1>⚠️ Danger, Will Robinson! ⚠️</h1>Try some warning</div>"
+# ╔═╡ 515f9706-5970-11eb-1664-396c70c439ac
+# true if files on disk match configuration
+function filesmatch()
+	ondisk = xmlfiles(editorsrepo)
+	cited = textconfig[:,:file]
+	isempty(setdiff(ondisk, cited)) && isempty(setdiff(cited, ondisk))
+	
+end
+
+# ╔═╡ c60d88a4-5970-11eb-0148-e1b7110cbfe6
+# List texts in catalog but missing from citation
+function fileonly()
+	ondisk = xmlfiles(editorsrepo)
+	cited = textconfig[:,:file]
+	diffs = setdiff(ondisk, cited)
+	intersect(diffs, ondisk)
+end
+
+# ╔═╡ dbb97052-5970-11eb-0850-d5e2895444d6
+# list files configured in citation.cex not found on disk
+function citedonly()
+	ondisk = xmlfiles(editorsrepo)
+	cited = textconfig[:,:file]
+	diffs = setdiff(cited, ondisk)
+	intersect(diffs, cited)
+end
+	
+
+# ╔═╡ 4133cbbc-5971-11eb-0bcd-658721f886f1
+# Compose HTML reporting on correctness of file cataloging
+function fileinventory()
+	if filesmatch()
+		md""
+	else
+		missingfiles = fileonly()
+		if isempty(missingfiles)
+			notondisk = citedonly()
+			nofiletems = map(f -> "<li>" * f * "</li>", notondisk)
+			nofilelist = "<p>Configured files found on disk: </p><ul>" * join(nofiletems, "\n") * "</ul>"
+			nofilehtml = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨 </h1>" *
+				"<p>No files matching configured name:</p>" * nofilelist
+			HTML(nofilehtml)
+			
+		else 
+			fileitems = map(f -> "<li>" * f * "</li>", missingfiles)
+			filelist = "<p>Uncataloged files found on disk: </p><ul>" * join(fileitems,"\n") * "</ul>"
+			fileshtml = "<div class='warn'><h1>⚠️ Warning</h1>" *  filelist  * "</div>"
+			HTML(fileshtml)
+					
+		end
+
+	end
+end
+
+# ╔═╡ 925647c6-5974-11eb-1886-1fa2b12684f5
+begin
+	loadem
+	fileinventory()
+end
 
 # ╔═╡ Cell order:
 # ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
-# ╟─bec00462-596a-11eb-1694-076c78f2ba95
+# ╟─c9652ac8-5974-11eb-2dd0-654e93786446
+# ╟─925647c6-5974-11eb-1886-1fa2b12684f5
 # ╟─6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
 # ╟─0bd05af4-573b-11eb-1b90-31d469940e5b
 # ╟─4010cf78-573c-11eb-03cf-b7dd1ae23b60
@@ -611,7 +671,8 @@ md"Experiment with css for validation reporting"
 # ╟─0da08ada-574b-11eb-3d9a-11226200f537
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
-# ╟─0c025f44-574b-11eb-3049-33ad523ec6e4
+# ╟─bec00462-596a-11eb-1694-076c78f2ba95
+# ╟─4133cbbc-5971-11eb-0bcd-658721f886f1
 # ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
 # ╟─b899d304-574b-11eb-1d50-5b7813ea201e
 # ╟─356f7236-573c-11eb-18b5-2f5a6bfc545d
@@ -627,5 +688,6 @@ md"Experiment with css for validation reporting"
 # ╟─70bc6cd0-596a-11eb-0449-bde0e666e2e2
 # ╟─a52c1a1c-596b-11eb-286e-17533288c1a0
 # ╟─3a8d3256-596c-11eb-11c6-077e342eb5d3
-# ╟─5c34ac9c-596a-11eb-37ee-bf3c4455bc2f
-# ╠═27302dac-5968-11eb-06ed-c145c36d403f
+# ╟─515f9706-5970-11eb-1664-396c70c439ac
+# ╟─c60d88a4-5970-11eb-0148-e1b7110cbfe6
+# ╟─dbb97052-5970-11eb-0850-d5e2895444d6
