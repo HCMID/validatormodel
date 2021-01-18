@@ -261,6 +261,27 @@ hdr()
 # ╔═╡ 0da08ada-574b-11eb-3d9a-11226200f537
 css = html"""
 <style>
+.danger {
+     background-color: #fbf0f0;
+     border-left: solid 4px #db3434;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+	  }
+.warn {
+     background-color: 	#ffdd00;
+     border-left: solid 4px  black;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+  }
+
+  .danger h1 {
+	color: red;
+	}
+
  .invalid {
 	text-decoration-line: underline;
   	text-decoration-style: wavy;
@@ -288,6 +309,19 @@ text-align: center;
      padding: 15px 60px;
     font-style: italic;
  }
+
+
+.instructions {
+     background-color: #f0f7fb;
+     border-left: solid 4px  #3498db;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+  }
+
+
+
 </style>
 """
 
@@ -460,11 +494,78 @@ begin
 	end
 end
 
+# ╔═╡ 015456be-5968-11eb-2829-1f516fe1255e
+md"""
+
+> ### Temporary content to go in libraries
+
+"""
+
+# ╔═╡ a83a1f8e-596f-11eb-1d2b-1f58c5042258
+md"Add these to `EditorsRepo`:"
+
+# ╔═╡ 70bc6cd0-596a-11eb-0449-bde0e666e2e2
+# True if  1<->1 between citation entries and catalog
+function citationcomplete()
+	catalog = catalogedtexts[:,:urn]
+	citationconfig = textconfig[:,:urn]
+	#length(catalog) == length(citationconfig)
+	isempty(setdiff(catalog, citationconfig)) && isempty(setdiff(citationconfig, catalog))
+end
+
+# ╔═╡ a52c1a1c-596b-11eb-286e-17533288c1a0
+# List texts in catalog but missing from citation
+function catalogonly()
+	catalog = catalogedtexts[:,:urn]
+	citationconfig = textconfig[:,:urn]
+	diffs = setdiff(catalog, citationconfig)
+	intersect(diffs, catalog)
+end
+
+# ╔═╡ 3a8d3256-596c-11eb-11c6-077e342eb5d3
+# List texts in catalog but missing from citation
+function citationonly()
+	catalog = catalogedtexts[:,:urn]
+	citationconfig = textconfig[:,:urn]
+	diffs = setdiff(citationconfig, catalog)
+	intersect(diffs, citationconfig)
+end
+
+# ╔═╡ bec00462-596a-11eb-1694-076c78f2ba95
+begin
+	loadem
+	if citationcomplete()
+		md"> Summary of cataloged content"
+	else
+		
+		missingcats = catalogonly()
+		catitems = map(c -> "<li>" * c.urn * "</li>", missingcats)
+		catlist = "<p>In catalog, but not <code>citation.cex</code>:</p><ul>" * join(catitems,"\n") * "</ul>"
+		cathtml = isempty(catitems) ? "" : catlist
+		
+		
+		missingcites = citationonly()
+		citeitems = map(c -> "<li>" * c.urn * "</li>", missingcites)
+		citelist = "<p>In <code>citation.cex</code>, but not text catalog:</p><ul>" * join(citeitems,"\n") * "</ul>"
+		citehtml = isempty(citeitems) ? "" : citelist
+		
+		HTML("<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨</h1>" *  cathtml * "\n" * citehtml * "</div>")
+	end
+end
+
+# ╔═╡ 5c34ac9c-596a-11eb-37ee-bf3c4455bc2f
+md"Experiment with css for validation reporting"
+
+# ╔═╡ 27302dac-5968-11eb-06ed-c145c36d403f
+# Warning example
+#html"<div class='warn'><h1>⚠️ Danger, Will Robinson! ⚠️</h1>Try some warning</div>"
+
 # ╔═╡ Cell order:
 # ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
+# ╟─bec00462-596a-11eb-1694-076c78f2ba95
 # ╟─6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
 # ╟─0bd05af4-573b-11eb-1b90-31d469940e5b
 # ╟─4010cf78-573c-11eb-03cf-b7dd1ae23b60
@@ -521,3 +622,10 @@ end
 # ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
 # ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
 # ╟─6dd532e6-5827-11eb-1dea-696e884652ac
+# ╟─015456be-5968-11eb-2829-1f516fe1255e
+# ╟─a83a1f8e-596f-11eb-1d2b-1f58c5042258
+# ╟─70bc6cd0-596a-11eb-0449-bde0e666e2e2
+# ╟─a52c1a1c-596b-11eb-286e-17533288c1a0
+# ╟─3a8d3256-596c-11eb-11c6-077e342eb5d3
+# ╟─5c34ac9c-596a-11eb-37ee-bf3c4455bc2f
+# ╠═27302dac-5968-11eb-06ed-c145c36d403f
