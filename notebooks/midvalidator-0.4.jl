@@ -358,6 +358,69 @@ $(img)
 end
 
 
+# ╔═╡ bec00462-596a-11eb-1694-076c78f2ba95
+# Compose HTML reporting on status of text cataloging
+function catalogcheck()
+	if citationmatches(catalogedtexts, textconfig) # citationcomplete()
+		md"> Summary of cataloged content"
+	else
+		
+		missingcats = catalogony(catalogedtexts, textconfig) #catalogonly()
+		catitems = map(c -> "<li>" * c.urn * "</li>", missingcats)
+		catlist = "<p>In catalog, but not <code>citation.cex</code>:</p><ul>" * join(catitems,"\n") * "</ul>"
+		cathtml = isempty(catitems) ? "" : catlist
+		
+		
+		missingcites = citationonly(catalogedtexts, textconfig)
+		citeitems = map(c -> "<li>" * c.urn * "</li>", missingcites)
+		citelist = "<p>In <code>citation.cex</code>, but not text catalog:</p><ul>" * join(citeitems,"\n") * "</ul>"
+		citehtml = isempty(citeitems) ? "" : citelist
+		
+		cataloginghtml = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨</h1>" *  cathtml * "\n" * citehtml * "</div>"
+		
+		
+		HTML(cataloginghtml)
+	end
+end
+
+# ╔═╡ c9652ac8-5974-11eb-2dd0-654e93786446
+begin
+	loadem
+	catalogcheck()
+end
+
+# ╔═╡ 4133cbbc-5971-11eb-0bcd-658721f886f1
+# Compose HTML reporting on correctness of file cataloging
+function fileinventory()
+	if filesmatch(editorsrepo, textconfig)
+		md""
+	else
+		missingfiles = filesonly(editorsrepo, textconfig)
+		if isempty(missingfiles)
+			notondisk = citedonly(editorsrepo, textconfig)
+			nofiletems = map(f -> "<li>" * f * "</li>", notondisk)
+			nofilelist = "<p>Configured files found on disk: </p><ul>" * join(nofiletems, "\n") * "</ul>"
+			nofilehtml = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨 </h1>" *
+				"<p>No files matching configured name:</p>" * nofilelist
+			HTML(nofilehtml)
+			
+		else 
+			fileitems = map(f -> "<li>" * f * "</li>", missingfiles)
+			filelist = "<p>Uncataloged files found on disk: </p><ul>" * join(fileitems,"\n") * "</ul>"
+			fileshtml = "<div class='warn'><h1>⚠️ Warning</h1>" *  filelist  * "</div>"
+			HTML(fileshtml)
+					
+		end
+
+	end
+end
+
+# ╔═╡ 925647c6-5974-11eb-1886-1fa2b12684f5
+begin
+	loadem
+	fileinventory()
+end
+
 # ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
 md"""
 
@@ -491,141 +554,6 @@ begin
 	end
 end
 
-# ╔═╡ 015456be-5968-11eb-2829-1f516fe1255e
-md"""
-
-> ### Temporary content to go in libraries
-
-"""
-
-# ╔═╡ a83a1f8e-596f-11eb-1d2b-1f58c5042258
-md"Add these to `EditorsRepo`:"
-
-# ╔═╡ 70bc6cd0-596a-11eb-0449-bde0e666e2e2
-# Replace with
-# citationmatches(catalog, citationconfig)
-#
-# True if  1<->1 between citation entries and catalog
-function citationcomplete()
-	catalog = catalogedtexts[:,:urn]
-	citationconfig = textconfig[:,:urn]
-	#length(catalog) == length(citationconfig)
-	isempty(setdiff(catalog, citationconfig)) && isempty(setdiff(citationconfig, catalog))
-end
-
-# ╔═╡ a52c1a1c-596b-11eb-286e-17533288c1a0
-#Replace with catalogony(catalog, citationconfig)
-# List texts in catalog but missing from citation
-function catalogonly()
-	catalog = catalogedtexts[:,:urn]
-	citationconfig = textconfig[:,:urn]
-	diffs = setdiff(catalog, citationconfig)
-	intersect(diffs, catalog)
-end
-
-# ╔═╡ 3a8d3256-596c-11eb-11c6-077e342eb5d3
-# Replace with citationonly(catalog, textconfig)
-# List texts in catalog but missing from citation
-function citationonly()
-	catalog = catalogedtexts[:,:urn]
-	citationconfig = textconfig[:,:urn]
-	diffs = setdiff(citationconfig, catalog)
-	intersect(diffs, citationconfig)
-end
-
-# ╔═╡ bec00462-596a-11eb-1694-076c78f2ba95
-# Compose HTML reporting on status of text cataloging
-function catalogcheck()
-	if citationcomplete()
-		md"> Summary of cataloged content"
-	else
-		
-		missingcats = catalogonly()
-		catitems = map(c -> "<li>" * c.urn * "</li>", missingcats)
-		catlist = "<p>In catalog, but not <code>citation.cex</code>:</p><ul>" * join(catitems,"\n") * "</ul>"
-		cathtml = isempty(catitems) ? "" : catlist
-		
-		
-		missingcites = citationonly()
-		citeitems = map(c -> "<li>" * c.urn * "</li>", missingcites)
-		citelist = "<p>In <code>citation.cex</code>, but not text catalog:</p><ul>" * join(citeitems,"\n") * "</ul>"
-		citehtml = isempty(citeitems) ? "" : citelist
-		
-		cataloginghtml = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨</h1>" *  cathtml * "\n" * citehtml * "</div>"
-		
-		
-		HTML(cataloginghtml)
-	end
-end
-
-# ╔═╡ c9652ac8-5974-11eb-2dd0-654e93786446
-begin
-	loadem
-	catalogcheck()
-end
-
-# ╔═╡ 515f9706-5970-11eb-1664-396c70c439ac
-# Replace with filesmatch(repo, textconfig)
-# true if files on disk match configuration
-function filesmatch()
-	ondisk = xmlfiles(editorsrepo)
-	cited = textconfig[:,:file]
-	isempty(setdiff(ondisk, cited)) && isempty(setdiff(cited, ondisk))
-	
-end
-
-# ╔═╡ c60d88a4-5970-11eb-0148-e1b7110cbfe6
-# Replace with filesonly(repo, textconfig)
-# List texts in catalog but missing from citation
-function fileonly()
-	ondisk = xmlfiles(editorsrepo)
-	cited = textconfig[:,:file]
-	diffs = setdiff(ondisk, cited)
-	intersect(diffs, ondisk)
-end
-
-# ╔═╡ dbb97052-5970-11eb-0850-d5e2895444d6
-# list files configured in citation.cex not found on disk
-function citedonly()
-	ondisk = xmlfiles(editorsrepo)
-	cited = textconfig[:,:file]
-	diffs = setdiff(cited, ondisk)
-	intersect(diffs, cited)
-end
-	
-
-# ╔═╡ 4133cbbc-5971-11eb-0bcd-658721f886f1
-# Compose HTML reporting on correctness of file cataloging
-function fileinventory()
-	if filesmatch()
-		md""
-	else
-		missingfiles = fileonly()
-		if isempty(missingfiles)
-			notondisk = citedonly()
-			nofiletems = map(f -> "<li>" * f * "</li>", notondisk)
-			nofilelist = "<p>Configured files found on disk: </p><ul>" * join(nofiletems, "\n") * "</ul>"
-			nofilehtml = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨 </h1>" *
-				"<p>No files matching configured name:</p>" * nofilelist
-			HTML(nofilehtml)
-			
-		else 
-			fileitems = map(f -> "<li>" * f * "</li>", missingfiles)
-			filelist = "<p>Uncataloged files found on disk: </p><ul>" * join(fileitems,"\n") * "</ul>"
-			fileshtml = "<div class='warn'><h1>⚠️ Warning</h1>" *  filelist  * "</div>"
-			HTML(fileshtml)
-					
-		end
-
-	end
-end
-
-# ╔═╡ 925647c6-5974-11eb-1886-1fa2b12684f5
-begin
-	loadem
-	fileinventory()
-end
-
 # ╔═╡ Cell order:
 # ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
@@ -679,7 +607,7 @@ end
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─bec00462-596a-11eb-1694-076c78f2ba95
-# ╟─4133cbbc-5971-11eb-0bcd-658721f886f1
+# ╠═4133cbbc-5971-11eb-0bcd-658721f886f1
 # ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
 # ╟─b899d304-574b-11eb-1d50-5b7813ea201e
 # ╟─356f7236-573c-11eb-18b5-2f5a6bfc545d
@@ -690,11 +618,3 @@ end
 # ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
 # ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
 # ╟─6dd532e6-5827-11eb-1dea-696e884652ac
-# ╟─015456be-5968-11eb-2829-1f516fe1255e
-# ╟─a83a1f8e-596f-11eb-1d2b-1f58c5042258
-# ╠═70bc6cd0-596a-11eb-0449-bde0e666e2e2
-# ╠═a52c1a1c-596b-11eb-286e-17533288c1a0
-# ╠═3a8d3256-596c-11eb-11c6-077e342eb5d3
-# ╠═515f9706-5970-11eb-1664-396c70c439ac
-# ╠═c60d88a4-5970-11eb-0148-e1b7110cbfe6
-# ╠═dbb97052-5970-11eb-0850-d5e2895444d6
