@@ -261,6 +261,27 @@ hdr()
 # ╔═╡ 0da08ada-574b-11eb-3d9a-11226200f537
 css = html"""
 <style>
+.danger {
+     background-color: #fbf0f0;
+     border-left: solid 4px #db3434;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+	  }
+.warn {
+     background-color: 	#ffdd00;
+     border-left: solid 4px  black;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+  }
+
+  .danger h1 {
+	color: red;
+	}
+
  .invalid {
 	text-decoration-line: underline;
   	text-decoration-style: wavy;
@@ -288,6 +309,19 @@ text-align: center;
      padding: 15px 60px;
     font-style: italic;
  }
+
+
+.instructions {
+     background-color: #f0f7fb;
+     border-left: solid 4px  #3498db;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+  }
+
+
+
 </style>
 """
 
@@ -324,8 +358,68 @@ $(img)
 end
 
 
-# ╔═╡ 0c025f44-574b-11eb-3049-33ad523ec6e4
+# ╔═╡ bec00462-596a-11eb-1694-076c78f2ba95
+# Compose HTML reporting on status of text cataloging
+function catalogcheck()
+	if citationmatches(catalogedtexts, textconfig) # citationcomplete()
+		md"> Summary of cataloged content"
+	else
+		
+		missingcats = catalogony(catalogedtexts, textconfig) #catalogonly()
+		catitems = map(c -> "<li>" * c.urn * "</li>", missingcats)
+		catlist = "<p>In catalog, but not <code>citation.cex</code>:</p><ul>" * join(catitems,"\n") * "</ul>"
+		cathtml = isempty(catitems) ? "" : catlist
+		
+		
+		missingcites = citationonly(catalogedtexts, textconfig)
+		citeitems = map(c -> "<li>" * c.urn * "</li>", missingcites)
+		citelist = "<p>In <code>citation.cex</code>, but not text catalog:</p><ul>" * join(citeitems,"\n") * "</ul>"
+		citehtml = isempty(citeitems) ? "" : citelist
+		
+		cataloginghtml = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨</h1>" *  cathtml * "\n" * citehtml * "</div>"
+		
+		
+		HTML(cataloginghtml)
+	end
+end
 
+# ╔═╡ c9652ac8-5974-11eb-2dd0-654e93786446
+begin
+	loadem
+	catalogcheck()
+end
+
+# ╔═╡ 4133cbbc-5971-11eb-0bcd-658721f886f1
+# Compose HTML reporting on correctness of file cataloging
+function fileinventory()
+	if filesmatch(editorsrepo, textconfig)
+		md""
+	else
+		missingfiles = filesonly(editorsrepo, textconfig)
+		if isempty(missingfiles)
+			notondisk = citedonly(editorsrepo, textconfig)
+			nofiletems = map(f -> "<li>" * f * "</li>", notondisk)
+			nofilelist = "<p>Configured files found on disk: </p><ul>" * join(nofiletems, "\n") * "</ul>"
+			nofilehtml = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨 </h1>" *
+				"<p>No files matching configured name:</p>" * nofilelist
+			HTML(nofilehtml)
+			
+		else 
+			fileitems = map(f -> "<li>" * f * "</li>", missingfiles)
+			filelist = "<p>Uncataloged files found on disk: </p><ul>" * join(fileitems,"\n") * "</ul>"
+			fileshtml = "<div class='warn'><h1>⚠️ Warning</h1>" *  filelist  * "</div>"
+			HTML(fileshtml)
+					
+		end
+
+	end
+end
+
+# ╔═╡ 925647c6-5974-11eb-1886-1fa2b12684f5
+begin
+	loadem
+	fileinventory()
+end
 
 # ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
 md"""
@@ -465,6 +559,8 @@ end
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
+# ╟─c9652ac8-5974-11eb-2dd0-654e93786446
+# ╟─925647c6-5974-11eb-1886-1fa2b12684f5
 # ╟─6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
 # ╟─0bd05af4-573b-11eb-1b90-31d469940e5b
 # ╟─4010cf78-573c-11eb-03cf-b7dd1ae23b60
@@ -510,7 +606,8 @@ end
 # ╟─0da08ada-574b-11eb-3d9a-11226200f537
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
-# ╟─0c025f44-574b-11eb-3049-33ad523ec6e4
+# ╟─bec00462-596a-11eb-1694-076c78f2ba95
+# ╠═4133cbbc-5971-11eb-0bcd-658721f886f1
 # ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
 # ╟─b899d304-574b-11eb-1d50-5b7813ea201e
 # ╟─356f7236-573c-11eb-18b5-2f5a6bfc545d
