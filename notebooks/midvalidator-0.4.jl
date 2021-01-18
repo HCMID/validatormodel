@@ -502,6 +502,9 @@ md"""
 md"Add these to `EditorsRepo`:"
 
 # ╔═╡ 70bc6cd0-596a-11eb-0449-bde0e666e2e2
+# Replace with
+# citationmatches(catalog, citationconfig)
+#
 # True if  1<->1 between citation entries and catalog
 function citationcomplete()
 	catalog = catalogedtexts[:,:urn]
@@ -511,6 +514,7 @@ function citationcomplete()
 end
 
 # ╔═╡ a52c1a1c-596b-11eb-286e-17533288c1a0
+#Replace with catalogony(catalog, citationconfig)
 # List texts in catalog but missing from citation
 function catalogonly()
 	catalog = catalogedtexts[:,:urn]
@@ -520,6 +524,7 @@ function catalogonly()
 end
 
 # ╔═╡ 3a8d3256-596c-11eb-11c6-077e342eb5d3
+# Replace with citationonly(catalog, textconfig)
 # List texts in catalog but missing from citation
 function citationonly()
 	catalog = catalogedtexts[:,:urn]
@@ -560,6 +565,7 @@ begin
 end
 
 # ╔═╡ 515f9706-5970-11eb-1664-396c70c439ac
+# Replace with filesmatch(repo, textconfig)
 # true if files on disk match configuration
 function filesmatch()
 	ondisk = xmlfiles(editorsrepo)
@@ -569,6 +575,7 @@ function filesmatch()
 end
 
 # ╔═╡ c60d88a4-5970-11eb-0148-e1b7110cbfe6
+# Replace with filesonly(repo, textconfig)
 # List texts in catalog but missing from citation
 function fileonly()
 	ondisk = xmlfiles(editorsrepo)
@@ -685,9 +692,9 @@ end
 # ╟─6dd532e6-5827-11eb-1dea-696e884652ac
 # ╟─015456be-5968-11eb-2829-1f516fe1255e
 # ╟─a83a1f8e-596f-11eb-1d2b-1f58c5042258
-# ╟─70bc6cd0-596a-11eb-0449-bde0e666e2e2
-# ╟─a52c1a1c-596b-11eb-286e-17533288c1a0
-# ╟─3a8d3256-596c-11eb-11c6-077e342eb5d3
-# ╟─515f9706-5970-11eb-1664-396c70c439ac
-# ╟─c60d88a4-5970-11eb-0148-e1b7110cbfe6
-# ╟─dbb97052-5970-11eb-0850-d5e2895444d6
+# ╠═70bc6cd0-596a-11eb-0449-bde0e666e2e2
+# ╠═a52c1a1c-596b-11eb-286e-17533288c1a0
+# ╠═3a8d3256-596c-11eb-11c6-077e342eb5d3
+# ╠═515f9706-5970-11eb-1664-396c70c439ac
+# ╠═c60d88a4-5970-11eb-0148-e1b7110cbfe6
+# ╠═dbb97052-5970-11eb-0850-d5e2895444d6
