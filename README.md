@@ -5,7 +5,7 @@ This is a template repository illustrating HC MID validation and verification us
 
 ## Status
 
-The validating notebook is in early stages of development.  The [project issue tracker](https://github.com/HCMID/validatormodel/issues) includes a 1.0 milestone identifying issues that need to be resolved before the notebook can be considered mature enough to consider a thorough validation of cross-project MID standards for editing projects.
+The validating notebook is in early stages of development.  The [project issue tracker](https://github.com/HCMID/validatormodel/issues) includes a 1.0 milestone identifying issues that need to be resolved before the notebook can be considered mature enough to constitute a thorough validation of cross-project MID standards for editing projects.
 
 ## Organization of repository
 
