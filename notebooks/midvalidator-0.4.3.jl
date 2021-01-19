@@ -17,6 +17,8 @@ end
 begin
 	import Pkg
 	Pkg.activate(".")
+	
+	#=
 	Pkg.add("PlutoUI")
 	Pkg.add("CitableText")
 	Pkg.add("CitableObject")
@@ -28,9 +30,8 @@ begin
 	Pkg.add("EditorsRepo")
 	Pkg.add("Orthography")
 	Pkg.add("EditionBuilders")
-	
+	=#
 
-	
 	using PlutoUI
 	using CitableText
 	using CitableObject
@@ -38,13 +39,11 @@ begin
 	using CitableTeiReaders
 	using CSV
 	using DataFrames
-	using HTTP
-	using EditorsRepo
-	using Orthography	
-	using Markdown
-	
 	using EditionBuilders
-
+	using EditorsRepo
+	using HTTP
+	using Markdown
+	using Orthography	
 
 end
 
@@ -169,6 +168,9 @@ end
 # ╔═╡ 0bd05af4-573b-11eb-1b90-31d469940e5b
 urnlist = catalogedtexts[:, :urn]
 
+# ╔═╡ 86d922d4-5a48-11eb-0b0b-2d5b0f3b37a5
+urnlist
+
 # ╔═╡ e3578474-573c-11eb-057f-27fc9eb9b519
 md"This is the `EditingRepository` built from these settings:"
 
@@ -180,7 +182,6 @@ uniquesurfaces = EditorsRepo.surfaces(editorsrepo)
 
 # ╔═╡ 2a84a042-5739-11eb-13f1-1d881f215521
 diplomaticpassages = begin
-	#diplomaticnodes(editorsrepo, urnlist[1])
 	diplomaticarrays = map(u -> diplomaticnodes(editorsrepo, u), urnlist)
 	reduce(vcat, diplomaticarrays)
 end
@@ -547,6 +548,7 @@ function tokenizeRow(row)
 end
 
 # ╔═╡ aa385f1a-5827-11eb-2319-6f84d3201a7e
+# Orthographic verification:
 # display highlighted tokens for verification
 begin
 	if surface == ""
@@ -559,6 +561,65 @@ begin
 		HTML(join(htmlout,"\n"))
 	end
 end
+
+# ╔═╡ 1c08c51a-5a3c-11eb-1097-2de01f01bcc8
+md"""
+
+---
+
+> ## Temporary material
+
+To be moved to `EdiorsRepo`
+
+"""
+
+# ╔═╡ a54e66c6-5a3d-11eb-1d84-cff03070e403
+function formatbroken(broken) 
+	#broken = invalidsymbols()
+	if isempty(broken)
+		md""
+	else
+		brokenlist = map(prop -> "<span class='highlight'>$(prop)</span>" , broken)
+
+		msg = "<p>The following values are invalid: " * join(brokenlist, ", ") * "</p>"
+		HTML(msg)
+	end
+end
+
+# ╔═╡ 33d0659c-5a3c-11eb-0aef-979e7c9b4493
+#=
+For one row of a dataframe, 
+Test o2converter, diplomatic, normlaized and orthography
+=#
+function invalidsymbols(r)
+	failedprops = Symbol[]
+	for prop in [:o2converter, :diplomatic, :normalized, :orthography]
+		try
+			eval(r[prop])
+		catch e
+			rslt = r[:urn].urn * " " * prop
+			push!(failedprops, rslt)
+		end
+	end
+	failedprops
+end
+
+
+# ╔═╡ a04d007c-5a3f-11eb-136d-59d8ac45266b
+begin
+	collected = []
+	for r in eachrow(textconfig)
+		bad = invalidsymbols(r)
+		if isempty(bad)
+		else
+			push!(collected, r[:urn])
+		end
+	end
+	collected
+end
+
+# ╔═╡ fe23ad74-5a3f-11eb-3de3-bd76f56a7437
+textconfig[1,:urn].urn
 
 # ╔═╡ Cell order:
 # ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
@@ -579,12 +640,13 @@ end
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
 # ╟─926873c8-5829-11eb-300d-b34796359491
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
-# ╟─aa385f1a-5827-11eb-2319-6f84d3201a7e
+# ╠═aa385f1a-5827-11eb-2319-6f84d3201a7e
 # ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
 # ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
 # ╟─562b460a-573a-11eb-321b-678429a06c0c
-# ╟─2a84a042-5739-11eb-13f1-1d881f215521
+# ╠═2a84a042-5739-11eb-13f1-1d881f215521
+# ╠═86d922d4-5a48-11eb-0b0b-2d5b0f3b37a5
 # ╟─9118b6d0-573a-11eb-323b-0347fef8d3e6
 # ╟─9974fadc-573a-11eb-10c4-13c589f5810b
 # ╟─100a1942-573c-11eb-211e-371998789bfa
@@ -624,3 +686,8 @@ end
 # ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
 # ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
 # ╟─6dd532e6-5827-11eb-1dea-696e884652ac
+# ╟─1c08c51a-5a3c-11eb-1097-2de01f01bcc8
+# ╠═a54e66c6-5a3d-11eb-1d84-cff03070e403
+# ╠═33d0659c-5a3c-11eb-0aef-979e7c9b4493
+# ╠═a04d007c-5a3f-11eb-136d-59d8ac45266b
+# ╠═fe23ad74-5a3f-11eb-3de3-bd76f56a7437

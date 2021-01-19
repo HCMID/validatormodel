@@ -128,9 +128,9 @@ version = "0.1.0"
 
 [[EditorsRepo]]
 deps = ["CSV", "CitableBase", "CitableObject", "CitablePhysicalText", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "EditionBuilders", "Orthography", "Test"]
-git-tree-sha1 = "3f4166178e60ee4f94b9774e2df85bb96d8b9fbf"
+git-tree-sha1 = "db873a8c35ac9d8fd6f47946efba2c1895b045bd"
 uuid = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
-version = "0.6.2"
+version = "0.6.3"
 
 [[EzXML]]
 deps = ["Printf", "XML2_jll"]
