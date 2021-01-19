@@ -338,7 +338,9 @@ function diplnode(urn)
 end
 
 # ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
-function mdForRow(row::DataFrameRow)
+# Compose markdown for one row of display interleaving citable
+# text passage and indexed image.
+function mdForDseRow(row::DataFrameRow)
 	citation = "**" * passagecomponent(row.passage)  * "** "
 
 	
@@ -386,7 +388,14 @@ end
 # ╔═╡ c9652ac8-5974-11eb-2dd0-654e93786446
 begin
 	loadem
-	catalogcheck()
+	try
+		catalogcheck()
+	catch e
+		msg = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨</h1>" *
+		"<p>One or more invalid CTS URNs in <code>catalog.cex</code></p></div>"
+		HTML(msg)
+	end
+		
 end
 
 # ╔═╡ 4133cbbc-5971-11eb-0bcd-658721f886f1
@@ -419,6 +428,71 @@ end
 begin
 	loadem
 	fileinventory()
+end
+
+# ╔═╡ 9fcf6ece-5a89-11eb-2f2a-9d03a433c597
+# Organize this better so it can be used from EditorsRepo
+#
+# Compose HTML report on bad configuration
+function configerrors()
+	repo = editorsrepo
+	arr = CSV.File(repo.root * "/" * repo.configs * "/citation.cex", skipto=2, delim="|", 
+	quotechar='&', escapechar='&') |> Array
+	urns = map(row -> CtsUrn(row[1]), arr)
+	files = map(row -> row[2], arr)
+	ohco2s = map(row -> row[3], arr)
+	dipls = map(row -> row[4], arr)
+	norms = map(row -> row[5], arr)
+	orthos = map(row -> row[6], arr)
+	df = DataFrame(urn = urns, file = files, 
+	o2converter = ohco2s, diplomatic = dipls,
+	normalized = norms, orthography = orthos)
+	missinglist = []
+	nrows, ncols = size(df)
+	
+	
+	for row in 1:nrows
+		for prop in [:o2converter, :normalized, :diplomatic, :orthography]
+			propvalue = df[row, prop]
+			try 
+				eval(Meta.parse(propvalue))
+			catch e
+				push!(missinglist, "<li><i><b>$(df[row,:urn].urn)</b></i> has bad value for <i>$(prop)</i>:   <span class='highlight'><i>$(propvalue)</i></span></li>" )
+			end
+		end
+				
+  	end
+
+	if isempty(missinglist)
+		""
+	else
+		"<div class='danger'><h2>🧨🧨 Configuration error  🧨🧨</h2><ul>" *
+		join(missinglist, "\n") * "</ul></h2>"
+
+	end
+end
+
+
+# ╔═╡ 5eb46332-5a8d-11eb-1bcd-41741622e15b
+# DISPLAY ERRORS IN CONFIGURARTION FILE
+begin
+	loadem
+	try 
+		errorreport = configerrors()
+		if isempty(errorreport)
+			md""
+		else
+			msg = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨</h1><p>" * 
+			errorreport * "</p></div>"
+			HTML(msg)
+		end
+	catch e
+		msg = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨</h1><p><b>$(e)</b></p></div>"
+		HTML(msg)
+	end
+	
+	
+
 end
 
 # ╔═╡ 9ac99da0-573c-11eb-080a-aba995c3fbbf
@@ -494,7 +568,7 @@ begin
 	else
 		cellout = []
 		for r in eachrow(surfaceDse)
-			push!(cellout, mdForRow(r))
+			push!(cellout, mdForDseRow(r))
 		end
 		Markdown.parse(join(cellout,"\n"))
 	end
@@ -562,70 +636,12 @@ begin
 	end
 end
 
-# ╔═╡ 1c08c51a-5a3c-11eb-1097-2de01f01bcc8
-md"""
-
----
-
-> ## Temporary material
-
-To be moved to `EdiorsRepo`
-
-"""
-
-# ╔═╡ a54e66c6-5a3d-11eb-1d84-cff03070e403
-function formatbroken(broken) 
-	#broken = invalidsymbols()
-	if isempty(broken)
-		md""
-	else
-		brokenlist = map(prop -> "<span class='highlight'>$(prop)</span>" , broken)
-
-		msg = "<p>The following values are invalid: " * join(brokenlist, ", ") * "</p>"
-		HTML(msg)
-	end
-end
-
-# ╔═╡ 33d0659c-5a3c-11eb-0aef-979e7c9b4493
-#=
-For one row of a dataframe, 
-Test o2converter, diplomatic, normlaized and orthography
-=#
-function invalidsymbols(r)
-	failedprops = Symbol[]
-	for prop in [:o2converter, :diplomatic, :normalized, :orthography]
-		try
-			eval(r[prop])
-		catch e
-			rslt = r[:urn].urn * " " * prop
-			push!(failedprops, rslt)
-		end
-	end
-	failedprops
-end
-
-
-# ╔═╡ a04d007c-5a3f-11eb-136d-59d8ac45266b
-begin
-	collected = []
-	for r in eachrow(textconfig)
-		bad = invalidsymbols(r)
-		if isempty(bad)
-		else
-			push!(collected, r[:urn])
-		end
-	end
-	collected
-end
-
-# ╔═╡ fe23ad74-5a3f-11eb-3de3-bd76f56a7437
-textconfig[1,:urn].urn
-
 # ╔═╡ Cell order:
 # ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
+# ╟─5eb46332-5a8d-11eb-1bcd-41741622e15b
 # ╟─c9652ac8-5974-11eb-2dd0-654e93786446
 # ╟─925647c6-5974-11eb-1886-1fa2b12684f5
 # ╟─6b4decf8-573b-11eb-3ef3-0196c9bb5b4b
@@ -675,6 +691,7 @@ textconfig[1,:urn].urn
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─bec00462-596a-11eb-1694-076c78f2ba95
 # ╟─4133cbbc-5971-11eb-0bcd-658721f886f1
+# ╟─9fcf6ece-5a89-11eb-2f2a-9d03a433c597
 # ╟─9ac99da0-573c-11eb-080a-aba995c3fbbf
 # ╟─b899d304-574b-11eb-1d50-5b7813ea201e
 # ╟─356f7236-573c-11eb-18b5-2f5a6bfc545d
@@ -685,8 +702,3 @@ textconfig[1,:urn].urn
 # ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
 # ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
 # ╟─6dd532e6-5827-11eb-1dea-696e884652ac
-# ╟─1c08c51a-5a3c-11eb-1097-2de01f01bcc8
-# ╠═a54e66c6-5a3d-11eb-1d84-cff03070e403
-# ╠═33d0659c-5a3c-11eb-0aef-979e7c9b4493
-# ╠═a04d007c-5a3f-11eb-136d-59d8ac45266b
-# ╠═fe23ad74-5a3f-11eb-3de3-bd76f56a7437
