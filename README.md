@@ -1,4 +1,4 @@
-# HC MID template repository, version` 0.4.1`
+# HC MID template repository, version` 0.4.2`
 
 
 This is a template repository illustrating HC MID validation and verification using an interactive Pluto notebook.
@@ -42,7 +42,7 @@ To minimize the setup you have to do, the notebook is configured to download and
 
 You can always find the current version of the MID validator notebook in this github repository.
 
-To update the standard MID validation in your repository, you need to update these three files in your project's `notebooks` directory:
+To update the standard MID validation in your editing project, you need to update three files in your project's `notebooks` directory:
 
 - `notebooks/Project.toml`
 - `notebooks/Manifest.toml`
