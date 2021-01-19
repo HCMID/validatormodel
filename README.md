@@ -37,6 +37,19 @@ Within Pluto, open the generic `midvalidator-VERSION.jl` notebook in the `notebo
 
 To minimize the setup you have to do, the notebook is configured to download and build the entire app each time you start it.  This means you don't need to have anything else preinstalled, but it also means that startup time is slow. (It can take up to 2 minutes on an older laptop.)  Once the notebook has started, it is very responsive even on older personal machines.
 
+
+## How do I update my validation notebook?
+
+You can always find the current version of the MID validator notebook in this github repository.
+
+To update the standard MID validation in your repository, you need to update these three files in your project's `notebooks` directory:
+
+- `notebooks/Project.toml`
+- `notebooks/Manifest.toml`
+- `notebooks/midvalidator-VERSION.jl`
+
+You may rename `midvalidator.jl` to anything you like; `Project.toml` and `Manifest.toml` must have exactly those names.
+
 ## Configuration files
 
 
