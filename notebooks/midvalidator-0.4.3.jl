@@ -180,13 +180,15 @@ uniquesurfaces = EditorsRepo.surfaces(editorsrepo)
 # ╔═╡ 2a84a042-5739-11eb-13f1-1d881f215521
 diplomaticpassages = begin
 	diplomaticarrays = map(u -> diplomaticnodes(editorsrepo, u), urnlist)
-	reduce(vcat, diplomaticarrays)
+	singlearray = reduce(vcat, diplomaticarrays)
+	filter(psg -> psg !== nothing, singlearray)
 end
 
 # ╔═╡ 9974fadc-573a-11eb-10c4-13c589f5810b
 normalizedpassages =  begin
 	normalizedarrays = map(u -> normalizednodes(editorsrepo, u), urnlist)
-	reduce(vcat, normalizedarrays)
+	onearray = reduce(vcat, normalizedarrays)
+	filter(psg -> psg !== nothing, onearray)
 end
 
 # ╔═╡ 175f2e58-573c-11eb-3a36-f3142c341d93
@@ -507,21 +509,12 @@ begin
 	end
 end
 
-# ╔═╡ f38d7b86-5a76-11eb-38af-13c6948d8f6e
-badrow = surfaceDse[1,:]
-
 # ╔═╡ aac2d102-5829-11eb-2e89-ad4510c25f28
 md"""
 
 > Formatting tokenized text for verifying orthography
 
 """
-
-# ╔═╡ 1ad10b36-5a77-11eb-3b42-a54af28c5fda
-orthographyforurn(textconfig, badrow.passage)
-
-# ╔═╡ 2d830b26-5a77-11eb-2adf-d7d40b6390ca
-diplnode(badrow.passage)
 
 # ╔═╡ 6dd532e6-5827-11eb-1dea-696e884652ac
 function formatToken(ortho, s)
@@ -562,6 +555,7 @@ begin
 	else
 		htmlout = []
 		for r in eachrow(surfaceDse)
+			
 			push!(htmlout, tokenizeRow(r))
 		end
 		HTML(join(htmlout,"\n"))
@@ -642,12 +636,11 @@ textconfig[1,:urn].urn
 # ╟─e08d5418-573b-11eb-2375-35a717b36a30
 # ╟─c9a3bd8c-573d-11eb-2034-6f608e8bf414
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
-# ╠═00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
 # ╟─926873c8-5829-11eb-300d-b34796359491
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
-# ╠═f38d7b86-5a76-11eb-38af-13c6948d8f6e
-# ╠═aa385f1a-5827-11eb-2319-6f84d3201a7e
+# ╟─aa385f1a-5827-11eb-2319-6f84d3201a7e
 # ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
 # ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
@@ -690,10 +683,8 @@ textconfig[1,:urn].urn
 # ╟─d9495f98-574b-11eb-2ee9-a38e09af22e6
 # ╟─e57c9326-573b-11eb-100c-ed7f37414d79
 # ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
-# ╠═1ad10b36-5a77-11eb-3b42-a54af28c5fda
-# ╠═2d830b26-5a77-11eb-2adf-d7d40b6390ca
-# ╠═bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
-# ╠═6dd532e6-5827-11eb-1dea-696e884652ac
+# ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
+# ╟─6dd532e6-5827-11eb-1dea-696e884652ac
 # ╟─1c08c51a-5a3c-11eb-1097-2de01f01bcc8
 # ╠═a54e66c6-5a3d-11eb-1d84-cff03070e403
 # ╠═33d0659c-5a3c-11eb-0aef-979e7c9b4493
