@@ -175,7 +175,10 @@ md"This is the `EditingRepository` built from these settings:"
 editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
 
 # ╔═╡ 547c4ffa-574b-11eb-3b6e-69fa417421fc
-uniquesurfaces = EditorsRepo.surfaces(editorsrepo)
+uniquesurfaces = begin
+	loadem
+	EditorsRepo.surfaces(editorsrepo)
+end
 
 # ╔═╡ 2a84a042-5739-11eb-13f1-1d881f215521
 diplomaticpassages = begin
