@@ -17,20 +17,6 @@ end
 begin
 	import Pkg
 	Pkg.activate(".")
-	
-	#=
-	Pkg.add("PlutoUI")
-	Pkg.add("CitableText")
-	Pkg.add("CitableObject")
-	Pkg.add("CitableImage")
-	Pkg.add("CitableTeiReaders")
-	Pkg.add("CSV")
-	Pkg.add("HTTP")
-	Pkg.add("DataFrames")
-	Pkg.add("EditorsRepo")
-	Pkg.add("Orthography")
-	Pkg.add("EditionBuilders")
-	=#
 
 	using PlutoUI
 	using CitableText
@@ -43,7 +29,8 @@ begin
 	using EditorsRepo
 	using HTTP
 	using Markdown
-	using Orthography	
+	using Orthography
+	using Query
 
 end
 
