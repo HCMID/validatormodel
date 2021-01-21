@@ -56,20 +56,28 @@ md"""
 ### Verify *completeness* of indexing
 
 
-*TBA*
+*Check completeness of indexing by following linked thumb to overlay view in the Image Citation Tool*
 """
 
 # ╔═╡ b5951d46-5c1c-11eb-2af9-116000308410
-md"*Width of thumbnail image*: $(@bind thumbht Slider(150:500, show_value=true))"
+md"*Height of thumbnail image*: $(@bind thumbht Slider(150:500, show_value=true))"
 
 
 # ╔═╡ 77acba86-5bf7-11eb-21ac-bb1d76532e04
 md"""
 ### Verify *accuracy* of indexing
+
+*Check that diplomatic text and indexed image correspond.*
+
+
 """
 
 # ╔═╡ f1f5643c-573d-11eb-1fd1-99c111eb523f
-md"*Maximum width of image*: $(@bind w Slider(200:1200, show_value=true))"
+md"""
+*Maximum width of image*: $(@bind w Slider(200:1200, show_value=true))
+
+---
+"""
 
 
 # ╔═╡ 13e8b16c-574c-11eb-13a6-61c5f05dfca2
@@ -575,34 +583,6 @@ begin
 	end
 end
 
-# ╔═╡ b0a23a54-5bf8-11eb-07dc-eba00196b4f7
-function completenessView()
-	# Group images witt ROI into a dictionary keyed by image
-	# WITHOUT RoI.
-	grouped = Dict()
-	for row in eachrow(surfaceDse)
-		trimmed = CitableObject.dropsubref(row.image)
-		if haskey(grouped, trimmed)
-			push!(grouped[trimmed], row.image)
-		else
-			grouped[trimmed] = [row.image]
-		end
-	end
-	
-	mdstrings = []
-	for k in keys(grouped)
-		thumb = markdownImage(k, iiifsvc, thumbht)
-		push!(mdstrings, thumb)
-	end
-	Markdown.parse(join(mdstrings, " "))
-	#linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
-	#markdownImage(img::Cite2Urn, service::IIIFservice, ht::Int=2000, caption::AbstractString="image") 
-	
-end
-
-# ╔═╡ b913d18e-5c1b-11eb-37d1-6b5f387ae248
-completenessView()
-
 # ╔═╡ 00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # display DSE records for verification
 begin
@@ -625,6 +605,36 @@ begin
 		md"*Verifying orthography of **$(nrow(surfaceDse))** citable text passages for $(objectcomponent(surfurn) )*"
 	end
 end
+
+# ╔═╡ b0a23a54-5bf8-11eb-07dc-eba00196b4f7
+# Compose markdown for thumbnail images linked to ICT with overlay of all
+# DSE regions.
+function completenessView()
+	# Group images witt ROI into a dictionary keyed by image
+	# WITHOUT RoI.
+	grouped = Dict()
+	for row in eachrow(surfaceDse)
+		trimmed = CitableObject.dropsubref(row.image)
+		if haskey(grouped, trimmed)
+			push!(grouped[trimmed], row.image)
+		else
+			grouped[trimmed] = [row.image]
+		end
+	end
+	
+	mdstrings = []
+	for k in keys(grouped)
+		thumb = markdownImage(k, iiifsvc, thumbht)
+		
+		params = map(img -> "urn=" * img.urn * "&", grouped[k]) 
+		lnk = ict * join(params,"") 
+		push!(mdstrings, "[$(thumb)]($(lnk))")
+	end
+	Markdown.parse(join(mdstrings, " "))	
+end
+
+# ╔═╡ b913d18e-5c1b-11eb-37d1-6b5f387ae248
+completenessView()
 
 # ╔═╡ aac2d102-5829-11eb-2e89-ad4510c25f28
 md"""
@@ -697,10 +707,9 @@ end
 # ╟─66454380-5bf7-11eb-2634-85d4b4b10243
 # ╟─b5951d46-5c1c-11eb-2af9-116000308410
 # ╟─b913d18e-5c1b-11eb-37d1-6b5f387ae248
-# ╠═b0a23a54-5bf8-11eb-07dc-eba00196b4f7
 # ╟─77acba86-5bf7-11eb-21ac-bb1d76532e04
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
-# ╠═00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
 # ╟─926873c8-5829-11eb-300d-b34796359491
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
@@ -736,6 +745,7 @@ end
 # ╟─17d926a4-574b-11eb-1180-9376c363f71c
 # ╟─0da08ada-574b-11eb-3d9a-11226200f537
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
+# ╟─b0a23a54-5bf8-11eb-07dc-eba00196b4f7
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─bec00462-596a-11eb-1694-076c78f2ba95
 # ╟─4133cbbc-5971-11eb-0bcd-658721f886f1
