@@ -25,12 +25,12 @@ begin
 	using CitableTeiReaders
 	using CSV
 	using DataFrames
+	using DataFramesMeta
 	using EditionBuilders
 	using EditorsRepo
 	using HTTP
 	using Markdown
 	using Orthography
-	using Query
 
 end
 
@@ -53,19 +53,23 @@ md"""
 # ╔═╡ 66454380-5bf7-11eb-2634-85d4b4b10243
 md"""
 
-### Verify completeness of indexing
+### Verify *completeness* of indexing
 
 
 *TBA*
 """
 
+# ╔═╡ b5951d46-5c1c-11eb-2af9-116000308410
+md"*Width of thumbnail image*: $(@bind thumbht Slider(150:500, show_value=true))"
+
+
 # ╔═╡ 77acba86-5bf7-11eb-21ac-bb1d76532e04
 md"""
-### Verify accuracy of indexing
+### Verify *accuracy* of indexing
 """
 
 # ╔═╡ f1f5643c-573d-11eb-1fd1-99c111eb523f
-md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
+md"*Maximum width of image*: $(@bind w Slider(200:1200, show_value=true))"
 
 
 # ╔═╡ 13e8b16c-574c-11eb-13a6-61c5f05dfca2
@@ -572,15 +576,32 @@ begin
 end
 
 # ╔═╡ b0a23a54-5bf8-11eb-07dc-eba00196b4f7
-begin
-	rois = surfaceDse[ : , :image]
-	imgs = map(img -> CitableObject.dropsubref(img), rois)
-
-	#=
-	md = markdownImage(imgs[1], iiifsvc,150,"norois")
-	Markdown.parse(md)
-	=#
+function completenessView()
+	# Group images witt ROI into a dictionary keyed by image
+	# WITHOUT RoI.
+	grouped = Dict()
+	for row in eachrow(surfaceDse)
+		trimmed = CitableObject.dropsubref(row.image)
+		if haskey(grouped, trimmed)
+			push!(grouped[trimmed], row.image)
+		else
+			grouped[trimmed] = [row.image]
+		end
+	end
+	
+	mdstrings = []
+	for k in keys(grouped)
+		thumb = markdownImage(k, iiifsvc, thumbht)
+		push!(mdstrings, thumb)
+	end
+	Markdown.parse(join(mdstrings, " "))
+	#linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
+	#markdownImage(img::Cite2Urn, service::IIIFservice, ht::Int=2000, caption::AbstractString="image") 
+	
 end
+
+# ╔═╡ b913d18e-5c1b-11eb-37d1-6b5f387ae248
+completenessView()
 
 # ╔═╡ 00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # display DSE records for verification
@@ -659,7 +680,7 @@ begin
 end
 
 # ╔═╡ Cell order:
-# ╠═0589b23a-5736-11eb-2cb7-8b122e101c35
+# ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
@@ -674,6 +695,8 @@ end
 # ╟─e08d5418-573b-11eb-2375-35a717b36a30
 # ╟─c9a3bd8c-573d-11eb-2034-6f608e8bf414
 # ╟─66454380-5bf7-11eb-2634-85d4b4b10243
+# ╟─b5951d46-5c1c-11eb-2af9-116000308410
+# ╟─b913d18e-5c1b-11eb-37d1-6b5f387ae248
 # ╠═b0a23a54-5bf8-11eb-07dc-eba00196b4f7
 # ╟─77acba86-5bf7-11eb-21ac-bb1d76532e04
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
