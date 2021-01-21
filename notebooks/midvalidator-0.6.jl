@@ -63,6 +63,20 @@ md"""
 
 """
 
+# ╔═╡ 66454380-5bf7-11eb-2634-85d4b4b10243
+md"""
+
+### Verify completeness of indexing
+
+
+*TBA*
+"""
+
+# ╔═╡ 77acba86-5bf7-11eb-21ac-bb1d76532e04
+md"""
+### Verify accuracy of indexing
+"""
+
 # ╔═╡ f1f5643c-573d-11eb-1fd1-99c111eb523f
 md"Maximum width of image: $(@bind w Slider(200:1200, show_value=true))"
 
@@ -177,7 +191,14 @@ editorsrepo = EditingRepository(reporoot, editions, dsedir, configdir)
 # ╔═╡ 547c4ffa-574b-11eb-3b6e-69fa417421fc
 uniquesurfaces = begin
 	loadem
-	EditorsRepo.surfaces(editorsrepo)
+	try
+		EditorsRepo.surfaces(editorsrepo)
+	catch e
+		msg = """<div class='danger'><h2>🧨🧨 Configuration error 🧨🧨</h2>
+		<p><b>$(e)</b></p></div>
+		"""
+		HTML(msg)
+	end
 end
 
 # ╔═╡ 2a84a042-5739-11eb-13f1-1d881f215521
@@ -563,6 +584,17 @@ begin
 	end
 end
 
+# ╔═╡ b0a23a54-5bf8-11eb-07dc-eba00196b4f7
+begin
+	rois = surfaceDse[ : , :image]
+	imgs = map(img -> CitableObject.dropsubref(img), rois)
+
+	#=
+	md = markdownImage(imgs[1], iiifsvc,150,"norois")
+	Markdown.parse(md)
+	=#
+end
+
 # ╔═╡ 00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # display DSE records for verification
 begin
@@ -640,7 +672,7 @@ begin
 end
 
 # ╔═╡ Cell order:
-# ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
+# ╠═0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
@@ -654,8 +686,11 @@ end
 # ╟─558e587a-573c-11eb-3364-632f0b0703da
 # ╟─e08d5418-573b-11eb-2375-35a717b36a30
 # ╟─c9a3bd8c-573d-11eb-2034-6f608e8bf414
+# ╟─66454380-5bf7-11eb-2634-85d4b4b10243
+# ╠═b0a23a54-5bf8-11eb-07dc-eba00196b4f7
+# ╟─77acba86-5bf7-11eb-21ac-bb1d76532e04
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
-# ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╠═00a9347c-573e-11eb-1b25-bb15d56c1b0d
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
 # ╟─926873c8-5829-11eb-300d-b34796359491
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
