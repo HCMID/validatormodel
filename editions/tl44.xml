@@ -17,8 +17,8 @@
   </teiHeader>
   <text>
     <body>
-        <div n="1">
-            <ab n="1">Text of line 1 on west side</ab>
+        <div n="northwest">
+            <ab n="1">Text of line 1 on northwest side</ab>
         </div>
     </body>
   </text>
