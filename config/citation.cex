@@ -1,4 +1,5 @@
 urn|file|converter|diplomatic|normalized|orthography
 urn:cts:trmilli:tl.3.v1:|tl3.xml|simpleAbReader|LiteralTextBuilder("Literal text builder","rawtext")|LiteralTextBuilder("Literal text builder","rawtext")|SimpleAscii()
 urn:cts:trmilli:tl.25.v1:|tl25.xml|simpleAbReader|LiteralTextBuilder("Literal text builder","rawtext")|LiteralTextBuilder("Literal text builder","rawtext")|SimpleAscii()
+urn:cts:trmilli:tl.44.v1:|tl44.xml|divAbReader|LiteralTextBuilder("Literal text builder","rawtext")|LiteralTextBuilder("Literal text builder","rawtext")|SimpleAscii()
 urn:cts:latinLit:phi0881.phi003.bern88:|aratea.xml|poeticLineReader|LiteralTextBuilder("Literal text builder","rawtext")|LiteralTextBuilder("Literal text builder","rawtext")|SimpleAscii()
