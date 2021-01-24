@@ -17,8 +17,8 @@
         <p>Directly edited from images</p>
       </sourceDesc>
     </fileDesc>
-  </teiHeader>
-  <text>
+  </teiHeader> 
+  <text> 
     <body>
     <!-- 4 verso -->
       <l n="256"><rs type="astro">Pliades</rs> suberunt: brevis et locus occupat omnes</l>
@@ -36,7 +36,7 @@
       <l n="270">quin etiam lyra <persName n="Mercury"> Mercurio </persName> dilecta deorum· </l>
       <l n="271">plurimulum accepte pro <choice><sic>hs</sic><corr>his</corr></choice> celo nitet ante labore·</l>
       <l n="272">deuictam effigiem plantae erecta quoque dextra;</l>
-      <l n="269">at cum surgit hiems· <unclear> pona </unclear> fugienda perritis; </l>
+      <l n="269">at cum surgit hiems: <unclear> pona </unclear> fugienda perritis; </l>
       <l n="273">tempora laeua premit· torti subiecta draconis</l>
       <l n="274">summa genu subuersa tenet qua se lyra uersat·</l>
       <l n="275">contra spectat auem·vel <persName n="Phoebe"> Phoebi </persName> qui fuit olim;</l>

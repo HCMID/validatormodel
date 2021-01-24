@@ -122,15 +122,15 @@ version = "0.26.1"
 
 [[EditionBuilders]]
 deps = ["CitableText", "DocStringExtensions", "Documenter", "EzXML", "Test"]
-git-tree-sha1 = "1dc7d14c300afeadc7fd5489069a6203bb73d7e6"
+git-tree-sha1 = "494bafa6b71c68ecb46f1aecb0b6f0460c9a7b22"
 uuid = "2fb66cca-c1f8-4a32-85dd-1a01a9e8cd8f"
-version = "0.1.0"
+version = "0.2.0"
 
 [[EditorsRepo]]
 deps = ["CSV", "CitableBase", "CitableObject", "CitablePhysicalText", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "EditionBuilders", "Orthography", "Test"]
-git-tree-sha1 = "d285b32a353d45d29eea227a4c57c7c922b6e347"
+git-tree-sha1 = "403ecef26abd46afcc1433d6bb5e7643c623f688"
 uuid = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
-version = "0.6.5"
+version = "0.6.6"
 
 [[EzXML]]
 deps = ["Printf", "XML2_jll"]
@@ -347,9 +347,9 @@ uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [[StructTypes]]
 deps = ["Dates", "UUIDs"]
-git-tree-sha1 = "d94235fcdc4a09649f263365c5f7e4ed4ba6ed34"
+git-tree-sha1 = "f66fdeb76151f8e6eb2d08e56e169b0915c8fff0"
 uuid = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
-version = "1.2.1"
+version = "1.2.2"
 
 [[Suppressor]]
 git-tree-sha1 = "a819d77f31f83e5792a76081eee1ea6342ab8787"
@@ -364,9 +364,9 @@ version = "1.0.0"
 
 [[Tables]]
 deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "LinearAlgebra", "TableTraits", "Test"]
-git-tree-sha1 = "97385160861239fc4e906cefdafb7c2e56fa7570"
+git-tree-sha1 = "8dc2bb7d3548e315d890706547b24502ed79504f"
 uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
-version = "1.3.0"
+version = "1.3.1"
 
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
