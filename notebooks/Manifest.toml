@@ -122,15 +122,15 @@ version = "0.26.1"
 
 [[EditionBuilders]]
 deps = ["CitableText", "DocStringExtensions", "Documenter", "EzXML", "Test"]
-git-tree-sha1 = "494bafa6b71c68ecb46f1aecb0b6f0460c9a7b22"
+git-tree-sha1 = "40fbc3bcb326684c64521a4796ce80cef13ba563"
 uuid = "2fb66cca-c1f8-4a32-85dd-1a01a9e8cd8f"
-version = "0.2.0"
+version = "0.2.1"
 
 [[EditorsRepo]]
 deps = ["CSV", "CitableBase", "CitableObject", "CitablePhysicalText", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "EditionBuilders", "Orthography", "Test"]
-git-tree-sha1 = "403ecef26abd46afcc1433d6bb5e7643c623f688"
+git-tree-sha1 = "4049ceba22887bddc6434e42954e519cd850181d"
 uuid = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
-version = "0.6.6"
+version = "0.6.7"
 
 [[EzXML]]
 deps = ["Printf", "XML2_jll"]
