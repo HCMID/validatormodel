@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.12.19
+# v0.12.20
 
 using Markdown
 using InteractiveUtils
@@ -14,9 +14,24 @@ macro bind(def, element)
 end
 
 # ╔═╡ 0589b23a-5736-11eb-2cb7-8b122e101c35
+# build environment
 begin
 	import Pkg
 	Pkg.activate(".")
+	Pkg.add("PlutoUI")
+	Pkg.add("CitableText")
+	Pkg.add("CitableObject")
+	Pkg.add("CitableImage")
+	Pkg.add("CitableTeiReaders")
+	Pkg.add("CSV")
+	Pkg.add("DataFrames")
+	Pkg.add("EditionBuilders")
+	Pkg.add("EditorsRepo")
+	Pkg.add("HTTP")
+	Pkg.add("Lycian")
+	Pkg.add("Markdown")
+	Pkg.add("Orthography")
+	
 
 	using PlutoUI
 	using CitableText
@@ -28,6 +43,7 @@ begin
 	using EditionBuilders
 	using EditorsRepo
 	using HTTP
+	using Lycian
 	using Markdown
 	using Orthography
 
@@ -688,8 +704,7 @@ function tokenizeRow(row)
 	else
 
 		txt = normednode(row.passage)
-		tokenstart::Array{OrthographicToken} = []
-		tokens = tokenize(ortho, txt,tokenstart)
+		tokens = ortho.tokenizer(txt)
 		highlighted = map(t -> formatToken(ortho, t.text), tokens)
 		html = join(highlighted, " ")
 		"<p>$(citation) $(html)</p>"
@@ -716,6 +731,12 @@ begin
 	end
 end
 
+# ╔═╡ 368a59bc-6216-11eb-3fc6-b37219dc38bc
+testrow = tokenizeRow(surfaceDse[1, :])
+
+# ╔═╡ 55429a0c-6216-11eb-0942-9711aef9c6c5
+orthographyforurn(textconfig,testrow.passage)
+
 # ╔═╡ Cell order:
 # ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
@@ -740,7 +761,7 @@ end
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
 # ╟─926873c8-5829-11eb-300d-b34796359491
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
-# ╟─aa385f1a-5827-11eb-2319-6f84d3201a7e
+# ╠═aa385f1a-5827-11eb-2319-6f84d3201a7e
 # ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
 # ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
@@ -786,5 +807,7 @@ end
 # ╟─d9495f98-574b-11eb-2ee9-a38e09af22e6
 # ╟─e57c9326-573b-11eb-100c-ed7f37414d79
 # ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
-# ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
+# ╠═bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
 # ╟─6dd532e6-5827-11eb-1dea-696e884652ac
+# ╠═368a59bc-6216-11eb-3fc6-b37219dc38bc
+# ╠═55429a0c-6216-11eb-0942-9711aef9c6c5
