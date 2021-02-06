@@ -49,8 +49,8 @@ begin
 
 	
 	
-	#Pkg.add(url="https://github.com/neelsmith/PolytonicGreek.jl")
-	#using PolytonicGreek
+	Pkg.add("PolytonicGreek")
+	using PolytonicGreek
 end
 
 # ╔═╡ 7ee4b3a6-573d-11eb-1470-67a241783b23
@@ -105,6 +105,9 @@ md"""
 > ## Verification:  orthography
 
 """
+
+# ╔═╡ d217b476-6854-11eb-2ceb-59dc1a061a49
+literaryGreek()
 
 # ╔═╡ a7903abe-5747-11eb-310e-ffe2ee128f1b
 md"""
@@ -686,6 +689,24 @@ md"""
 
 """
 
+# ╔═╡ 0a8fceec-6855-11eb-0196-7144880b34b4
+orthographyforurn(textconfig, surfaceDse[1,:].passage)
+
+# ╔═╡ c88ab736-6855-11eb-0bc2-27e1f0b82c71
+textconfig
+
+# ╔═╡ dcd7ff1e-6855-11eb-274e-2f8b2c18b722
+begin
+	tz = eval(Meta.parse("literaryGreek()"))
+	tz.tokenizer("μῆνιν")
+end
+
+# ╔═╡ 39858be6-6856-11eb-2e8a-8fc54d25a39d
+begin
+	iliad = CtsUrn("urn:cts:greekLit:tlg0012.tlg001.msA:")
+	orthographyforurn(textconfig, iliad)
+end
+
 # ╔═╡ 6dd532e6-5827-11eb-1dea-696e884652ac
 function formatToken(ortho, s)
 	if validstring(ortho, s)
@@ -730,7 +751,8 @@ begin
 			end
 			HTML(join(htmlout,"\n"))
 		catch e
-			html"<p class='danger'>Problem with XML edition: see message below</p>"
+			msg = "<p class='danger'>Problem with XML edition: $(e)</p>"
+			HTML(msg)
 		end
 	end
 end
@@ -759,7 +781,8 @@ end
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
 # ╟─926873c8-5829-11eb-300d-b34796359491
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
-# ╟─aa385f1a-5827-11eb-2319-6f84d3201a7e
+# ╠═aa385f1a-5827-11eb-2319-6f84d3201a7e
+# ╠═d217b476-6854-11eb-2ceb-59dc1a061a49
 # ╟─a7903abe-5747-11eb-310e-ffe2ee128f1b
 # ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
@@ -805,5 +828,9 @@ end
 # ╟─d9495f98-574b-11eb-2ee9-a38e09af22e6
 # ╟─e57c9326-573b-11eb-100c-ed7f37414d79
 # ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
-# ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
+# ╠═bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
+# ╠═0a8fceec-6855-11eb-0196-7144880b34b4
+# ╠═c88ab736-6855-11eb-0bc2-27e1f0b82c71
+# ╠═dcd7ff1e-6855-11eb-274e-2f8b2c18b722
+# ╠═39858be6-6856-11eb-2e8a-8fc54d25a39d
 # ╟─6dd532e6-5827-11eb-1dea-696e884652ac
