@@ -18,19 +18,7 @@ end
 begin
 	import Pkg
 	Pkg.activate(".")
-	Pkg.add("PlutoUI")
-	Pkg.add("CitableText")
-	Pkg.add("CitableObject")
-	Pkg.add("CitableImage")
-	Pkg.add("CitableTeiReaders")
-	Pkg.add("CSV")
-	Pkg.add("DataFrames")
-	Pkg.add("EditionBuilders")
-	Pkg.add("EditorsRepo")
-	Pkg.add("HTTP")
-	Pkg.add("Lycian")
-	Pkg.add("Markdown")
-	Pkg.add("Orthography")
+	Pkg.instantiate()
 	
 
 	using PlutoUI
@@ -46,10 +34,6 @@ begin
 	using Lycian
 	using Markdown
 	using Orthography
-
-	
-	
-	Pkg.add("PolytonicGreek")
 	using PolytonicGreek
 end
 
@@ -381,6 +365,9 @@ text-align: center;
 </style>
 """
 
+# ╔═╡ dda07b42-6d08-11eb-25bd-11ff1236777b
+
+
 # ╔═╡ 2d218414-573e-11eb-33dc-af1f2df86cf7
 # Select a node from list of diplomatic nodes
 function diplnode(urn)
@@ -416,7 +403,7 @@ end
 
 
 # ╔═╡ 4a129b20-5e80-11eb-0b5c-b915b2919db8
-# Select a node from list of diplomatic nodes
+# Select a node from list of normalized nodes
 function normednode(urn)
 	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), normalizedpassages)
 	if length(filtered) > 0
@@ -686,7 +673,21 @@ md"""
 
 """
 
+# ╔═╡ 64ff6412-6d0c-11eb-1622-d3940005a93c
+# Find URN for a single node from DSE record, which could
+# include a range with subrefs within a single node.
+function baseurn(urn::CtsUrn)
+	trimmed = CitableText.dropsubref(urn)
+	if CitableText.isrange(trimmed)
+		psg = CitableText.rangebegin(trimmed)
+		CitableText.addpassage(urn,psg)
+	else
+		urn
+	end
+end
+
 # ╔═╡ 6dd532e6-5827-11eb-1dea-696e884652ac
+# Wrap tokens with invalid orthography in HTML tag
 function formatToken(ortho, s)
 	if validstring(ortho, s)
 			s
@@ -699,20 +700,25 @@ end
 # Compose string of HTML for a tokenized row including
 # tagging of invalid tokens
 function tokenizeRow(row)
-
-	citation = "<b>" * passagecomponent(row.passage)  * "</b> "
+	reduced = baseurn(row.passage)
 	
-	ortho = orthographyforurn(textconfig, row.passage)
+	citation = "<b>" * passagecomponent(reduced)  * "</b> "
+	
+	ortho = orthographyforurn(textconfig, reduced)
+	
 	if ortho === nothing
 		"<p class='warn'>⚠️  $(citation). No text configured</p>"
 	else
-
-		txt = normednode(row.passage)
+	
+		txt = normednode(reduced)
+		
 		tokens = ortho.tokenizer(txt)
 		highlighted = map(t -> formatToken(ortho, t.text), tokens)
 		html = join(highlighted, " ")
-		"<p>$(citation) $(html)</p>"
-	end	
+		#"<p>$(citation) $(html)</p>"
+		"<p><b>$(reduced.urn)</b> $(html)</p>"
+	
+	end
 end
 
 # ╔═╡ aa385f1a-5827-11eb-2319-6f84d3201a7e
@@ -792,6 +798,7 @@ end
 # ╟─17d926a4-574b-11eb-1180-9376c363f71c
 # ╟─0da08ada-574b-11eb-3d9a-11226200f537
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
+# ╠═dda07b42-6d08-11eb-25bd-11ff1236777b
 # ╟─b0a23a54-5bf8-11eb-07dc-eba00196b4f7
 # ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─4a129b20-5e80-11eb-0b5c-b915b2919db8
@@ -806,5 +813,6 @@ end
 # ╟─d9495f98-574b-11eb-2ee9-a38e09af22e6
 # ╟─e57c9326-573b-11eb-100c-ed7f37414d79
 # ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
+# ╟─64ff6412-6d0c-11eb-1622-d3940005a93c
 # ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
 # ╟─6dd532e6-5827-11eb-1dea-696e884652ac
