@@ -35,6 +35,7 @@ begin
 	using Markdown
 	using Orthography
 	using PolytonicGreek
+	Pkg.status()
 end
 
 # ╔═╡ 7ee4b3a6-573d-11eb-1470-67a241783b23
@@ -204,7 +205,11 @@ uniquesurfaces = begin
 	end
 end
 
+# ╔═╡ 45f41428-72e1-11eb-3093-e788c33798f9
+ diplomaticnodes(editorsrepo, urnlist[1])
+
 # ╔═╡ 2a84a042-5739-11eb-13f1-1d881f215521
+#
 diplomaticpassages = begin
 	loadem
 	try 
@@ -220,7 +225,9 @@ end
 # ╔═╡ 2d218414-573e-11eb-33dc-af1f2df86cf7
 # Select a node from list of diplomatic nodes
 function diplnode(urn)
+	#depth = citationdepth(droppassage(urn)catalogedtexts)
 	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticpassages)
+
 	if length(filtered) > 0
 		filtered[1].text
 	else 
@@ -632,6 +639,22 @@ begin
 	end
 end
 
+# ╔═╡ 47b9191c-72e0-11eb-247f-99b5e749fec3
+begin
+	urn = surfaceDse[1,:passage]
+	depth = citationdepth(droppassage(urn), catalogedtexts)
+	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticpassages)
+	collapsePassageTo( dropversion(urn), depth)
+end
+
+# ╔═╡ b1a91252-72e0-11eb-17d1-d990143b26e9
+begin
+	u = surfaceDse[1,:passage]
+	cdepth = citationdepth(droppassage(u), catalogedtexts)
+	droppassage(u)
+	diplomaticpassages[1]
+end
+
 # ╔═╡ 4e8e8ada-729a-11eb-3392-1dabd56b930f
 begin
 	txturn = surfaceDse[1,:passage]
@@ -639,7 +662,13 @@ begin
 end
 
 # ╔═╡ 014927d6-72b0-11eb-1053-4ff21234f6c8
-citationdepth(txturn, catalogedtexts)
+#CitableText.citationdepth(txturn, catalogedtexts)
+begin
+	#catalogedtexts
+	
+	citationdepth(droppassage(txturn), catalogedtexts)
+end
+
 
 # ╔═╡ 926873c8-5829-11eb-300d-b34796359491
 begin
@@ -757,7 +786,7 @@ begin
 end
 
 # ╔═╡ Cell order:
-# ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
+# ╠═0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
@@ -776,7 +805,9 @@ end
 # ╟─b913d18e-5c1b-11eb-37d1-6b5f387ae248
 # ╟─77acba86-5bf7-11eb-21ac-bb1d76532e04
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
-# ╠═00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╠═47b9191c-72e0-11eb-247f-99b5e749fec3
+# ╠═b1a91252-72e0-11eb-17d1-d990143b26e9
 # ╠═2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╠═4e8e8ada-729a-11eb-3392-1dabd56b930f
 # ╠═014927d6-72b0-11eb-1053-4ff21234f6c8
@@ -790,7 +821,8 @@ end
 # ╟─37258038-574c-11eb-3acd-fb67db0bf1c8
 # ╟─61bf76b0-573c-11eb-1d23-855b40e06c02
 # ╟─562b460a-573a-11eb-321b-678429a06c0c
-# ╟─2a84a042-5739-11eb-13f1-1d881f215521
+# ╠═45f41428-72e1-11eb-3093-e788c33798f9
+# ╠═2a84a042-5739-11eb-13f1-1d881f215521
 # ╟─9118b6d0-573a-11eb-323b-0347fef8d3e6
 # ╟─9974fadc-573a-11eb-10c4-13c589f5810b
 # ╟─100a1942-573c-11eb-211e-371998789bfa
