@@ -217,6 +217,20 @@ diplomaticpassages = begin
 	end
 end
 
+# ╔═╡ 2d218414-573e-11eb-33dc-af1f2df86cf7
+# Select a node from list of diplomatic nodes
+function diplnode(urn)
+	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticpassages)
+	if length(filtered) > 0
+		filtered[1].text
+	else 
+		""
+	end
+end
+
+# ╔═╡ 9efc8670-729a-11eb-2703-55c503cb2f50
+diplomaticpassages
+
 # ╔═╡ 9974fadc-573a-11eb-10c4-13c589f5810b
 normalizedpassages =  begin
 	loadem
@@ -278,6 +292,29 @@ iiifsvc = begin
 	root = iiifroot
 	IIIFservice(baseurl, root)
 end
+
+# ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
+# Compose markdown for one row of display interleaving citable
+# text passage and indexed image.
+function mdForDseRow(row::DataFrameRow)
+	citation = "**" * passagecomponent(row.passage)  * "** "
+
+	
+	txt = diplnode(row.passage)
+	caption = passagecomponent(row.passage)
+	
+	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
+	
+	#urn
+	record = """$(citation) $(txt)
+	
+$(img)
+	
+---
+"""
+	record
+end
+
 
 # ╔═╡ 1fbce92e-5748-11eb-3417-579ae03a8d76
 md"""
@@ -366,40 +403,6 @@ text-align: center;
 """
 
 # ╔═╡ dda07b42-6d08-11eb-25bd-11ff1236777b
-
-
-# ╔═╡ 2d218414-573e-11eb-33dc-af1f2df86cf7
-# Select a node from list of diplomatic nodes
-function diplnode(urn)
-	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticpassages)
-	if length(filtered) > 0
-		filtered[1].text
-	else 
-		""
-	end
-end
-
-# ╔═╡ bf77d456-573d-11eb-05b6-e51fd2be98fe
-# Compose markdown for one row of display interleaving citable
-# text passage and indexed image.
-function mdForDseRow(row::DataFrameRow)
-	citation = "**" * passagecomponent(row.passage)  * "** "
-
-	
-	txt = diplnode(row.passage)
-	caption = passagecomponent(row.passage)
-	
-	img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
-	
-	#urn
-	record = """$(citation) $(txt)
-	
-$(img)
-	
----
-"""
-	record
-end
 
 
 # ╔═╡ 4a129b20-5e80-11eb-0b5c-b915b2919db8
@@ -595,7 +598,9 @@ end
 md"DSE records for selected surface:"
 
 # ╔═╡ e57c9326-573b-11eb-100c-ed7f37414d79
-surfaceDse = filter(row -> row.surface == surfurn, alldse)
+surfaceDse = begin
+	filter(row -> row.surface == surfurn, alldse)
+end
 
 # ╔═╡ c9a3bd8c-573d-11eb-2034-6f608e8bf414
 begin
@@ -626,6 +631,15 @@ begin
 	
 	end
 end
+
+# ╔═╡ 4e8e8ada-729a-11eb-3392-1dabd56b930f
+begin
+	txturn = surfaceDse[1,:passage]
+
+end
+
+# ╔═╡ 014927d6-72b0-11eb-1053-4ff21234f6c8
+citationdepth(txturn, catalogedtexts)
 
 # ╔═╡ 926873c8-5829-11eb-300d-b34796359491
 begin
@@ -762,7 +776,12 @@ end
 # ╟─b913d18e-5c1b-11eb-37d1-6b5f387ae248
 # ╟─77acba86-5bf7-11eb-21ac-bb1d76532e04
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
-# ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╠═00a9347c-573e-11eb-1b25-bb15d56c1b0d
+# ╠═2d218414-573e-11eb-33dc-af1f2df86cf7
+# ╠═4e8e8ada-729a-11eb-3392-1dabd56b930f
+# ╠═014927d6-72b0-11eb-1053-4ff21234f6c8
+# ╠═9efc8670-729a-11eb-2703-55c503cb2f50
+# ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
 # ╟─926873c8-5829-11eb-300d-b34796359491
 # ╟─1fde0332-574c-11eb-1baf-01d335b27912
@@ -797,10 +816,8 @@ end
 # ╟─1fbce92e-5748-11eb-3417-579ae03a8d76
 # ╟─17d926a4-574b-11eb-1180-9376c363f71c
 # ╟─0da08ada-574b-11eb-3d9a-11226200f537
-# ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╠═dda07b42-6d08-11eb-25bd-11ff1236777b
 # ╟─b0a23a54-5bf8-11eb-07dc-eba00196b4f7
-# ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─4a129b20-5e80-11eb-0b5c-b915b2919db8
 # ╟─bec00462-596a-11eb-1694-076c78f2ba95
 # ╟─4133cbbc-5971-11eb-0bcd-658721f886f1
@@ -811,7 +828,7 @@ end
 # ╟─cb954628-574b-11eb-29e3-a7f277852b45
 # ╟─901ae238-573c-11eb-15e2-3f7611dacab7
 # ╟─d9495f98-574b-11eb-2ee9-a38e09af22e6
-# ╟─e57c9326-573b-11eb-100c-ed7f37414d79
+# ╠═e57c9326-573b-11eb-100c-ed7f37414d79
 # ╟─aac2d102-5829-11eb-2e89-ad4510c25f28
 # ╟─64ff6412-6d0c-11eb-1622-d3940005a93c
 # ╟─bdeb6d18-5827-11eb-3f90-8dd9e41a8c0e
