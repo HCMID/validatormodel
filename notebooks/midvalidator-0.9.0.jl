@@ -235,9 +235,6 @@ function diplnode(urn)
 	end
 end
 
-# ╔═╡ 9efc8670-729a-11eb-2703-55c503cb2f50
-diplomaticpassages
-
 # ╔═╡ 9974fadc-573a-11eb-10c4-13c589f5810b
 normalizedpassages =  begin
 	loadem
@@ -639,37 +636,6 @@ begin
 	end
 end
 
-# ╔═╡ 47b9191c-72e0-11eb-247f-99b5e749fec3
-begin
-	urn = surfaceDse[1,:passage]
-	depth = citationdepth(droppassage(urn), catalogedtexts)
-	filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticpassages)
-	collapsePassageTo( dropversion(urn), depth)
-end
-
-# ╔═╡ b1a91252-72e0-11eb-17d1-d990143b26e9
-begin
-	u = surfaceDse[1,:passage]
-	cdepth = citationdepth(droppassage(u), catalogedtexts)
-	droppassage(u)
-	diplomaticpassages[1]
-end
-
-# ╔═╡ 4e8e8ada-729a-11eb-3392-1dabd56b930f
-begin
-	txturn = surfaceDse[1,:passage]
-
-end
-
-# ╔═╡ 014927d6-72b0-11eb-1053-4ff21234f6c8
-#CitableText.citationdepth(txturn, catalogedtexts)
-begin
-	#catalogedtexts
-	
-	citationdepth(droppassage(txturn), catalogedtexts)
-end
-
-
 # ╔═╡ 926873c8-5829-11eb-300d-b34796359491
 begin
 	if surface == ""
@@ -786,7 +752,7 @@ begin
 end
 
 # ╔═╡ Cell order:
-# ╠═0589b23a-5736-11eb-2cb7-8b122e101c35
+# ╟─0589b23a-5736-11eb-2cb7-8b122e101c35
 # ╟─fef09e62-5748-11eb-0944-c983eef98e1b
 # ╟─22980f4c-574b-11eb-171b-170c4a68b30b
 # ╟─7ee4b3a6-573d-11eb-1470-67a241783b23
@@ -806,12 +772,7 @@ end
 # ╟─77acba86-5bf7-11eb-21ac-bb1d76532e04
 # ╟─f1f5643c-573d-11eb-1fd1-99c111eb523f
 # ╟─00a9347c-573e-11eb-1b25-bb15d56c1b0d
-# ╠═47b9191c-72e0-11eb-247f-99b5e749fec3
-# ╠═b1a91252-72e0-11eb-17d1-d990143b26e9
-# ╠═2d218414-573e-11eb-33dc-af1f2df86cf7
-# ╠═4e8e8ada-729a-11eb-3392-1dabd56b930f
-# ╠═014927d6-72b0-11eb-1053-4ff21234f6c8
-# ╠═9efc8670-729a-11eb-2703-55c503cb2f50
+# ╟─2d218414-573e-11eb-33dc-af1f2df86cf7
 # ╟─bf77d456-573d-11eb-05b6-e51fd2be98fe
 # ╟─13e8b16c-574c-11eb-13a6-61c5f05dfca2
 # ╟─926873c8-5829-11eb-300d-b34796359491
