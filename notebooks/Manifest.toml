@@ -47,21 +47,21 @@ version = "0.2.1"
 
 [[CitablePhysicalText]]
 deps = ["CitableObject", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "Test"]
-git-tree-sha1 = "bb6cea258c75fc0066ca595e85c14072c8582cfb"
+git-tree-sha1 = "140047ee7ee51a83c93e6786cdbe781836d82b9b"
 uuid = "e38a874e-a7c2-4ff3-8dea-81ae2e5c9b07"
-version = "0.2.0"
+version = "0.2.1"
 
 [[CitableTeiReaders]]
 deps = ["CitableText", "DocStringExtensions", "Documenter", "EzXML", "Test"]
-git-tree-sha1 = "e533934dab12022718ff312d8c291f0a7c12e3f4"
+git-tree-sha1 = "333cf1ca4d2e06337a980e96b78eebe46b3898b5"
 uuid = "b4325aa9-906c-402e-9c3f-19ab8a88308e"
-version = "0.4.2"
+version = "0.5.0"
 
 [[CitableText]]
 deps = ["BenchmarkTools", "CSV", "CitableBase", "DataFrames", "DocStringExtensions", "Documenter", "HTTP", "Test"]
-git-tree-sha1 = "86b6a790e2af40f6c3db5d7bb12aacc223d6c9a5"
+git-tree-sha1 = "457b7f9bd625b2988ffc32f59122e778bdee4f2a"
 uuid = "41e66566-473b-49d4-85b7-da83b66615d8"
-version = "0.4.1"
+version = "0.6.0"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
@@ -75,9 +75,9 @@ uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
 version = "4.0.4"
 
 [[DataAPI]]
-git-tree-sha1 = "8ab70b4de35bb3b8cc19654f6b893cf5164f8ee8"
+git-tree-sha1 = "dfb3b7e89e395be1e25c2ad6d7690dc29cc53b1d"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
-version = "1.5.1"
+version = "1.6.0"
 
 [[DataFrames]]
 deps = ["CategoricalArrays", "Compat", "DataAPI", "Future", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrettyTables", "Printf", "REPL", "Reexport", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
@@ -116,21 +116,21 @@ version = "0.8.3"
 
 [[Documenter]]
 deps = ["Base64", "Dates", "DocStringExtensions", "IOCapture", "InteractiveUtils", "JSON", "LibGit2", "Logging", "Markdown", "REPL", "Test", "Unicode"]
-git-tree-sha1 = "b7715ae18be02110a8cf9cc8ed2ccdb1e3e3aba2"
+git-tree-sha1 = "21fb992ef1b28ff8f315354d3808ebf4a8fa6e45"
 uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-version = "0.26.1"
+version = "0.26.2"
 
 [[EditionBuilders]]
 deps = ["CitableText", "DocStringExtensions", "Documenter", "EzXML", "Test"]
-git-tree-sha1 = "3298946c5041ac9f4f26376f7b815f0eaa543331"
+git-tree-sha1 = "85a366f9825ecba5f356dfbcaf6df258f5da5055"
 uuid = "2fb66cca-c1f8-4a32-85dd-1a01a9e8cd8f"
-version = "0.2.10"
+version = "0.2.13"
 
 [[EditorsRepo]]
 deps = ["CSV", "CategoricalArrays", "CitableBase", "CitableObject", "CitablePhysicalText", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "EditionBuilders", "Lycian", "Orthography", "PolytonicGreek", "PooledArrays", "Test"]
-git-tree-sha1 = "fda67e66f26e602b3ee6c89a513700b57541c0f3"
+git-tree-sha1 = "44476eef27b598ae517aa5881897cfa8ea48a85b"
 uuid = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
-version = "0.6.13"
+version = "0.7.0"
 
 [[EzXML]]
 deps = ["Printf", "XML2_jll"]
@@ -220,9 +220,9 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[Lycian]]
 deps = ["DocStringExtensions", "Documenter", "Orthography", "Test"]
-git-tree-sha1 = "059ea8769fae60ae8641720f9a9af8cd9f944125"
+git-tree-sha1 = "92df94c85a6e84dfa786821a97418afc3fd16f06"
 uuid = "7c215dd3-d1b4-4517-b6c6-0123f1059a20"
-version = "0.1.3"
+version = "0.1.7"
 
 [[Markdown]]
 deps = ["Base64"]
@@ -256,9 +256,9 @@ uuid = "99f44e22-a591-53d1-9472-aa23ef4bd671"
 version = "1.1.0"
 
 [[OrderedCollections]]
-git-tree-sha1 = "d45739abcfc03b51f6a42712894a593f74c80a23"
+git-tree-sha1 = "4fa2ba51070ec13fcc7517db714445b4ab986bdf"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
-version = "1.3.3"
+version = "1.4.0"
 
 [[Orthography]]
 deps = ["DocStringExtensions", "Documenter", "Test"]
@@ -290,9 +290,9 @@ version = "0.6.11"
 
 [[PolytonicGreek]]
 deps = ["DocStringExtensions", "Documenter", "Orthography", "Test", "Unicode"]
-git-tree-sha1 = "71cdcc713f3c3867edcd64745f9d747d4d33594c"
+git-tree-sha1 = "7d0b1310564b18137fcef1bed778acc2af44ddfd"
 uuid = "72b824a7-2b4a-40fa-944c-ac4f345dc63a"
-version = "0.1.2"
+version = "0.2.0"
 
 [[PooledArrays]]
 deps = ["DataAPI"]
