@@ -44,6 +44,28 @@ md"INSERT UI HEADING"
 # ╔═╡ 1e9d6620-78f3-11eb-3f66-7748e8758e08
 @bind loadem Button("Load/reload data")
 
+# ╔═╡ 8b46877e-78f7-11eb-2bcd-dbe2ca896eb0
+md"""
+
+### Verify *completeness* of indexing
+
+
+*Check completeness of indexing by following linked thumb to overlay view in the Image Citation Tool*
+"""
+
+# ╔═╡ 9b3a7606-78f7-11eb-1248-3f48982089c3
+md"*Height of thumbnail image*: $(@bind thumbht Slider(150:500, show_value=true))"
+
+
+# ╔═╡ 7c715a3c-78f7-11eb-2be0-a71beeed0f3e
+md"""
+### Verify *accuracy* of indexing
+
+*Check that diplomatic text and indexed image correspond.*
+
+
+"""
+
 # ╔═╡ b4ab331a-78f6-11eb-33f9-c3fde8bed5d1
 md"""
 *Maximum width of image*: $(@bind w Slider(200:1200, show_value=true))
@@ -250,15 +272,60 @@ begin
 
 end
 
+# ╔═╡ 0150956a-78f8-11eb-3ebd-793eefb046cb
+
+# Compose markdown for thumbnail images linked to ICT with overlay of all
+# DSE regions.
+function completenessView(urn, repo)
+     
+	# Group images with ROI into a dictionary keyed by image
+	# WITHOUT RoI.
+	grouped = Dict()
+	for row in eachrow(surfaceDse(urn, repo))
+		trimmed = CitableObject.dropsubref(row.image)
+		if haskey(grouped, trimmed)
+			push!(grouped[trimmed], row.image)
+		else
+			grouped[trimmed] = [row.image]
+		end
+	end
+
+	mdstrings = []
+	for k in keys(grouped)
+		thumb = markdownImage(k, iiifsvc(), thumbht)
+		params = map(img -> "urn=" * img.urn * "&", grouped[k]) 
+		lnk = ict() * join(params,"") 
+		push!(mdstrings, "[$(thumb)]($(lnk))")
+		
+	end
+	join(mdstrings, " ")
+
+end
+
+# ╔═╡ 055b4a92-78f8-11eb-3b27-478beed207d2
+# Display link for completeness view
+begin
+	if isempty(surface)
+		md""
+	else
+		Markdown.parse(completenessView(Cite2Urn(surface), editorsrepo()))
+	end
+end
+
 # ╔═╡ Cell order:
 # ╟─d859973a-78f0-11eb-05a4-13dba1f0cb9e
 # ╟─493a315c-78f2-11eb-08e1-137d9a802802
 # ╟─1e9d6620-78f3-11eb-3f66-7748e8758e08
 # ╟─c91e8142-78f3-11eb-3410-0d65bfb93f0a
+# ╟─8b46877e-78f7-11eb-2bcd-dbe2ca896eb0
+# ╟─9b3a7606-78f7-11eb-1248-3f48982089c3
+# ╟─055b4a92-78f8-11eb-3b27-478beed207d2
+# ╟─7c715a3c-78f7-11eb-2be0-a71beeed0f3e
 # ╟─b4ab331a-78f6-11eb-33f9-c3fde8bed5d1
 # ╟─b4a23c4c-78f4-11eb-20d3-71eac58097c2
 # ╟─6f96dc0c-78f6-11eb-2894-f7c474078043
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
+# ╟─0150956a-78f8-11eb-3ebd-793eefb046cb
 # ╟─5734dd3a-78f6-11eb-3c69-35eabab3ac86
 # ╟─fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
 # ╟─669b0cc2-78f1-11eb-1050-eb5f80ff9aba
@@ -279,5 +346,5 @@ end
 # ╟─58cdfb8e-78f3-11eb-2adb-7518ff306e2a
 # ╟─a1c93e66-78f3-11eb-2ffc-3f5becceedc8
 # ╟─37e5ea20-78f4-11eb-1dff-c36418158c7c
-# ╠═cc19dac4-78f6-11eb-2269-453e2b1664fd
-# ╠═d1969604-78f6-11eb-3231-1570919758aa
+# ╟─cc19dac4-78f6-11eb-2269-453e2b1664fd
+# ╟─d1969604-78f6-11eb-3231-1570919758aa

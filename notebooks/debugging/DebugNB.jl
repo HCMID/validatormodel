@@ -16,7 +16,7 @@ using PolytonicGreek
 
 export editorsrepo, catalogedtexts, catalogedurns
 export diplpassages, diplnode
-
+export completenessView
 
 
 
@@ -85,7 +85,7 @@ function uniquesurfaces(editorsrepo)
 end
 
 function surfacemenu(editorsrepo)
-	loadem
+	#loadem
 	surfurns = EditorsRepo.surfaces(editorsrepo)
 	surflist = map(u -> u.urn, surfurns)
 	# Add a blank entry so popup menu can come up without a selection
@@ -94,9 +94,57 @@ end
 
 
 
-function surfaceDse(repo)
-    alldse = dse_df(editorsrepo())
+function surfaceDse(surfurn, repo)
+    alldse = dse_df(repo)
 	filter(row -> row.surface == surfurn, alldse)
 end
+
+# urn is a surface urn
+function completenessView(urn, repo)
+     
+	# Group images with ROI into a dictionary keyed by image
+	# WITHOUT RoI.
+	grouped = Dict()
+	for row in eachrow(surfaceDse(urn, repo))
+		trimmed = CitableObject.dropsubref(row.image)
+		if haskey(grouped, trimmed)
+			push!(grouped[trimmed], row.image)
+		else
+			grouped[trimmed] = [row.image]
+		end
+	end
+
+    println("KEYS: ", keys(grouped))
+	mdstrings = []
+	for k in keys(grouped)
+		
+		thumb = markdownImage(k, iiifsvc(), 150)
+		#push!(mdstrings,"THUMB: " * thumb)
+
+		params = map(img -> "urn=" * img.urn * "&", grouped[k]) 
+        println(" PARAMS ", params)
+		
+		
+		lnk = ict() * join(params,"") 
+		push!(mdstrings, "[$(thumb)]($(lnk))")
+				
+		
+	end
+	#Markdown.parse(join(mdstrings, " "))	
+	join(mdstrings, " ")
+
+end
+
+
+function iiifsvc()
+	IIIFservice("http://www.homermultitext.org/iipsrv",
+	"/project/homer/pyramidal/deepzoom"
+		)
+end
+
+function ict()
+	"http://www.homermultitext.org/ict2/?"
+end
+
 
 end
