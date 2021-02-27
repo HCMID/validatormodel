@@ -15,10 +15,11 @@ using Orthography
 using PolytonicGreek
 
 export editorsrepo, catalogedtexts, catalogedurns
-export diplpassages, diplnode
+export diplpassages, diplnode, normednode, normedpassages
 export completenessView
+export surfacemenu, surfaceDse, uniquesurfaces
 
-
+export tokenizeRow
 
 
 function editorsrepo() 
@@ -146,5 +147,79 @@ function ict()
 	"http://www.homermultitext.org/ict2/?"
 end
 
+
+
+# Compose string of HTML for a tokenized row including
+# tagging of invalid tokens
+function tokenizeRow(row, editorsrepo)
+    textconfig = citation_df(editorsrepo)
+
+
+	reduced = baseurn(row.passage)
+	citation = "<b>" * passagecomponent(reduced)  * "</b> "
+	ortho = orthographyforurn(textconfig, reduced)
+	
+	if ortho === nothing
+		"<p class='warn'>⚠️  $(citation). No text configured</p>"
+	else
+	
+		txt = normednode(reduced, normedpassages(editorsrepo))
+		
+		tokens = ortho.tokenizer(txt)
+		highlighted = map(t -> formatToken(ortho, t.text), tokens)
+		html = join(highlighted, " ")
+		#"<p>$(citation) $(html)</p>"
+		"<p><b>$(reduced.urn)</b> $(html)</p>"
+	
+	end
+end
+
+
+function baseurn(urn::CtsUrn)
+	trimmed = CitableText.dropsubref(urn)
+	if CitableText.isrange(trimmed)
+		psg = CitableText.rangebegin(trimmed)
+		CitableText.addpassage(urn,psg)
+	else
+		urn
+	end
+end
+
+
+# Select a node from list of normalized nodes
+function normednode(urn, normalizedpassages)
+    generalized = dropversion(urn)
+    filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), normalizedpassages)
+	#filtered = filter(cn -> generalized == dropversion(urn), normalizedpassages)
+    dropref = filter(cn -> ! isref(cn.urn), filtered)
+    
+	if length(dropref) > 0
+        content = collect(map(n -> n.text, dropref))
+        join(content, "\n")
+		#filtered[1].text
+	else 
+		""
+	end
+end
+
+function normedpassages(editorsrepo)
+    urnlist = texturns(editorsrepo)
+	try 
+		normedarrays = map(u -> normalizednodes(editorsrepo, u), urnlist)
+		singlearray = reduce(vcat, normedarrays)
+		filter(psg -> psg !== nothing, singlearray)
+	catch e
+		msg = "<div class='danger'><h1>🧨🧨 Markup error 🧨🧨</h1><p><b>$(e)</b></p></div>"
+		HTML(msg)
+	end
+end
+
+function formatToken(ortho, s)
+	if validstring(ortho, s)
+			s
+	else
+		"""<span class='invalid'>$(s)</span>"""
+	end
+end
 
 end
