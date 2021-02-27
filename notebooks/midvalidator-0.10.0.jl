@@ -44,6 +44,13 @@ md"INSERT UI HEADING"
 # ╔═╡ 1e9d6620-78f3-11eb-3f66-7748e8758e08
 @bind loadem Button("Load/reload data")
 
+# ╔═╡ b4ab331a-78f6-11eb-33f9-c3fde8bed5d1
+md"""
+*Maximum width of image*: $(@bind w Slider(200:1200, show_value=true))
+
+"""
+
+
 # ╔═╡ 6f96dc0c-78f6-11eb-2894-f7c474078043
 md"""
 
@@ -137,28 +144,6 @@ function diplnode(urn, repo)
 	end
 end
 
-# ╔═╡ 06d139d4-78f5-11eb-0247-df4126777208
-# Compose markdown for one row of display interleaving citable
-# text passage and indexed image.
-function mdForDseRow(row::DataFrameRow)
-	citation = "**" * passagecomponent(row.passage)  * "** "
-
-	
-	txt = diplnode(row.passage, editorsrepo())
-	caption = passagecomponent(row.passage)
-	
-	#img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
-	
-	#urn
-	record = """$(citation) $(txt)
-"""	
-#$(img)\
-#	
-#---
-#"""
-	record
-end
-
 # ╔═╡ 59496248-78f2-11eb-13f0-29da2e554f5f
 diplnode(CtsUrn("urn:cts:greekLit:tlg5026.e3.hmt:"), editorsrepo())
 
@@ -204,6 +189,43 @@ function surfaceDse(surfurn, repo)
 	filter(row -> row.surface == surfurn, alldse)
 end
 
+# ╔═╡ 40fe73e8-78f4-11eb-33fd-f9f2c78db1cf
+surfaceDse(Cite2Urn("urn:cite2:hmt:e3.v1:124r"),editorsrepo())
+
+# ╔═╡ cc19dac4-78f6-11eb-2269-453e2b1664fd
+function ict()
+	"http://www.homermultitext.org/ict2/?"
+end
+
+# ╔═╡ d1969604-78f6-11eb-3231-1570919758aa
+function iiifsvc()
+	IIIFservice("http://www.homermultitext.org/iipsrv",
+	"/project/homer/pyramidal/deepzoom"
+		)
+end
+
+# ╔═╡ 06d139d4-78f5-11eb-0247-df4126777208
+# Compose markdown for one row of display interleaving citable
+# text passage and indexed image.
+function mdForDseRow(row::DataFrameRow)
+	citation = "**" * passagecomponent(row.passage)  * "** "
+
+	
+	txt = diplnode(row.passage, editorsrepo())
+	caption = passagecomponent(row.passage)
+	
+	img = linkedMarkdownImage(ict(), row.image, iiifsvc(), w, caption)
+	
+	#urn
+	record = """$(citation) $(txt)
+
+$(img)
+
+---
+"""
+	record
+end
+
 # ╔═╡ b4a23c4c-78f4-11eb-20d3-71eac58097c2
 # Display for visual validation of DSE indexing
 begin
@@ -228,14 +250,12 @@ begin
 
 end
 
-# ╔═╡ 40fe73e8-78f4-11eb-33fd-f9f2c78db1cf
-surfaceDse(Cite2Urn("urn:cite2:hmt:e3.v1:124r"),editorsrepo())
-
 # ╔═╡ Cell order:
 # ╟─d859973a-78f0-11eb-05a4-13dba1f0cb9e
 # ╟─493a315c-78f2-11eb-08e1-137d9a802802
 # ╟─1e9d6620-78f3-11eb-3f66-7748e8758e08
 # ╟─c91e8142-78f3-11eb-3410-0d65bfb93f0a
+# ╟─b4ab331a-78f6-11eb-33f9-c3fde8bed5d1
 # ╟─b4a23c4c-78f4-11eb-20d3-71eac58097c2
 # ╟─6f96dc0c-78f6-11eb-2894-f7c474078043
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
@@ -249,7 +269,7 @@ surfaceDse(Cite2Urn("urn:cite2:hmt:e3.v1:124r"),editorsrepo())
 # ╠═6482a0ea-78f3-11eb-1f0d-b9803c01e70c
 # ╠═af847106-78f3-11eb-153b-0312f0390fdc
 # ╠═40fe73e8-78f4-11eb-33fd-f9f2c78db1cf
-# ╟─6db097fc-78f1-11eb-0713-59bf9132af2e
+# ╠═6db097fc-78f1-11eb-0713-59bf9132af2e
 # ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
 # ╟─7f130fb6-78f1-11eb-3143-a7208d3a9559
 # ╟─e45a445c-78f1-11eb-3ef5-81b1b7adec63
@@ -259,3 +279,5 @@ surfaceDse(Cite2Urn("urn:cite2:hmt:e3.v1:124r"),editorsrepo())
 # ╟─58cdfb8e-78f3-11eb-2adb-7518ff306e2a
 # ╟─a1c93e66-78f3-11eb-2ffc-3f5becceedc8
 # ╟─37e5ea20-78f4-11eb-1dff-c36418158c7c
+# ╠═cc19dac4-78f6-11eb-2269-453e2b1664fd
+# ╠═d1969604-78f6-11eb-3231-1570919758aa
