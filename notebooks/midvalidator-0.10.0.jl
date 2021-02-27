@@ -44,6 +44,13 @@ md"INSERT UI HEADING"
 # ╔═╡ 1e9d6620-78f3-11eb-3f66-7748e8758e08
 @bind loadem Button("Load/reload data")
 
+# ╔═╡ 8331f0b2-7900-11eb-2496-117104c3cfc1
+md"""
+
+> ## Verification: DSE indexing
+
+"""
+
 # ╔═╡ 8b46877e-78f7-11eb-2bcd-dbe2ca896eb0
 md"""
 
@@ -72,6 +79,13 @@ md"""
 
 """
 
+
+# ╔═╡ 70f42154-7900-11eb-325d-9b20517cb744
+md"""
+
+> ## Verification:  orthography
+
+"""
 
 # ╔═╡ 6f96dc0c-78f6-11eb-2894-f7c474078043
 md"""
@@ -141,11 +155,42 @@ end
 # ╔═╡ 2cad3228-78f2-11eb-37ec-03356d4f3f35
 editorsrepo() |> diplpassages
 
+# ╔═╡ 85119632-7903-11eb-3291-078d8c56087c
+function normedpassages(editorsrepo)
+    urnlist = texturns(editorsrepo)
+	try 
+		normedarrays = map(u -> normalizednodes(editorsrepo, u), urnlist)
+		singlearray = reduce(vcat, normedarrays)
+		filter(psg -> psg !== nothing, singlearray)
+	catch e
+		msg = "<div class='danger'><h1>🧨🧨 Markup error 🧨🧨</h1><p><b>$(e)</b></p></div>"
+		HTML(msg)
+	end
+end
+
 # ╔═╡ b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
 # True if last component of CTS URN passage is "ref"
 function isref(urn::CtsUrn)::Bool
     # True if last part of 
     passageparts(urn)[end] == "ref"
+end
+
+# ╔═╡ 81656522-7903-11eb-2ed7-53a05f05ebd6
+
+# Select a node from list of normalized nodes
+function normednode(urn, normalizedpassages)
+    generalized = dropversion(urn)
+    filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), normalizedpassages)
+	#filtered = filter(cn -> generalized == dropversion(urn), normalizedpassages)
+    dropref = filter(cn -> ! isref(cn.urn), filtered)
+    
+	if length(dropref) > 0
+        content = collect(map(n -> n.text, dropref))
+        join(content, "\n")
+		#filtered[1].text
+	else 
+		""
+	end
 end
 
 # ╔═╡ 5c472d86-78f2-11eb-2ead-5196f07a5869
@@ -312,17 +357,115 @@ begin
 	end
 end
 
+# ╔═╡ 36599fea-7902-11eb-2524-3bd9026f017c
+# Find URN for a single node from DSE record, which could
+# include a range with subrefs within a single node.
+function baseurn(urn::CtsUrn)
+	trimmed = CitableText.dropsubref(urn)
+	if CitableText.isrange(trimmed)
+		psg = CitableText.rangebegin(trimmed)
+		CitableText.addpassage(urn,psg)
+	else
+		urn
+	end
+end
+
+# ╔═╡ 42d2a0a4-7901-11eb-1b3b-af1b40611c19
+function tokenizeRow(row, editorsrepo)
+    textconfig = citation_df(editorsrepo)
+
+
+	reduced = baseurn(row.passage)
+	citation = "<b>" * passagecomponent(reduced)  * "</b> "
+	ortho = orthographyforurn(textconfig, reduced)
+	
+	if ortho === nothing
+		"<p class='warn'>⚠️  $(citation). No text configured</p>"
+	else
+	
+		txt = normednode(reduced, normedpassages(editorsrepo()))
+
+		#=
+		tokens = ortho.tokenizer(txt)
+		highlighted = map(t -> formatToken(ortho, t.text), tokens)
+		html = join(highlighted, " ")
+
+		"<p><b>$(reduced.urn)</b> $(html)</p>"
+	=#
+	end
+end
+
+# ╔═╡ af687a7e-7901-11eb-15e3-7be1f7879910
+function orthoView(repo)
+	if surface == ""
+		md""
+		
+	else
+		sdse = surfaceDse(Cite2Urn(surface), repo)
+		
+		htmlout = []
+		try 
+			for r in eachrow(sdse)
+				push!(htmlout, tokenizeRow(r, repo))
+			end
+			HTML(join(htmlout,"\n"))
+		catch e
+			msg = "<p class='danger'>Problem with XML edition: $(e)</p>"
+			HTML(msg)
+		end
+	end
+end
+
+# ╔═╡ 7a11f584-7905-11eb-0ea6-1b8543a4e471
+begin
+	#orthoView(editorsrepo())
+	sdse = surfaceDse(Cite2Urn(surface), editorsrepo())
+	htmlout = []
+	try 
+		for r in eachrow(sdse)
+			push!(htmlout, tokenizeRow(r, editorsrepo()))
+		end
+	catch  e
+		md"Error. $(e)"
+	end
+end
+
+# ╔═╡ 10e536bc-7906-11eb-3a08-0565d23cf67b
+onedse = begin
+	surfdf = surfaceDse(Cite2Urn(surface), editorsrepo())
+	onerow = surfdf[1, :]
+	tokenizeRow(onerow, editorsrepo())
+end
+
+
+# ╔═╡ 283df9ae-7904-11eb-1b77-b74be19a859c
+# Wrap tokens with invalid orthography in HTML tag
+function formatToken(ortho, s)
+	if validstring(ortho, s)
+			s
+	else
+		"""<span class='invalid'>$(s)</span>"""
+	end
+end
+
 # ╔═╡ Cell order:
 # ╟─d859973a-78f0-11eb-05a4-13dba1f0cb9e
 # ╟─493a315c-78f2-11eb-08e1-137d9a802802
 # ╟─1e9d6620-78f3-11eb-3f66-7748e8758e08
 # ╟─c91e8142-78f3-11eb-3410-0d65bfb93f0a
+# ╟─8331f0b2-7900-11eb-2496-117104c3cfc1
 # ╟─8b46877e-78f7-11eb-2bcd-dbe2ca896eb0
 # ╟─9b3a7606-78f7-11eb-1248-3f48982089c3
 # ╟─055b4a92-78f8-11eb-3b27-478beed207d2
 # ╟─7c715a3c-78f7-11eb-2be0-a71beeed0f3e
 # ╟─b4ab331a-78f6-11eb-33f9-c3fde8bed5d1
 # ╟─b4a23c4c-78f4-11eb-20d3-71eac58097c2
+# ╟─70f42154-7900-11eb-325d-9b20517cb744
+# ╟─af687a7e-7901-11eb-15e3-7be1f7879910
+# ╟─42d2a0a4-7901-11eb-1b3b-af1b40611c19
+# ╠═81656522-7903-11eb-2ed7-53a05f05ebd6
+# ╠═7a11f584-7905-11eb-0ea6-1b8543a4e471
+# ╠═10e536bc-7906-11eb-3a08-0565d23cf67b
 # ╟─6f96dc0c-78f6-11eb-2894-f7c474078043
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
 # ╟─0150956a-78f8-11eb-3ebd-793eefb046cb
@@ -336,15 +479,18 @@ end
 # ╠═6482a0ea-78f3-11eb-1f0d-b9803c01e70c
 # ╠═af847106-78f3-11eb-153b-0312f0390fdc
 # ╠═40fe73e8-78f4-11eb-33fd-f9f2c78db1cf
-# ╠═6db097fc-78f1-11eb-0713-59bf9132af2e
+# ╟─6db097fc-78f1-11eb-0713-59bf9132af2e
 # ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
 # ╟─7f130fb6-78f1-11eb-3143-a7208d3a9559
 # ╟─e45a445c-78f1-11eb-3ef5-81b1b7adec63
 # ╟─1829efee-78f2-11eb-06bd-ddad8fb26622
 # ╟─5c472d86-78f2-11eb-2ead-5196f07a5869
+# ╠═85119632-7903-11eb-3291-078d8c56087c
 # ╟─b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
 # ╟─58cdfb8e-78f3-11eb-2adb-7518ff306e2a
 # ╟─a1c93e66-78f3-11eb-2ffc-3f5becceedc8
 # ╟─37e5ea20-78f4-11eb-1dff-c36418158c7c
 # ╟─cc19dac4-78f6-11eb-2269-453e2b1664fd
 # ╟─d1969604-78f6-11eb-3231-1570919758aa
+# ╟─36599fea-7902-11eb-2524-3bd9026f017c
+# ╟─283df9ae-7904-11eb-1b77-b74be19a859c
