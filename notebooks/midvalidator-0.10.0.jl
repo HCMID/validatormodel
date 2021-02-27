@@ -96,9 +96,77 @@ md"""
 
 """
 
+# ╔═╡ ac2d4f3c-7925-11eb-3f8c-957b9de49d88
+css = html"""
+<style>
+.danger {
+     background-color: #fbf0f0;
+     border-left: solid 4px #db3434;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+	  }
+.warn {
+     background-color: 	#ffeeab;
+     border-left: solid 4px  black;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+  }
+
+  .danger h1 {
+	color: red;
+	}
+
+ .invalid {
+	text-decoration-line: underline;
+  	text-decoration-style: wavy;
+  	text-decoration-color: red;
+}
+ .center {
+text-align: center;
+}
+.highlight {
+  background: yellow;  
+}
+.urn {
+	color: silver;
+}
+  .note { -moz-border-radius: 6px;
+     -webkit-border-radius: 6px;
+     background-color: #eee;
+     background-image: url(../Images/icons/Pencil-48.png);
+     background-position: 9px 0px;
+     background-repeat: no-repeat;
+     border: solid 1px black;
+     border-radius: 6px;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+    font-style: italic;
+ }
+
+
+.instructions {
+     background-color: #f0f7fb;
+     border-left: solid 4px  #3498db;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+  }
+
+
+
+</style>
+"""
+
 # ╔═╡ 283df9ae-7904-11eb-1b77-b74be19a859c
 # Wrap tokens with invalid orthography in HTML tag
 function formatToken(ortho, s)
+	
 	if validstring(ortho, s)
 			s
 	else
@@ -378,6 +446,7 @@ function baseurn(urn::CtsUrn)
 end
 
 # ╔═╡ 442b37f6-791a-11eb-16b7-536a71aee034
+# Compose an HTML string for a row of tokens
 function tokenizeRow(row, editorsrepo)
     textconfig = citation_df(editorsrepo)
 
@@ -395,6 +464,7 @@ function tokenizeRow(row, editorsrepo)
 		tokens = ortho.tokenizer(txt)
 		highlighted = map(t -> formatToken(ortho, t.text), tokens)
 		html = join(highlighted, " ")
+		
 		#"<p>$(citation) $(html)</p>"
 		"<p><b>$(reduced.urn)</b> $(html)</p>"
 	
@@ -403,17 +473,23 @@ end
 
 # ╔═╡ 7a11f584-7905-11eb-0ea6-1b8543a4e471
 begin
-
-	sdse = surfaceDse(Cite2Urn(surface), editorsrepo())
-	htmlout = []
-	try 
-		for r in eachrow(sdse)
-			push!(htmlout, tokenizeRow(r, editorsrepo()))
+	if isempty(surface)
+		md""
+	else
+		sdse = surfaceDse(Cite2Urn(surface), editorsrepo())
+		htmlout = []
+		try 
+			for r in eachrow(sdse)
+				push!(htmlout, tokenizeRow(r, editorsrepo()))
+			end
+		catch  e
+			md"Error. $(e)"
 		end
-	catch  e
-		md"Error. $(e)"
+		#HTML(join(htmlout,"\n"))
+		HTML(join(htmlout,"\n"))
+		
+		#Markdown.parse(join(map(i -> string("- ", i), htmlout), "\n"))
 	end
-	HTML(join(htmlout,"\n"))
 end
 
 # ╔═╡ Cell order:
@@ -431,10 +507,11 @@ end
 # ╟─70f42154-7900-11eb-325d-9b20517cb744
 # ╟─7a11f584-7905-11eb-0ea6-1b8543a4e471
 # ╟─6f96dc0c-78f6-11eb-2894-f7c474078043
+# ╟─ac2d4f3c-7925-11eb-3f8c-957b9de49d88
+# ╟─283df9ae-7904-11eb-1b77-b74be19a859c
+# ╟─442b37f6-791a-11eb-16b7-536a71aee034
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
 # ╟─0150956a-78f8-11eb-3ebd-793eefb046cb
-# ╟─442b37f6-791a-11eb-16b7-536a71aee034
-# ╟─283df9ae-7904-11eb-1b77-b74be19a859c
 # ╟─5734dd3a-78f6-11eb-3c69-35eabab3ac86
 # ╟─fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
 # ╟─669b0cc2-78f1-11eb-1050-eb5f80ff9aba
