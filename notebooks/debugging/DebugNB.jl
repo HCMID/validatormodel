@@ -93,4 +93,10 @@ function surfacemenu(editorsrepo)
 end
 
 
+
+function surfaceDse(repo)
+    alldse = dse_df(editorsrepo())
+	filter(row -> row.surface == surfurn, alldse)
+end
+
 end

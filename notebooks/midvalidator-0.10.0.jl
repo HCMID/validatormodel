@@ -39,13 +39,29 @@ begin
 end
 
 # ╔═╡ 493a315c-78f2-11eb-08e1-137d9a802802
-md"UI"
+md"INSERT UI HEADING"
 
 # ╔═╡ 1e9d6620-78f3-11eb-3f66-7748e8758e08
 @bind loadem Button("Load/reload data")
 
+# ╔═╡ 6f96dc0c-78f6-11eb-2894-f7c474078043
+md"""
+
+---
+
+> UI functions
+
+"""
+
+# ╔═╡ 5734dd3a-78f6-11eb-3c69-35eabab3ac86
+md"""
+
+---
+
+"""
+
 # ╔═╡ fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
-md"Examples of using fundamentals"
+md">Examples of using fundamentals"
 
 # ╔═╡ 6db097fc-78f1-11eb-0713-59bf9132af2e
 md"Fundamentals"
@@ -121,6 +137,28 @@ function diplnode(urn, repo)
 	end
 end
 
+# ╔═╡ 06d139d4-78f5-11eb-0247-df4126777208
+# Compose markdown for one row of display interleaving citable
+# text passage and indexed image.
+function mdForDseRow(row::DataFrameRow)
+	citation = "**" * passagecomponent(row.passage)  * "** "
+
+	
+	txt = diplnode(row.passage, editorsrepo())
+	caption = passagecomponent(row.passage)
+	
+	#img = linkedMarkdownImage(ict, row.image, iiifsvc, w, caption)
+	
+	#urn
+	record = """$(citation) $(txt)
+"""	
+#$(img)\
+#	
+#---
+#"""
+	record
+end
+
 # ╔═╡ 59496248-78f2-11eb-13f0-29da2e554f5f
 diplnode(CtsUrn("urn:cts:greekLit:tlg5026.e3.hmt:"), editorsrepo())
 
@@ -160,19 +198,57 @@ $(@bind surface Select(surfacemenu(editorsrepo())))
 # ╔═╡ af847106-78f3-11eb-153b-0312f0390fdc
 editorsrepo() |> surfacemenu
 
+# ╔═╡ 37e5ea20-78f4-11eb-1dff-c36418158c7c
+function surfaceDse(surfurn, repo)
+    alldse = dse_df(editorsrepo())
+	filter(row -> row.surface == surfurn, alldse)
+end
+
+# ╔═╡ b4a23c4c-78f4-11eb-20d3-71eac58097c2
+# Display for visual validation of DSE indexing
+begin
+
+	if surface == ""
+		md""
+	else
+		surfDse = surfaceDse(Cite2Urn(surface), editorsrepo())
+		cellout = []
+		
+		try
+			for r in eachrow(surfDse)
+				push!(cellout, mdForDseRow(r))
+			end
+
+		catch e
+			html"<p class='danger'>Problem with XML edition: see message below</p>"
+		end
+		Markdown.parse(join(cellout,"\n"))				
+		
+	end
+
+end
+
+# ╔═╡ 40fe73e8-78f4-11eb-33fd-f9f2c78db1cf
+surfaceDse(Cite2Urn("urn:cite2:hmt:e3.v1:124r"),editorsrepo())
+
 # ╔═╡ Cell order:
 # ╟─d859973a-78f0-11eb-05a4-13dba1f0cb9e
 # ╟─493a315c-78f2-11eb-08e1-137d9a802802
 # ╟─1e9d6620-78f3-11eb-3f66-7748e8758e08
 # ╟─c91e8142-78f3-11eb-3410-0d65bfb93f0a
+# ╟─b4a23c4c-78f4-11eb-20d3-71eac58097c2
+# ╟─6f96dc0c-78f6-11eb-2894-f7c474078043
+# ╟─06d139d4-78f5-11eb-0247-df4126777208
+# ╟─5734dd3a-78f6-11eb-3c69-35eabab3ac86
 # ╟─fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
 # ╟─669b0cc2-78f1-11eb-1050-eb5f80ff9aba
 # ╠═9ef502ec-78f1-11eb-308d-abdbcfe66b77
-# ╟─e932b090-78f1-11eb-1f6c-2bd2a2805e5a
-# ╟─2cad3228-78f2-11eb-37ec-03356d4f3f35
-# ╟─59496248-78f2-11eb-13f0-29da2e554f5f
+# ╠═e932b090-78f1-11eb-1f6c-2bd2a2805e5a
+# ╠═2cad3228-78f2-11eb-37ec-03356d4f3f35
+# ╠═59496248-78f2-11eb-13f0-29da2e554f5f
 # ╠═6482a0ea-78f3-11eb-1f0d-b9803c01e70c
 # ╠═af847106-78f3-11eb-153b-0312f0390fdc
+# ╠═40fe73e8-78f4-11eb-33fd-f9f2c78db1cf
 # ╟─6db097fc-78f1-11eb-0713-59bf9132af2e
 # ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
 # ╟─7f130fb6-78f1-11eb-3143-a7208d3a9559
@@ -181,4 +257,5 @@ editorsrepo() |> surfacemenu
 # ╟─5c472d86-78f2-11eb-2ead-5196f07a5869
 # ╟─b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
 # ╟─58cdfb8e-78f3-11eb-2adb-7518ff306e2a
-# ╠═a1c93e66-78f3-11eb-2ffc-3f5becceedc8
+# ╟─a1c93e66-78f3-11eb-2ffc-3f5becceedc8
+# ╟─37e5ea20-78f4-11eb-1dff-c36418158c7c
