@@ -26,11 +26,11 @@ function editorsrepo()
 end
 
 function catalogedtexts(repo::EditingRepository)
-	allcataloged = fromfile(CatalogedText, repo.root * "/" * "config" * "/catalog.cex")
+	allcataloged = fromfile(CatalogedText, repo.root * "/" * repo.configs * "/catalog.cex")
 	filter(row -> row.online, allcataloged)
 end
 
-function catalogedurns(repo)
+function texturns(repo)
     texts = catalogedtexts(repo)
     texts[:, :urn]
 end
@@ -69,6 +69,27 @@ end
 function isref(urn::CtsUrn)::Bool
     # True if last part of 
     passageparts(urn)[end] == "ref"
+end
+
+
+function uniquesurfaces(editorsrepo)
+	
+	try
+		EditorsRepo.surfaces(editorsrepo)
+	catch e
+		msg = """<div class='danger'><h2>🧨🧨 Configuration error 🧨🧨</h2>
+		<p><b>$(e)</b></p></div>
+		"""
+		HTML(msg)
+	end
+end
+
+function surfacemenu(editorsrepo)
+	loadem
+	surfurns = EditorsRepo.surfaces(editorsrepo)
+	surflist = map(u -> u.urn, surfurns)
+	# Add a blank entry so popup menu can come up without a selection
+	pushfirst!( surflist, "")
 end
 
 
