@@ -96,6 +96,16 @@ md"""
 
 """
 
+# ╔═╡ 283df9ae-7904-11eb-1b77-b74be19a859c
+# Wrap tokens with invalid orthography in HTML tag
+function formatToken(ortho, s)
+	if validstring(ortho, s)
+			s
+	else
+		"""<span class='invalid'>$(s)</span>"""
+	end
+end
+
 # ╔═╡ 5734dd3a-78f6-11eb-3c69-35eabab3ac86
 md"""
 
@@ -107,7 +117,7 @@ md"""
 md">Examples of using fundamentals"
 
 # ╔═╡ 6db097fc-78f1-11eb-0713-59bf9132af2e
-md"Fundamentals"
+md"> Fundamental functions for working with repository"
 
 # ╔═╡ 54a24382-78f1-11eb-24c8-198fc54ef67e
 # Create EditingRepository for this notebook's repository
@@ -175,24 +185,6 @@ function isref(urn::CtsUrn)::Bool
     passageparts(urn)[end] == "ref"
 end
 
-# ╔═╡ 81656522-7903-11eb-2ed7-53a05f05ebd6
-
-# Select a node from list of normalized nodes
-function normednode(urn, normalizedpassages)
-    generalized = dropversion(urn)
-    filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), normalizedpassages)
-	#filtered = filter(cn -> generalized == dropversion(urn), normalizedpassages)
-    dropref = filter(cn -> ! isref(cn.urn), filtered)
-    
-	if length(dropref) > 0
-        content = collect(map(n -> n.text, dropref))
-        join(content, "\n")
-		#filtered[1].text
-	else 
-		""
-	end
-end
-
 # ╔═╡ 5c472d86-78f2-11eb-2ead-5196f07a5869
 # Collect diplomatic text for 
 function diplnode(urn, repo)
@@ -213,6 +205,24 @@ end
 
 # ╔═╡ 59496248-78f2-11eb-13f0-29da2e554f5f
 diplnode(CtsUrn("urn:cts:greekLit:tlg5026.e3.hmt:"), editorsrepo())
+
+# ╔═╡ 81656522-7903-11eb-2ed7-53a05f05ebd6
+
+# Select a node from list of normalized nodes
+function normednode(urn, normalizedpassages)
+    generalized = dropversion(urn)
+    filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), normalizedpassages)
+	#filtered = filter(cn -> generalized == dropversion(urn), normalizedpassages)
+    dropref = filter(cn -> ! isref(cn.urn), filtered)
+    
+	if length(dropref) > 0
+        content = collect(map(n -> n.text, dropref))
+        join(content, "\n")
+		#filtered[1].text
+	else 
+		""
+	end
+end
 
 # ╔═╡ 58cdfb8e-78f3-11eb-2adb-7518ff306e2a
 # Find surfaces in reposistory
@@ -255,9 +265,6 @@ function surfaceDse(surfurn, repo)
     alldse = dse_df(editorsrepo())
 	filter(row -> row.surface == surfurn, alldse)
 end
-
-# ╔═╡ 40fe73e8-78f4-11eb-33fd-f9f2c78db1cf
-surfaceDse(Cite2Urn("urn:cite2:hmt:e3.v1:124r"),editorsrepo())
 
 # ╔═╡ cc19dac4-78f6-11eb-2269-453e2b1664fd
 function ict()
@@ -370,7 +377,7 @@ function baseurn(urn::CtsUrn)
 	end
 end
 
-# ╔═╡ 42d2a0a4-7901-11eb-1b3b-af1b40611c19
+# ╔═╡ 442b37f6-791a-11eb-16b7-536a71aee034
 function tokenizeRow(row, editorsrepo)
     textconfig = citation_df(editorsrepo)
 
@@ -383,42 +390,20 @@ function tokenizeRow(row, editorsrepo)
 		"<p class='warn'>⚠️  $(citation). No text configured</p>"
 	else
 	
-		txt = normednode(reduced, normedpassages(editorsrepo()))
-
-		#=
+		txt = normednode(reduced, normedpassages(editorsrepo))
+		
 		tokens = ortho.tokenizer(txt)
 		highlighted = map(t -> formatToken(ortho, t.text), tokens)
 		html = join(highlighted, " ")
-
+		#"<p>$(citation) $(html)</p>"
 		"<p><b>$(reduced.urn)</b> $(html)</p>"
-	=#
-	end
-end
-
-# ╔═╡ af687a7e-7901-11eb-15e3-7be1f7879910
-function orthoView(repo)
-	if surface == ""
-		md""
-		
-	else
-		sdse = surfaceDse(Cite2Urn(surface), repo)
-		
-		htmlout = []
-		try 
-			for r in eachrow(sdse)
-				push!(htmlout, tokenizeRow(r, repo))
-			end
-			HTML(join(htmlout,"\n"))
-		catch e
-			msg = "<p class='danger'>Problem with XML edition: $(e)</p>"
-			HTML(msg)
-		end
+	
 	end
 end
 
 # ╔═╡ 7a11f584-7905-11eb-0ea6-1b8543a4e471
 begin
-	#orthoView(editorsrepo())
+
 	sdse = surfaceDse(Cite2Urn(surface), editorsrepo())
 	htmlout = []
 	try 
@@ -428,24 +413,7 @@ begin
 	catch  e
 		md"Error. $(e)"
 	end
-end
-
-# ╔═╡ 10e536bc-7906-11eb-3a08-0565d23cf67b
-onedse = begin
-	surfdf = surfaceDse(Cite2Urn(surface), editorsrepo())
-	onerow = surfdf[1, :]
-	tokenizeRow(onerow, editorsrepo())
-end
-
-
-# ╔═╡ 283df9ae-7904-11eb-1b77-b74be19a859c
-# Wrap tokens with invalid orthography in HTML tag
-function formatToken(ortho, s)
-	if validstring(ortho, s)
-			s
-	else
-		"""<span class='invalid'>$(s)</span>"""
-	end
+	HTML(join(htmlout,"\n"))
 end
 
 # ╔═╡ Cell order:
@@ -461,14 +429,12 @@ end
 # ╟─b4ab331a-78f6-11eb-33f9-c3fde8bed5d1
 # ╟─b4a23c4c-78f4-11eb-20d3-71eac58097c2
 # ╟─70f42154-7900-11eb-325d-9b20517cb744
-# ╟─af687a7e-7901-11eb-15e3-7be1f7879910
-# ╟─42d2a0a4-7901-11eb-1b3b-af1b40611c19
-# ╠═81656522-7903-11eb-2ed7-53a05f05ebd6
-# ╠═7a11f584-7905-11eb-0ea6-1b8543a4e471
-# ╠═10e536bc-7906-11eb-3a08-0565d23cf67b
+# ╟─7a11f584-7905-11eb-0ea6-1b8543a4e471
 # ╟─6f96dc0c-78f6-11eb-2894-f7c474078043
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
 # ╟─0150956a-78f8-11eb-3ebd-793eefb046cb
+# ╟─442b37f6-791a-11eb-16b7-536a71aee034
+# ╟─283df9ae-7904-11eb-1b77-b74be19a859c
 # ╟─5734dd3a-78f6-11eb-3c69-35eabab3ac86
 # ╟─fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
 # ╟─669b0cc2-78f1-11eb-1050-eb5f80ff9aba
@@ -478,14 +444,14 @@ end
 # ╠═59496248-78f2-11eb-13f0-29da2e554f5f
 # ╠═6482a0ea-78f3-11eb-1f0d-b9803c01e70c
 # ╠═af847106-78f3-11eb-153b-0312f0390fdc
-# ╠═40fe73e8-78f4-11eb-33fd-f9f2c78db1cf
 # ╟─6db097fc-78f1-11eb-0713-59bf9132af2e
 # ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
 # ╟─7f130fb6-78f1-11eb-3143-a7208d3a9559
 # ╟─e45a445c-78f1-11eb-3ef5-81b1b7adec63
 # ╟─1829efee-78f2-11eb-06bd-ddad8fb26622
 # ╟─5c472d86-78f2-11eb-2ead-5196f07a5869
-# ╠═85119632-7903-11eb-3291-078d8c56087c
+# ╟─85119632-7903-11eb-3291-078d8c56087c
+# ╟─81656522-7903-11eb-2ed7-53a05f05ebd6
 # ╟─b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
 # ╟─58cdfb8e-78f3-11eb-2adb-7518ff306e2a
 # ╟─a1c93e66-78f3-11eb-2ffc-3f5becceedc8
@@ -493,4 +459,3 @@ end
 # ╟─cc19dac4-78f6-11eb-2269-453e2b1664fd
 # ╟─d1969604-78f6-11eb-3231-1570919758aa
 # ╟─36599fea-7902-11eb-2524-3bd9026f017c
-# ╟─283df9ae-7904-11eb-1b77-b74be19a859c

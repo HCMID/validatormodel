@@ -1,3 +1,7 @@
+# Using from notebooks dir:
+#
+# push!(LOAD_PATH, "debugging/")
+#
 module DebugNB
 
 using CitableText
