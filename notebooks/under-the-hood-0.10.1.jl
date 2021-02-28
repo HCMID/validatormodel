@@ -29,29 +29,36 @@ begin
 	Pkg.status()
 end
 
-# ╔═╡ 493a315c-78f2-11eb-08e1-137d9a802802
-begin
-	nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
-	md" This demo is using libraries defined in version **$(nbversion)** of the MID validation notebook."
-end
+# ╔═╡ 3766b28a-79be-11eb-2731-b55581ccd19f
+md"Activate the notebook's environment, load all libraries, use  `Pkg.status()` to display version numbers of all librariesin the terminal where you started Pluto."
+
+# ╔═╡ 1fd65eae-79be-11eb-1599-875ca1d8e6f4
+md"># Under the hood of the MID validator notebook"
+
+# ╔═╡ 7c67cacc-79be-11eb-3fad-fd9950e55117
+md"""
+This notebook includes illustrative examples of the functions used in the MID validating notebook.
+
+For legibility, the examples use Julia's pipe operator `|>` when the functions take only one parameter.
+
+"""
 
 # ╔═╡ 4aacb152-79b2-11eb-349a-cfe86f526399
 begin
-	
+	# Read MID.toml
 	github = Pkg.TOML.parse(read("MID.toml", String))["github"]
 	projectname =	Pkg.TOML.parse(read("MID.toml", String))["projectname"]
-	
+	# Read Project.toml
 	notebookversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
 	
 	md"""
+This notebook is using libraries defined in version **$(notebookversion)** of the MID validation notebook.
 	
 - We read `MID.toml` to find values for github (*$(github)*) and project name (*$(projectname)*).
 - We read `Project.toml` to find the current version value (*$(notebookversion)*).
 - We know the notebook is in a subdirectory of the repository root, so we use the notebook's parent directory as our base directory. (*$(dirname(pwd()))*).
 	
-"""
-
-	
+"""	
 end
 
 
@@ -210,6 +217,64 @@ normednode(CtsUrn("urn:cts:greekLit:tlg5026.e3.hmt:"), editorsrepo())
 # ╔═╡ dc194b30-79b9-11eb-3fe8-7fc1930bd1b9
 md"> ### DSE indexing"
 
+# ╔═╡ dc63a172-79bd-11eb-11cc-0be16699050f
+md"> The functions"
+
+# ╔═╡ 58cdfb8e-78f3-11eb-2adb-7518ff306e2a
+# Find surfaces in reposistory
+function uniquesurfaces(editorsrepo)
+	
+	try
+		EditorsRepo.surfaces(editorsrepo)
+	catch e
+		msg = """<div class='danger'><h2>🧨🧨 Configuration error 🧨🧨</h2>
+		<p><b>$(e)</b></p></div>
+		"""
+		HTML(msg)
+	end
+end
+
+# ╔═╡ 37e5ea20-78f4-11eb-1dff-c36418158c7c
+function surfaceDse(surfurn, repo)
+    alldse = dse_df(editorsrepo())
+	filter(row -> row.surface == surfurn, alldse)
+end
+
+# ╔═╡ 36599fea-7902-11eb-2524-3bd9026f017c
+# Find URN for a single node from DSE record, which could
+# include a range with subrefs within a single node.
+function baseurn(urn::CtsUrn)
+	trimmed = CitableText.dropsubref(urn)
+	if CitableText.isrange(trimmed)
+		psg = CitableText.rangebegin(trimmed)
+		CitableText.addpassage(urn,psg)
+	else
+		urn
+	end
+end
+
+# ╔═╡ e4ad8aa0-79bd-11eb-34e9-ab87b28f3654
+md"> Examples"
+
+# ╔═╡ 00d8bd66-79bf-11eb-1c5e-677cff39c0d1
+editorsrepo() |> uniquesurfaces
+
+# ╔═╡ eb5549ba-79bd-11eb-11bf-f3988bc74b5d
+md"> ### Visualizations for verification"
+
+# ╔═╡ f65ca3c6-79bd-11eb-2ced-77d6774b4ca7
+md"> The functions"
+
+# ╔═╡ a1c93e66-78f3-11eb-2ffc-3f5becceedc8
+#Create list of text labels for popupmenu
+function surfacemenu(editorsrepo)
+	#loadem
+	surfurns = EditorsRepo.surfaces(editorsrepo)
+	surflist = map(u -> u.urn, surfurns)
+	# Add a blank entry so popup menu can come up without a selection
+	pushfirst!( surflist, "")
+end
+
 # ╔═╡ 283df9ae-7904-11eb-1b77-b74be19a859c
 # Wrap tokens with invalid orthography in HTML tag
 function formatToken(ortho, s)
@@ -218,6 +283,32 @@ function formatToken(ortho, s)
 			s
 	else
 		"""<span class='invalid'>$(s)</span>"""
+	end
+end
+
+# ╔═╡ 442b37f6-791a-11eb-16b7-536a71aee034
+# Compose an HTML string for a row of tokens
+function tokenizeRow(row, editorsrepo)
+    textconfig = citation_df(editorsrepo)
+
+
+	reduced = baseurn(row.passage)
+	citation = "<b>" * passagecomponent(reduced)  * "</b> "
+	ortho = orthographyforurn(textconfig, reduced)
+	
+	if ortho === nothing
+		"<p class='warn'>⚠️  $(citation). No text configured</p>"
+	else
+	
+		txt = normednode(reduced, normedpassages(editorsrepo))
+		
+		tokens = ortho.tokenizer(txt)
+		highlighted = map(t -> formatToken(ortho, t.text), tokens)
+		html = join(highlighted, " ")
+		
+		#"<p>$(citation) $(html)</p>"
+		"<p><b>$(reduced.urn)</b> $(html)</p>"
+	
 	end
 end
 
@@ -241,6 +332,36 @@ $(img)
 ---
 """
 	record
+end
+
+# ╔═╡ 0150956a-78f8-11eb-3ebd-793eefb046cb
+
+# Compose markdown for thumbnail images linked to ICT with overlay of all
+# DSE regions.
+function completenessView(urn, repo)
+     
+	# Group images with ROI into a dictionary keyed by image
+	# WITHOUT RoI.
+	grouped = Dict()
+	for row in eachrow(surfaceDse(urn, repo))
+		trimmed = CitableObject.dropsubref(row.image)
+		if haskey(grouped, trimmed)
+			push!(grouped[trimmed], row.image)
+		else
+			grouped[trimmed] = [row.image]
+		end
+	end
+
+	mdstrings = []
+	for k in keys(grouped)
+		thumb = markdownImage(k, iiifsvc(), thumbht)
+		params = map(img -> "urn=" * img.urn * "&", grouped[k]) 
+		lnk = ict() * join(params,"") 
+		push!(mdstrings, "[$(thumb)]($(lnk))")
+		
+	end
+	join(mdstrings, " ")
+
 end
 
 # ╔═╡ ac2d4f3c-7925-11eb-3f8c-957b9de49d88
@@ -310,137 +431,18 @@ text-align: center;
 </style>
 """
 
-# ╔═╡ 5734dd3a-78f6-11eb-3c69-35eabab3ac86
-md"""
-
----
-
-"""
-
-# ╔═╡ fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
-md">Examples of using fundamentals"
-
-# ╔═╡ 669b0cc2-78f1-11eb-1050-eb5f80ff9aba
-editorsrepo()
-
-# ╔═╡ 9ef502ec-78f1-11eb-308d-abdbcfe66b77
-editorsrepo() |> catalogedtexts |> nrow
-
-# ╔═╡ 59496248-78f2-11eb-13f0-29da2e554f5f
-diplnode(CtsUrn("urn:cts:greekLit:tlg5026.e3.hmt:"), editorsrepo())
-
-# ╔═╡ 6db097fc-78f1-11eb-0713-59bf9132af2e
-md"> Fundamental functions for working with repository"
-
-# ╔═╡ 58cdfb8e-78f3-11eb-2adb-7518ff306e2a
-# Find surfaces in reposistory
-function uniquesurfaces(editorsrepo)
-	
-	try
-		EditorsRepo.surfaces(editorsrepo)
-	catch e
-		msg = """<div class='danger'><h2>🧨🧨 Configuration error 🧨🧨</h2>
-		<p><b>$(e)</b></p></div>
-		"""
-		HTML(msg)
-	end
-end
-
-# ╔═╡ 6482a0ea-78f3-11eb-1f0d-b9803c01e70c
-editorsrepo() |> uniquesurfaces
-
-# ╔═╡ a1c93e66-78f3-11eb-2ffc-3f5becceedc8
-#Create list of text labels for popupmenu
-function surfacemenu(editorsrepo)
-	#loadem
-	surfurns = EditorsRepo.surfaces(editorsrepo)
-	surflist = map(u -> u.urn, surfurns)
-	# Add a blank entry so popup menu can come up without a selection
-	pushfirst!( surflist, "")
-end
+# ╔═╡ 1b381d96-79bf-11eb-2b39-4d510da858f3
+md"> Examples"
 
 # ╔═╡ af847106-78f3-11eb-153b-0312f0390fdc
 editorsrepo() |> surfacemenu
 
-# ╔═╡ 37e5ea20-78f4-11eb-1dff-c36418158c7c
-function surfaceDse(surfurn, repo)
-    alldse = dse_df(editorsrepo())
-	filter(row -> row.surface == surfurn, alldse)
-end
-
-# ╔═╡ 0150956a-78f8-11eb-3ebd-793eefb046cb
-
-# Compose markdown for thumbnail images linked to ICT with overlay of all
-# DSE regions.
-function completenessView(urn, repo)
-     
-	# Group images with ROI into a dictionary keyed by image
-	# WITHOUT RoI.
-	grouped = Dict()
-	for row in eachrow(surfaceDse(urn, repo))
-		trimmed = CitableObject.dropsubref(row.image)
-		if haskey(grouped, trimmed)
-			push!(grouped[trimmed], row.image)
-		else
-			grouped[trimmed] = [row.image]
-		end
-	end
-
-	mdstrings = []
-	for k in keys(grouped)
-		thumb = markdownImage(k, iiifsvc(), thumbht)
-		params = map(img -> "urn=" * img.urn * "&", grouped[k]) 
-		lnk = ict() * join(params,"") 
-		push!(mdstrings, "[$(thumb)]($(lnk))")
-		
-	end
-	join(mdstrings, " ")
-
-end
-
-# ╔═╡ 36599fea-7902-11eb-2524-3bd9026f017c
-# Find URN for a single node from DSE record, which could
-# include a range with subrefs within a single node.
-function baseurn(urn::CtsUrn)
-	trimmed = CitableText.dropsubref(urn)
-	if CitableText.isrange(trimmed)
-		psg = CitableText.rangebegin(trimmed)
-		CitableText.addpassage(urn,psg)
-	else
-		urn
-	end
-end
-
-# ╔═╡ 442b37f6-791a-11eb-16b7-536a71aee034
-# Compose an HTML string for a row of tokens
-function tokenizeRow(row, editorsrepo)
-    textconfig = citation_df(editorsrepo)
-
-
-	reduced = baseurn(row.passage)
-	citation = "<b>" * passagecomponent(reduced)  * "</b> "
-	ortho = orthographyforurn(textconfig, reduced)
-	
-	if ortho === nothing
-		"<p class='warn'>⚠️  $(citation). No text configured</p>"
-	else
-	
-		txt = normednode(reduced, normedpassages(editorsrepo))
-		
-		tokens = ortho.tokenizer(txt)
-		highlighted = map(t -> formatToken(ortho, t.text), tokens)
-		html = join(highlighted, " ")
-		
-		#"<p>$(citation) $(html)</p>"
-		"<p><b>$(reduced.urn)</b> $(html)</p>"
-	
-	end
-end
-
 # ╔═╡ Cell order:
-# ╟─d859973a-78f0-11eb-05a4-13dba1f0cb9e
-# ╟─493a315c-78f2-11eb-08e1-137d9a802802
-# ╟─4aacb152-79b2-11eb-349a-cfe86f526399
+# ╟─3766b28a-79be-11eb-2731-b55581ccd19f
+# ╠═d859973a-78f0-11eb-05a4-13dba1f0cb9e
+# ╟─1fd65eae-79be-11eb-1599-875ca1d8e6f4
+# ╟─7c67cacc-79be-11eb-3fad-fd9950e55117
+# ╠═4aacb152-79b2-11eb-349a-cfe86f526399
 # ╟─a85774e6-79b9-11eb-1fc8-030922c3d600
 # ╟─9d9b8144-79b8-11eb-2545-573129e6b22b
 # ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
@@ -467,20 +469,19 @@ end
 # ╠═9e9db4f2-79ba-11eb-0ec5-35c7d95dcdca
 # ╠═a2efcc70-79ba-11eb-0e1d-dddac9e39f26
 # ╟─dc194b30-79b9-11eb-3fe8-7fc1930bd1b9
+# ╟─dc63a172-79bd-11eb-11cc-0be16699050f
+# ╟─58cdfb8e-78f3-11eb-2adb-7518ff306e2a
+# ╟─37e5ea20-78f4-11eb-1dff-c36418158c7c
+# ╟─36599fea-7902-11eb-2524-3bd9026f017c
+# ╟─e4ad8aa0-79bd-11eb-34e9-ab87b28f3654
+# ╠═00d8bd66-79bf-11eb-1c5e-677cff39c0d1
+# ╟─eb5549ba-79bd-11eb-11bf-f3988bc74b5d
+# ╟─f65ca3c6-79bd-11eb-2ced-77d6774b4ca7
+# ╟─a1c93e66-78f3-11eb-2ffc-3f5becceedc8
 # ╟─283df9ae-7904-11eb-1b77-b74be19a859c
 # ╟─442b37f6-791a-11eb-16b7-536a71aee034
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
 # ╟─0150956a-78f8-11eb-3ebd-793eefb046cb
 # ╟─ac2d4f3c-7925-11eb-3f8c-957b9de49d88
-# ╟─5734dd3a-78f6-11eb-3c69-35eabab3ac86
-# ╟─fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
-# ╟─669b0cc2-78f1-11eb-1050-eb5f80ff9aba
-# ╠═9ef502ec-78f1-11eb-308d-abdbcfe66b77
-# ╠═59496248-78f2-11eb-13f0-29da2e554f5f
-# ╠═6482a0ea-78f3-11eb-1f0d-b9803c01e70c
+# ╟─1b381d96-79bf-11eb-2b39-4d510da858f3
 # ╠═af847106-78f3-11eb-153b-0312f0390fdc
-# ╟─6db097fc-78f1-11eb-0713-59bf9132af2e
-# ╟─58cdfb8e-78f3-11eb-2adb-7518ff306e2a
-# ╠═a1c93e66-78f3-11eb-2ffc-3f5becceedc8
-# ╟─37e5ea20-78f4-11eb-1dff-c36418158c7c
-# ╟─36599fea-7902-11eb-2524-3bd9026f017c
