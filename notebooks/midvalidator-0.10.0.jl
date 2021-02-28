@@ -326,7 +326,8 @@ end
 # Collect diplomatic text for a text passage identified by URN.
 # The URN should either match a citable node, or be a containing node
 # for one or more citable nodes.  Ranges URNs are not supported.
-function normednode(urn, normalizedpassages)
+function normednode(urn, repo)
+	normalizedpassages = repo |> normedpassages
     generalized = dropversion(urn)
     filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), normalizedpassages)
 	#filtered = filter(cn -> generalized == dropversion(urn), normalizedpassages)
@@ -472,7 +473,7 @@ function tokenizeRow(row, editorsrepo)
 		"<p class='warn'>⚠️  $(citation). No text configured</p>"
 	else
 	
-		txt = normednode(reduced, normedpassages(editorsrepo))
+		txt = normednode(reduced, editorsrepo)
 		
 		tokens = ortho.tokenizer(txt)
 		highlighted = map(t -> formatToken(ortho, t.text), tokens)
@@ -535,8 +536,8 @@ end
 # ╟─7f130fb6-78f1-11eb-3143-a7208d3a9559
 # ╟─e45a445c-78f1-11eb-3ef5-81b1b7adec63
 # ╟─1829efee-78f2-11eb-06bd-ddad8fb26622
-# ╟─5c472d86-78f2-11eb-2ead-5196f07a5869
 # ╟─85119632-7903-11eb-3291-078d8c56087c
+# ╟─5c472d86-78f2-11eb-2ead-5196f07a5869
 # ╟─81656522-7903-11eb-2ed7-53a05f05ebd6
 # ╟─b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
 # ╟─6565f4b6-79b4-11eb-22ae-491ea4d70f46
