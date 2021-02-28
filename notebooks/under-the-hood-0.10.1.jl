@@ -300,7 +300,7 @@ function tokenizeRow(row, editorsrepo)
 		"<p class='warn'>⚠️  $(citation). No text configured</p>"
 	else
 	
-		txt = normednode(reduced, normedpassages(editorsrepo))
+		txt = normednode(reduced, editorsrepo)
 		
 		tokens = ortho.tokenizer(txt)
 		highlighted = map(t -> formatToken(ortho, t.text), tokens)
