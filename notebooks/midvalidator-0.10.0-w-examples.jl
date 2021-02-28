@@ -110,29 +110,9 @@ md"""
 
 ---
 
----
-
-
-> ### Functions
-
-You don't need to look at the rest of the notebook unless you're curious about how it works.  The following cells define the functions that retreive data from your editing repository, validate it, and format it for visual verification.
-
+> UI functions
 
 """
-
-# ╔═╡ 509c782a-79b4-11eb-0801-a1d0c9b4ffb3
-md"> Formatting visualizations for verification"
-
-# ╔═╡ 283df9ae-7904-11eb-1b77-b74be19a859c
-# Wrap tokens with invalid orthography in HTML tag
-function formatToken(ortho, s)
-	
-	if validstring(ortho, s)
-			s
-	else
-		"""<span class='invalid'>$(s)</span>"""
-	end
-end
 
 # ╔═╡ ac2d4f3c-7925-11eb-3f8c-957b9de49d88
 css = html"""
@@ -201,33 +181,38 @@ text-align: center;
 </style>
 """
 
-# ╔═╡ c5d65e86-79b3-11eb-2c3f-d5e5c8efcc5a
-md"> Repository and image services to use"
+# ╔═╡ 283df9ae-7904-11eb-1b77-b74be19a859c
+# Wrap tokens with invalid orthography in HTML tag
+function formatToken(ortho, s)
+	
+	if validstring(ortho, s)
+			s
+	else
+		"""<span class='invalid'>$(s)</span>"""
+	end
+end
+
+# ╔═╡ 5734dd3a-78f6-11eb-3c69-35eabab3ac86
+md"""
+
+---
+
+"""
+
+# ╔═╡ fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
+md">Examples of using fundamentals"
+
+# ╔═╡ 6db097fc-78f1-11eb-0713-59bf9132af2e
+md"> Fundamental functions for working with repository"
 
 # ╔═╡ 54a24382-78f1-11eb-24c8-198fc54ef67e
 # Create EditingRepository for this notebook's repository
-# Since the notebook is in the `notebooks` subdirectory of the repository,
-# we can just use the parent directory (dirname() in julia) for the
-# root directory.
 function editorsrepo() 
     EditingRepository( dirname(pwd()), "editions", "dse", "config")
 end
 
-# ╔═╡ cc19dac4-78f6-11eb-2269-453e2b1664fd
-# Base URL for an ImageCitationTool
-function ict()
-	"http://www.homermultitext.org/ict2/?"
-end
-
-# ╔═╡ d1969604-78f6-11eb-3231-1570919758aa
-# API to work with an IIIF image service
-function iiifsvc()
-	IIIFservice("http://www.homermultitext.org/iipsrv",
-	"/project/homer/pyramidal/deepzoom")
-end
-
-# ╔═╡ 6db097fc-78f1-11eb-0713-59bf9132af2e
-md"> Texts in the repository"
+# ╔═╡ 669b0cc2-78f1-11eb-1050-eb5f80ff9aba
+editorsrepo()
 
 # ╔═╡ 7f130fb6-78f1-11eb-3143-a7208d3a9559
 # Build a dataframe for catalog of all online texts
@@ -236,6 +221,9 @@ function catalogedtexts(repo::EditingRepository)
 	filter(row -> row.online, allcataloged)
 end
 
+# ╔═╡ 9ef502ec-78f1-11eb-308d-abdbcfe66b77
+editorsrepo() |> catalogedtexts |> nrow
+
 # ╔═╡ e45a445c-78f1-11eb-3ef5-81b1b7adec63
 # Find CTS URNs of all texts cataloged as online
 function texturns(repo)
@@ -243,9 +231,11 @@ function texturns(repo)
     texts[:, :urn]
 end
 
+# ╔═╡ e932b090-78f1-11eb-1f6c-2bd2a2805e5a
+editorsrepo() |> texturns
+
 # ╔═╡ 1829efee-78f2-11eb-06bd-ddad8fb26622
-# Use configuratoin infor to compose diplomatic text for all 
-# all texts in the repository.
+
 function diplpassages(editorsrepo)
     urnlist = texturns(editorsrepo)
 	try 
@@ -258,9 +248,10 @@ function diplpassages(editorsrepo)
 	end
 end
 
+# ╔═╡ 2cad3228-78f2-11eb-37ec-03356d4f3f35
+editorsrepo() |> diplpassages
+
 # ╔═╡ 85119632-7903-11eb-3291-078d8c56087c
-# Use configuratoin infor to compose normalized text for all 
-# all texts in the repository.
 function normedpassages(editorsrepo)
     urnlist = texturns(editorsrepo)
 	try 
@@ -274,30 +265,103 @@ function normedpassages(editorsrepo)
 end
 
 # ╔═╡ b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
-# True if last component of CTS URN passage is "ref".
-# We use this to exclude elements with this identifier, 
-# like HMT scholia
+# True if last component of CTS URN passage is "ref"
 function isref(urn::CtsUrn)::Bool
     # True if last part of 
     passageparts(urn)[end] == "ref"
 end
 
 # ╔═╡ 5c472d86-78f2-11eb-2ead-5196f07a5869
-# Collect diplomatic text for a text passage identified by URN.
-# The URN should either match a citable node, or be a containing node
-# for one or more citable nodes.  Ranges URNs are not supported.
+# Collect diplomatic text for 
 function diplnode(urn, repo)
 	diplomaticpassages = repo |> diplpassages
 	generalized = dropversion(urn)
-	filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), 		diplomaticpassages)
+	filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), diplomaticpassages)
+	#filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticpassages)
     dropref = filter(cn -> ! isref(cn.urn), filtered)
     
 	if length(dropref) > 0
         content = collect(map(n -> n.text, dropref))
         join(content, "\n")
+		#filtered[1].text
 	else 
 		""
 	end
+end
+
+# ╔═╡ 59496248-78f2-11eb-13f0-29da2e554f5f
+diplnode(CtsUrn("urn:cts:greekLit:tlg5026.e3.hmt:"), editorsrepo())
+
+# ╔═╡ 81656522-7903-11eb-2ed7-53a05f05ebd6
+
+# Select a node from list of normalized nodes
+function normednode(urn, normalizedpassages)
+    generalized = dropversion(urn)
+    filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), normalizedpassages)
+	#filtered = filter(cn -> generalized == dropversion(urn), normalizedpassages)
+    dropref = filter(cn -> ! isref(cn.urn), filtered)
+    
+	if length(dropref) > 0
+        content = collect(map(n -> n.text, dropref))
+        join(content, "\n")
+		#filtered[1].text
+	else 
+		""
+	end
+end
+
+# ╔═╡ 58cdfb8e-78f3-11eb-2adb-7518ff306e2a
+# Find surfaces in reposistory
+function uniquesurfaces(editorsrepo)
+	
+	try
+		EditorsRepo.surfaces(editorsrepo)
+	catch e
+		msg = """<div class='danger'><h2>🧨🧨 Configuration error 🧨🧨</h2>
+		<p><b>$(e)</b></p></div>
+		"""
+		HTML(msg)
+	end
+end
+
+# ╔═╡ 6482a0ea-78f3-11eb-1f0d-b9803c01e70c
+editorsrepo() |> uniquesurfaces
+
+# ╔═╡ a1c93e66-78f3-11eb-2ffc-3f5becceedc8
+#Create list of text labels for popupmenu
+function surfacemenu(editorsrepo)
+	loadem
+	surfurns = EditorsRepo.surfaces(editorsrepo)
+	surflist = map(u -> u.urn, surfurns)
+	# Add a blank entry so popup menu can come up without a selection
+	pushfirst!( surflist, "")
+end
+
+# ╔═╡ c91e8142-78f3-11eb-3410-0d65bfb93f0a
+md"""###  Choose a surface to verify
+
+$(@bind surface Select(surfacemenu(editorsrepo())))
+"""
+
+# ╔═╡ af847106-78f3-11eb-153b-0312f0390fdc
+editorsrepo() |> surfacemenu
+
+# ╔═╡ 37e5ea20-78f4-11eb-1dff-c36418158c7c
+function surfaceDse(surfurn, repo)
+    alldse = dse_df(editorsrepo())
+	filter(row -> row.surface == surfurn, alldse)
+end
+
+# ╔═╡ cc19dac4-78f6-11eb-2269-453e2b1664fd
+function ict()
+	"http://www.homermultitext.org/ict2/?"
+end
+
+# ╔═╡ d1969604-78f6-11eb-3231-1570919758aa
+function iiifsvc()
+	IIIFservice("http://www.homermultitext.org/iipsrv",
+	"/project/homer/pyramidal/deepzoom"
+		)
 end
 
 # ╔═╡ 06d139d4-78f5-11eb-0247-df4126777208
@@ -322,47 +386,28 @@ $(img)
 	record
 end
 
-# ╔═╡ 81656522-7903-11eb-2ed7-53a05f05ebd6
-# Collect diplomatic text for a text passage identified by URN.
-# The URN should either match a citable node, or be a containing node
-# for one or more citable nodes.  Ranges URNs are not supported.
-function normednode(urn, normalizedpassages)
-    generalized = dropversion(urn)
-    filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), normalizedpassages)
-	#filtered = filter(cn -> generalized == dropversion(urn), normalizedpassages)
-    dropref = filter(cn -> ! isref(cn.urn), filtered)
-    
-	if length(dropref) > 0
-        content = collect(map(n -> n.text, dropref))
-        join(content, "\n")
-		#filtered[1].text
-	else 
-		""
+# ╔═╡ b4a23c4c-78f4-11eb-20d3-71eac58097c2
+# Display for visual validation of DSE indexing
+begin
+
+	if surface == ""
+		md""
+	else
+		surfDse = surfaceDse(Cite2Urn(surface), editorsrepo())
+		cellout = []
+		
+		try
+			for r in eachrow(surfDse)
+				push!(cellout, mdForDseRow(r))
+			end
+
+		catch e
+			html"<p class='danger'>Problem with XML edition: see message below</p>"
+		end
+		Markdown.parse(join(cellout,"\n"))				
+		
 	end
-end
 
-# ╔═╡ 6565f4b6-79b4-11eb-22ae-491ea4d70f46
-md"> DSE indexing"
-
-# ╔═╡ 58cdfb8e-78f3-11eb-2adb-7518ff306e2a
-# Find all surfaces in reposistory
-function uniquesurfaces(editorsrepo)
-	
-	try
-		EditorsRepo.surfaces(editorsrepo)
-	catch e
-		msg = """<div class='danger'><h2>🧨🧨 Configuration error 🧨🧨</h2>
-		<p><b>$(e)</b></p></div>
-		"""
-		HTML(msg)
-	end
-end
-
-# ╔═╡ 37e5ea20-78f4-11eb-1dff-c36418158c7c
-# Find DSE records for surface currently selected in popup menu.
-function surfaceDse(surfurn, repo)
-    alldse = dse_df(editorsrepo())
-	filter(row -> row.surface == surfurn, alldse)
 end
 
 # ╔═╡ 0150956a-78f8-11eb-3ebd-793eefb046cb
@@ -395,22 +440,6 @@ function completenessView(urn, repo)
 
 end
 
-# ╔═╡ a1c93e66-78f3-11eb-2ffc-3f5becceedc8
-#Create list of text labels for popupmenu
-function surfacemenu(editorsrepo)
-	loadem
-	surfurns = EditorsRepo.surfaces(editorsrepo)
-	surflist = map(u -> u.urn, surfurns)
-	# Add a blank entry so popup menu can come up without a selection
-	pushfirst!( surflist, "")
-end
-
-# ╔═╡ c91e8142-78f3-11eb-3410-0d65bfb93f0a
-md"""###  Choose a surface to verify
-
-$(@bind surface Select(surfacemenu(editorsrepo())))
-"""
-
 # ╔═╡ 055b4a92-78f8-11eb-3b27-478beed207d2
 # Display link for completeness view
 begin
@@ -419,30 +448,6 @@ begin
 	else
 		Markdown.parse(completenessView(Cite2Urn(surface), editorsrepo()))
 	end
-end
-
-# ╔═╡ b4a23c4c-78f4-11eb-20d3-71eac58097c2
-# Display for visual validation of DSE indexing
-begin
-
-	if surface == ""
-		md""
-	else
-		surfDse = surfaceDse(Cite2Urn(surface), editorsrepo())
-		cellout = []
-		
-		try
-			for r in eachrow(surfDse)
-				push!(cellout, mdForDseRow(r))
-			end
-
-		catch e
-			html"<p class='danger'>Problem with XML edition: see message below</p>"
-		end
-		Markdown.parse(join(cellout,"\n"))				
-		
-	end
-
 end
 
 # ╔═╡ 36599fea-7902-11eb-2524-3bd9026f017c
@@ -521,17 +526,22 @@ end
 # ╟─70f42154-7900-11eb-325d-9b20517cb744
 # ╟─7a11f584-7905-11eb-0ea6-1b8543a4e471
 # ╟─6f96dc0c-78f6-11eb-2894-f7c474078043
-# ╟─509c782a-79b4-11eb-0801-a1d0c9b4ffb3
+# ╟─ac2d4f3c-7925-11eb-3f8c-957b9de49d88
 # ╟─283df9ae-7904-11eb-1b77-b74be19a859c
 # ╟─442b37f6-791a-11eb-16b7-536a71aee034
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
 # ╟─0150956a-78f8-11eb-3ebd-793eefb046cb
-# ╟─ac2d4f3c-7925-11eb-3f8c-957b9de49d88
-# ╟─c5d65e86-79b3-11eb-2c3f-d5e5c8efcc5a
-# ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
-# ╟─cc19dac4-78f6-11eb-2269-453e2b1664fd
-# ╟─d1969604-78f6-11eb-3231-1570919758aa
+# ╟─5734dd3a-78f6-11eb-3c69-35eabab3ac86
+# ╟─fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
+# ╟─669b0cc2-78f1-11eb-1050-eb5f80ff9aba
+# ╠═9ef502ec-78f1-11eb-308d-abdbcfe66b77
+# ╠═e932b090-78f1-11eb-1f6c-2bd2a2805e5a
+# ╠═2cad3228-78f2-11eb-37ec-03356d4f3f35
+# ╠═59496248-78f2-11eb-13f0-29da2e554f5f
+# ╠═6482a0ea-78f3-11eb-1f0d-b9803c01e70c
+# ╠═af847106-78f3-11eb-153b-0312f0390fdc
 # ╟─6db097fc-78f1-11eb-0713-59bf9132af2e
+# ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
 # ╟─7f130fb6-78f1-11eb-3143-a7208d3a9559
 # ╟─e45a445c-78f1-11eb-3ef5-81b1b7adec63
 # ╟─1829efee-78f2-11eb-06bd-ddad8fb26622
@@ -539,8 +549,9 @@ end
 # ╟─85119632-7903-11eb-3291-078d8c56087c
 # ╟─81656522-7903-11eb-2ed7-53a05f05ebd6
 # ╟─b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
-# ╟─6565f4b6-79b4-11eb-22ae-491ea4d70f46
 # ╟─58cdfb8e-78f3-11eb-2adb-7518ff306e2a
-# ╟─37e5ea20-78f4-11eb-1dff-c36418158c7c
 # ╟─a1c93e66-78f3-11eb-2ffc-3f5becceedc8
+# ╟─37e5ea20-78f4-11eb-1dff-c36418158c7c
+# ╟─cc19dac4-78f6-11eb-2269-453e2b1664fd
+# ╟─d1969604-78f6-11eb-3231-1570919758aa
 # ╟─36599fea-7902-11eb-2524-3bd9026f017c
