@@ -4,15 +4,6 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    quote
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : missing
-        el
-    end
-end
-
 # ╔═╡ d859973a-78f0-11eb-05a4-13dba1f0cb9e
 # build environment
 begin
@@ -38,81 +29,219 @@ begin
 	Pkg.status()
 end
 
-# ╔═╡ 1e9d6620-78f3-11eb-3f66-7748e8758e08
-@bind loadem Button("Load/reload data")
-
 # ╔═╡ 493a315c-78f2-11eb-08e1-137d9a802802
 begin
-	loadem
 	nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
-	md"This is version **$(nbversion)** of the MID validation notebook."
+	md" This demo is using libraries defined in version **$(nbversion)** of the MID validation notebook."
 end
 
 # ╔═╡ 4aacb152-79b2-11eb-349a-cfe86f526399
 begin
-	loadem
+	
 	github = Pkg.TOML.parse(read("MID.toml", String))["github"]
 	projectname =	Pkg.TOML.parse(read("MID.toml", String))["projectname"]
+	
+	notebookversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
+	
+	md"""
+	
+- We read `MID.toml` to find values for github (*$(github)*) and project name (*$(projectname)*).
+- We read `Project.toml` to find the current version value (*$(notebookversion)*).
+- We know the notebook is in a subdirectory of the repository root, so we use the notebook's parent directory as our base directory. (*$(dirname(pwd()))*).
+	
+"""
 
-	HTML("<blockquote  class='center'><h1>MID validation notebook</h1>" *
-		"<h3>" * projectname * "</h3>" 		*
-		"<p>On github at <a href=\"" * github * "\">" * github * "</a></p>" *
-		"<p>Editing project from repository in:</p><h5><i>" * dirname(pwd()) * "</i></h5></blockquote>")
 	
 end
 
 
-# ╔═╡ 8331f0b2-7900-11eb-2496-117104c3cfc1
+# ╔═╡ a85774e6-79b9-11eb-1fc8-030922c3d600
 md"""
 
-> ## Verification: DSE indexing
+> ### Repositories and image services to use
 
 """
 
-# ╔═╡ 8b46877e-78f7-11eb-2bcd-dbe2ca896eb0
-md"""
+# ╔═╡ 9d9b8144-79b8-11eb-2545-573129e6b22b
+md"> The functions"
 
-### Verify *completeness* of indexing
+# ╔═╡ 54a24382-78f1-11eb-24c8-198fc54ef67e
+# Create EditingRepository for this notebook's repository
+function editorsrepo() 
+    EditingRepository( dirname(pwd()), "editions", "dse", "config")
+end
 
+# ╔═╡ cc19dac4-78f6-11eb-2269-453e2b1664fd
+function ict()
+	"http://www.homermultitext.org/ict2/?"
+end
 
-*Check completeness of indexing by following linked thumb to overlay view in the Image Citation Tool*
-"""
+# ╔═╡ d1969604-78f6-11eb-3231-1570919758aa
+function iiifsvc()
+	IIIFservice("http://www.homermultitext.org/iipsrv",
+	"/project/homer/pyramidal/deepzoom"
+		)
+end
 
-# ╔═╡ 9b3a7606-78f7-11eb-1248-3f48982089c3
-md"*Height of thumbnail image*: $(@bind thumbht Slider(150:500, show_value=true))"
+# ╔═╡ f2f717e2-79b9-11eb-2868-1d7dd6157b38
+md"> Examples"
 
+# ╔═╡ fbfd4d66-79b9-11eb-2022-b73a3729367c
+editorsrepo()
 
-# ╔═╡ 7c715a3c-78f7-11eb-2be0-a71beeed0f3e
-md"""
-### Verify *accuracy* of indexing
+# ╔═╡ 0384f280-79ba-11eb-253b-07208c459884
+ict()
 
-*Check that diplomatic text and indexed image correspond.*
+# ╔═╡ 060202ca-79ba-11eb-0e42-bdaf0f165118
+iiifsvc()
 
+# ╔═╡ fbd9d710-79ba-11eb-2c14-4d479ee0bbfd
+md"> ### Texts in the repository"
 
-"""
+# ╔═╡ d10a6d0a-79b9-11eb-3a98-a95112fa0f3b
+md"> The functions"
 
-# ╔═╡ b4ab331a-78f6-11eb-33f9-c3fde8bed5d1
-md"""
-*Maximum width of image*: $(@bind w Slider(200:1200, show_value=true))
+# ╔═╡ 7f130fb6-78f1-11eb-3143-a7208d3a9559
+# Build a dataframe for catalog of all online texts
+function catalogedtexts(repo::EditingRepository)
+	allcataloged = fromfile(CatalogedText, repo.root * "/" * repo.configs * "/catalog.cex")
+	filter(row -> row.online, allcataloged)
+end
 
-"""
+# ╔═╡ e45a445c-78f1-11eb-3ef5-81b1b7adec63
+# Find CTS URNs of all texts cataloged as online
+function texturns(repo)
+    texts = catalogedtexts(repo)
+    texts[:, :urn]
+end
 
+# ╔═╡ 1829efee-78f2-11eb-06bd-ddad8fb26622
 
-# ╔═╡ 70f42154-7900-11eb-325d-9b20517cb744
-md"""
+function diplpassages(editorsrepo)
+    urnlist = texturns(editorsrepo)
+	try 
+		diplomaticarrays = map(u -> diplomaticnodes(editorsrepo, u), urnlist)
+		singlearray = reduce(vcat, diplomaticarrays)
+		filter(psg -> psg !== nothing, singlearray)
+	catch e
+		msg = "<div class='danger'><h1>🧨🧨 Markup error 🧨🧨</h1><p><b>$(e)</b></p></div>"
+		HTML(msg)
+	end
+end
 
-> ## Verification:  orthography
+# ╔═╡ 85119632-7903-11eb-3291-078d8c56087c
+function normedpassages(editorsrepo)
+    urnlist = texturns(editorsrepo)
+	try 
+		normedarrays = map(u -> normalizednodes(editorsrepo, u), urnlist)
+		singlearray = reduce(vcat, normedarrays)
+		filter(psg -> psg !== nothing, singlearray)
+	catch e
+		msg = "<div class='danger'><h1>🧨🧨 Markup error 🧨🧨</h1><p><b>$(e)</b></p></div>"
+		HTML(msg)
+	end
+end
 
-"""
+# ╔═╡ b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
+# True if last component of CTS URN passage is "ref"
+function isref(urn::CtsUrn)::Bool
+    # True if last part of 
+    passageparts(urn)[end] == "ref"
+end
 
-# ╔═╡ 6f96dc0c-78f6-11eb-2894-f7c474078043
-md"""
+# ╔═╡ 5c472d86-78f2-11eb-2ead-5196f07a5869
+# Collect diplomatic text for 
+function diplnode(urn, repo)
+	diplomaticpassages = repo |> diplpassages
+	generalized = dropversion(urn)
+	filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), diplomaticpassages)
+	#filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticpassages)
+    dropref = filter(cn -> ! isref(cn.urn), filtered)
+    
+	if length(dropref) > 0
+        content = collect(map(n -> n.text, dropref))
+        join(content, "\n")
+		#filtered[1].text
+	else 
+		""
+	end
+end
+
+# ╔═╡ 81656522-7903-11eb-2ed7-53a05f05ebd6
+
+# Select a node from list of normalized nodes
+function normednode(urn, repo)
+	normalizedpassages = repo |> normedpassages
+    generalized = dropversion(urn)
+    filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), normalizedpassages)
+	#filtered = filter(cn -> generalized == dropversion(urn), normalizedpassages)
+    dropref = filter(cn -> ! isref(cn.urn), filtered)
+    
+	if length(dropref) > 0
+        content = collect(map(n -> n.text, dropref))
+        join(content, "\n")
+		#filtered[1].text
+	else 
+		""
+	end
+end
+
+# ╔═╡ 202e654e-79ba-11eb-2836-efb2152d7096
+md"> Examples"
+
+# ╔═╡ 24fc269c-79ba-11eb-052f-8b45ca87b55c
+editorsrepo() |> catalogedtexts
+
+# ╔═╡ 460bce32-79ba-11eb-09de-7bb98dc9127b
+editorsrepo() |> texturns
+
+# ╔═╡ 57c4528e-79ba-11eb-0b2e-e11240803f48
+editorsrepo() |> diplpassages
+
+# ╔═╡ 711b6876-79ba-11eb-0882-815f8c4d0000
+editorsrepo() |> normedpassages
+
+# ╔═╡ 9e9db4f2-79ba-11eb-0ec5-35c7d95dcdca
+diplnode(CtsUrn("urn:cts:greekLit:tlg5026.e3.hmt:"), editorsrepo())
+
+# ╔═╡ a2efcc70-79ba-11eb-0e1d-dddac9e39f26
+normednode(CtsUrn("urn:cts:greekLit:tlg5026.e3.hmt:"), editorsrepo())
+
+# ╔═╡ dc194b30-79b9-11eb-3fe8-7fc1930bd1b9
+md"> ### DSE indexing"
+
+# ╔═╡ 283df9ae-7904-11eb-1b77-b74be19a859c
+# Wrap tokens with invalid orthography in HTML tag
+function formatToken(ortho, s)
+	
+	if validstring(ortho, s)
+			s
+	else
+		"""<span class='invalid'>$(s)</span>"""
+	end
+end
+
+# ╔═╡ 06d139d4-78f5-11eb-0247-df4126777208
+# Compose markdown for one row of display interleaving citable
+# text passage and indexed image.
+function mdForDseRow(row::DataFrameRow)
+	citation = "**" * passagecomponent(row.passage)  * "** "
+
+	
+	txt = diplnode(row.passage, editorsrepo())
+	caption = passagecomponent(row.passage)
+	
+	img = linkedMarkdownImage(ict(), row.image, iiifsvc(), w, caption)
+	
+	#urn
+	record = """$(citation) $(txt)
+
+$(img)
 
 ---
-
-> UI functions
-
 """
+	record
+end
 
 # ╔═╡ ac2d4f3c-7925-11eb-3f8c-957b9de49d88
 css = html"""
@@ -181,17 +310,6 @@ text-align: center;
 </style>
 """
 
-# ╔═╡ 283df9ae-7904-11eb-1b77-b74be19a859c
-# Wrap tokens with invalid orthography in HTML tag
-function formatToken(ortho, s)
-	
-	if validstring(ortho, s)
-			s
-	else
-		"""<span class='invalid'>$(s)</span>"""
-	end
-end
-
 # ╔═╡ 5734dd3a-78f6-11eb-3c69-35eabab3ac86
 md"""
 
@@ -202,113 +320,17 @@ md"""
 # ╔═╡ fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
 md">Examples of using fundamentals"
 
-# ╔═╡ 6db097fc-78f1-11eb-0713-59bf9132af2e
-md"> Fundamental functions for working with repository"
-
-# ╔═╡ 54a24382-78f1-11eb-24c8-198fc54ef67e
-# Create EditingRepository for this notebook's repository
-function editorsrepo() 
-    EditingRepository( dirname(pwd()), "editions", "dse", "config")
-end
-
 # ╔═╡ 669b0cc2-78f1-11eb-1050-eb5f80ff9aba
 editorsrepo()
-
-# ╔═╡ 7f130fb6-78f1-11eb-3143-a7208d3a9559
-# Build a dataframe for catalog of all online texts
-function catalogedtexts(repo::EditingRepository)
-	allcataloged = fromfile(CatalogedText, repo.root * "/" * repo.configs * "/catalog.cex")
-	filter(row -> row.online, allcataloged)
-end
 
 # ╔═╡ 9ef502ec-78f1-11eb-308d-abdbcfe66b77
 editorsrepo() |> catalogedtexts |> nrow
 
-# ╔═╡ e45a445c-78f1-11eb-3ef5-81b1b7adec63
-# Find CTS URNs of all texts cataloged as online
-function texturns(repo)
-    texts = catalogedtexts(repo)
-    texts[:, :urn]
-end
-
-# ╔═╡ e932b090-78f1-11eb-1f6c-2bd2a2805e5a
-editorsrepo() |> texturns
-
-# ╔═╡ 1829efee-78f2-11eb-06bd-ddad8fb26622
-
-function diplpassages(editorsrepo)
-    urnlist = texturns(editorsrepo)
-	try 
-		diplomaticarrays = map(u -> diplomaticnodes(editorsrepo, u), urnlist)
-		singlearray = reduce(vcat, diplomaticarrays)
-		filter(psg -> psg !== nothing, singlearray)
-	catch e
-		msg = "<div class='danger'><h1>🧨🧨 Markup error 🧨🧨</h1><p><b>$(e)</b></p></div>"
-		HTML(msg)
-	end
-end
-
-# ╔═╡ 2cad3228-78f2-11eb-37ec-03356d4f3f35
-editorsrepo() |> diplpassages
-
-# ╔═╡ 85119632-7903-11eb-3291-078d8c56087c
-function normedpassages(editorsrepo)
-    urnlist = texturns(editorsrepo)
-	try 
-		normedarrays = map(u -> normalizednodes(editorsrepo, u), urnlist)
-		singlearray = reduce(vcat, normedarrays)
-		filter(psg -> psg !== nothing, singlearray)
-	catch e
-		msg = "<div class='danger'><h1>🧨🧨 Markup error 🧨🧨</h1><p><b>$(e)</b></p></div>"
-		HTML(msg)
-	end
-end
-
-# ╔═╡ b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
-# True if last component of CTS URN passage is "ref"
-function isref(urn::CtsUrn)::Bool
-    # True if last part of 
-    passageparts(urn)[end] == "ref"
-end
-
-# ╔═╡ 5c472d86-78f2-11eb-2ead-5196f07a5869
-# Collect diplomatic text for 
-function diplnode(urn, repo)
-	diplomaticpassages = repo |> diplpassages
-	generalized = dropversion(urn)
-	filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), diplomaticpassages)
-	#filtered = filter(cn -> dropversion(cn.urn) == dropversion(urn), diplomaticpassages)
-    dropref = filter(cn -> ! isref(cn.urn), filtered)
-    
-	if length(dropref) > 0
-        content = collect(map(n -> n.text, dropref))
-        join(content, "\n")
-		#filtered[1].text
-	else 
-		""
-	end
-end
-
 # ╔═╡ 59496248-78f2-11eb-13f0-29da2e554f5f
 diplnode(CtsUrn("urn:cts:greekLit:tlg5026.e3.hmt:"), editorsrepo())
 
-# ╔═╡ 81656522-7903-11eb-2ed7-53a05f05ebd6
-
-# Select a node from list of normalized nodes
-function normednode(urn, normalizedpassages)
-    generalized = dropversion(urn)
-    filtered = filter(cn -> urncontains(generalized, dropversion(cn.urn)), normalizedpassages)
-	#filtered = filter(cn -> generalized == dropversion(urn), normalizedpassages)
-    dropref = filter(cn -> ! isref(cn.urn), filtered)
-    
-	if length(dropref) > 0
-        content = collect(map(n -> n.text, dropref))
-        join(content, "\n")
-		#filtered[1].text
-	else 
-		""
-	end
-end
+# ╔═╡ 6db097fc-78f1-11eb-0713-59bf9132af2e
+md"> Fundamental functions for working with repository"
 
 # ╔═╡ 58cdfb8e-78f3-11eb-2adb-7518ff306e2a
 # Find surfaces in reposistory
@@ -330,18 +352,12 @@ editorsrepo() |> uniquesurfaces
 # ╔═╡ a1c93e66-78f3-11eb-2ffc-3f5becceedc8
 #Create list of text labels for popupmenu
 function surfacemenu(editorsrepo)
-	loadem
+	#loadem
 	surfurns = EditorsRepo.surfaces(editorsrepo)
 	surflist = map(u -> u.urn, surfurns)
 	# Add a blank entry so popup menu can come up without a selection
 	pushfirst!( surflist, "")
 end
-
-# ╔═╡ c91e8142-78f3-11eb-3410-0d65bfb93f0a
-md"""###  Choose a surface to verify
-
-$(@bind surface Select(surfacemenu(editorsrepo())))
-"""
 
 # ╔═╡ af847106-78f3-11eb-153b-0312f0390fdc
 editorsrepo() |> surfacemenu
@@ -350,64 +366,6 @@ editorsrepo() |> surfacemenu
 function surfaceDse(surfurn, repo)
     alldse = dse_df(editorsrepo())
 	filter(row -> row.surface == surfurn, alldse)
-end
-
-# ╔═╡ cc19dac4-78f6-11eb-2269-453e2b1664fd
-function ict()
-	"http://www.homermultitext.org/ict2/?"
-end
-
-# ╔═╡ d1969604-78f6-11eb-3231-1570919758aa
-function iiifsvc()
-	IIIFservice("http://www.homermultitext.org/iipsrv",
-	"/project/homer/pyramidal/deepzoom"
-		)
-end
-
-# ╔═╡ 06d139d4-78f5-11eb-0247-df4126777208
-# Compose markdown for one row of display interleaving citable
-# text passage and indexed image.
-function mdForDseRow(row::DataFrameRow)
-	citation = "**" * passagecomponent(row.passage)  * "** "
-
-	
-	txt = diplnode(row.passage, editorsrepo())
-	caption = passagecomponent(row.passage)
-	
-	img = linkedMarkdownImage(ict(), row.image, iiifsvc(), w, caption)
-	
-	#urn
-	record = """$(citation) $(txt)
-
-$(img)
-
----
-"""
-	record
-end
-
-# ╔═╡ b4a23c4c-78f4-11eb-20d3-71eac58097c2
-# Display for visual validation of DSE indexing
-begin
-
-	if surface == ""
-		md""
-	else
-		surfDse = surfaceDse(Cite2Urn(surface), editorsrepo())
-		cellout = []
-		
-		try
-			for r in eachrow(surfDse)
-				push!(cellout, mdForDseRow(r))
-			end
-
-		catch e
-			html"<p class='danger'>Problem with XML edition: see message below</p>"
-		end
-		Markdown.parse(join(cellout,"\n"))				
-		
-	end
-
 end
 
 # ╔═╡ 0150956a-78f8-11eb-3ebd-793eefb046cb
@@ -438,16 +396,6 @@ function completenessView(urn, repo)
 	end
 	join(mdstrings, " ")
 
-end
-
-# ╔═╡ 055b4a92-78f8-11eb-3b27-478beed207d2
-# Display link for completeness view
-begin
-	if isempty(surface)
-		md""
-	else
-		Markdown.parse(completenessView(Cite2Urn(surface), editorsrepo()))
-	end
 end
 
 # ╔═╡ 36599fea-7902-11eb-2524-3bd9026f017c
@@ -489,69 +437,50 @@ function tokenizeRow(row, editorsrepo)
 	end
 end
 
-# ╔═╡ 7a11f584-7905-11eb-0ea6-1b8543a4e471
-begin
-	if isempty(surface)
-		md""
-	else
-		sdse = surfaceDse(Cite2Urn(surface), editorsrepo())
-		htmlout = []
-		try 
-			for r in eachrow(sdse)
-				push!(htmlout, tokenizeRow(r, editorsrepo()))
-			end
-		catch  e
-			md"Error. $(e)"
-		end
-		#HTML(join(htmlout,"\n"))
-		HTML(join(htmlout,"\n"))
-		
-		#Markdown.parse(join(map(i -> string("- ", i), htmlout), "\n"))
-	end
-end
-
 # ╔═╡ Cell order:
 # ╟─d859973a-78f0-11eb-05a4-13dba1f0cb9e
 # ╟─493a315c-78f2-11eb-08e1-137d9a802802
 # ╟─4aacb152-79b2-11eb-349a-cfe86f526399
-# ╟─1e9d6620-78f3-11eb-3f66-7748e8758e08
-# ╟─c91e8142-78f3-11eb-3410-0d65bfb93f0a
-# ╟─8331f0b2-7900-11eb-2496-117104c3cfc1
-# ╟─8b46877e-78f7-11eb-2bcd-dbe2ca896eb0
-# ╟─9b3a7606-78f7-11eb-1248-3f48982089c3
-# ╟─055b4a92-78f8-11eb-3b27-478beed207d2
-# ╟─7c715a3c-78f7-11eb-2be0-a71beeed0f3e
-# ╟─b4ab331a-78f6-11eb-33f9-c3fde8bed5d1
-# ╟─b4a23c4c-78f4-11eb-20d3-71eac58097c2
-# ╟─70f42154-7900-11eb-325d-9b20517cb744
-# ╟─7a11f584-7905-11eb-0ea6-1b8543a4e471
-# ╟─6f96dc0c-78f6-11eb-2894-f7c474078043
-# ╟─ac2d4f3c-7925-11eb-3f8c-957b9de49d88
+# ╟─a85774e6-79b9-11eb-1fc8-030922c3d600
+# ╟─9d9b8144-79b8-11eb-2545-573129e6b22b
+# ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
+# ╟─cc19dac4-78f6-11eb-2269-453e2b1664fd
+# ╟─d1969604-78f6-11eb-3231-1570919758aa
+# ╟─f2f717e2-79b9-11eb-2868-1d7dd6157b38
+# ╠═fbfd4d66-79b9-11eb-2022-b73a3729367c
+# ╠═0384f280-79ba-11eb-253b-07208c459884
+# ╠═060202ca-79ba-11eb-0e42-bdaf0f165118
+# ╟─fbd9d710-79ba-11eb-2c14-4d479ee0bbfd
+# ╟─d10a6d0a-79b9-11eb-3a98-a95112fa0f3b
+# ╟─7f130fb6-78f1-11eb-3143-a7208d3a9559
+# ╟─e45a445c-78f1-11eb-3ef5-81b1b7adec63
+# ╟─1829efee-78f2-11eb-06bd-ddad8fb26622
+# ╟─85119632-7903-11eb-3291-078d8c56087c
+# ╟─5c472d86-78f2-11eb-2ead-5196f07a5869
+# ╟─81656522-7903-11eb-2ed7-53a05f05ebd6
+# ╟─b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
+# ╟─202e654e-79ba-11eb-2836-efb2152d7096
+# ╠═24fc269c-79ba-11eb-052f-8b45ca87b55c
+# ╠═460bce32-79ba-11eb-09de-7bb98dc9127b
+# ╠═57c4528e-79ba-11eb-0b2e-e11240803f48
+# ╠═711b6876-79ba-11eb-0882-815f8c4d0000
+# ╠═9e9db4f2-79ba-11eb-0ec5-35c7d95dcdca
+# ╠═a2efcc70-79ba-11eb-0e1d-dddac9e39f26
+# ╟─dc194b30-79b9-11eb-3fe8-7fc1930bd1b9
 # ╟─283df9ae-7904-11eb-1b77-b74be19a859c
 # ╟─442b37f6-791a-11eb-16b7-536a71aee034
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
 # ╟─0150956a-78f8-11eb-3ebd-793eefb046cb
+# ╟─ac2d4f3c-7925-11eb-3f8c-957b9de49d88
 # ╟─5734dd3a-78f6-11eb-3c69-35eabab3ac86
 # ╟─fc25dd3e-78f2-11eb-22a8-edd5a1f0470d
 # ╟─669b0cc2-78f1-11eb-1050-eb5f80ff9aba
 # ╠═9ef502ec-78f1-11eb-308d-abdbcfe66b77
-# ╠═e932b090-78f1-11eb-1f6c-2bd2a2805e5a
-# ╠═2cad3228-78f2-11eb-37ec-03356d4f3f35
 # ╠═59496248-78f2-11eb-13f0-29da2e554f5f
 # ╠═6482a0ea-78f3-11eb-1f0d-b9803c01e70c
 # ╠═af847106-78f3-11eb-153b-0312f0390fdc
 # ╟─6db097fc-78f1-11eb-0713-59bf9132af2e
-# ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
-# ╟─7f130fb6-78f1-11eb-3143-a7208d3a9559
-# ╟─e45a445c-78f1-11eb-3ef5-81b1b7adec63
-# ╟─1829efee-78f2-11eb-06bd-ddad8fb26622
-# ╟─5c472d86-78f2-11eb-2ead-5196f07a5869
-# ╟─85119632-7903-11eb-3291-078d8c56087c
-# ╟─81656522-7903-11eb-2ed7-53a05f05ebd6
-# ╟─b30ccd06-78f2-11eb-2b03-8bff7ab09aa6
 # ╟─58cdfb8e-78f3-11eb-2adb-7518ff306e2a
-# ╟─a1c93e66-78f3-11eb-2ffc-3f5becceedc8
+# ╠═a1c93e66-78f3-11eb-2ffc-3f5becceedc8
 # ╟─37e5ea20-78f4-11eb-1dff-c36418158c7c
-# ╟─cc19dac4-78f6-11eb-2269-453e2b1664fd
-# ╟─d1969604-78f6-11eb-3231-1570919758aa
 # ╟─36599fea-7902-11eb-2524-3bd9026f017c
