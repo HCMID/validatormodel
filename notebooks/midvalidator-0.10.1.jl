@@ -38,6 +38,15 @@ begin
 	Pkg.status()
 end
 
+# ╔═╡ c8c4f0a0-7b50-11eb-0be9-27b71bddbc9f
+html"""
+<style>
+.splash {
+	background-color: #f0f7fb;
+}
+</style>
+"""
+
 # ╔═╡ 1e9d6620-78f3-11eb-3f66-7748e8758e08
 @bind loadem Button("Load/reload data")
 
@@ -45,7 +54,15 @@ end
 begin
 	loadem
 	nbversion = Pkg.TOML.parse(read("Project.toml", String))["version"]
-	md"This is version **$(nbversion)** of the MID validation notebook."
+	md"""
+	## Validating notebook
+	
+	- How to edit: see the [MID handbook](https://hcmid.github.io/tutorial2021/)
+	- Version: this is version **$(nbversion)** of the MID validation notebook.
+	
+	
+	
+	"""
 end
 
 # ╔═╡ 4aacb152-79b2-11eb-349a-cfe86f526399
@@ -54,10 +71,31 @@ begin
 	github = Pkg.TOML.parse(read("MID.toml", String))["github"]
 	projectname =	Pkg.TOML.parse(read("MID.toml", String))["projectname"]
 
-	HTML("<blockquote  class='center'><h1>MID validation notebook</h1>" *
-		"<h3>" * projectname * "</h3>" 		*
-		"<p>On github at <a href=\"" * github * "\">" * github * "</a></p>" *
-		"<p>Editing project from repository in:</p><h5><i>" * dirname(pwd()) * "</i></h5></blockquote>")
+	pg = string(
+		
+		"<blockquote  class='splash'>",
+		"<div class=\"center\">",
+		"<h2>Project: <em>",
+		projectname,
+		"</em>",
+		"</h2>",
+		"</div>",
+		"<ul>",
+		"<li>On github at:  ",
+		"<a href=\"" * github * "\">" * github * "</a>",
+		"</li>",
+		
+		"<li>Repository cloned in: ",
+		"<strong>",
+		dirname(pwd()),
+		"</strong>",
+		"</li>",
+		"</ul>",
+
+		"</blockquote>"
+		)
+	
+	HTML(pg)
 	
 end
 
@@ -507,6 +545,7 @@ end
 # ╟─d859973a-78f0-11eb-05a4-13dba1f0cb9e
 # ╟─493a315c-78f2-11eb-08e1-137d9a802802
 # ╟─4aacb152-79b2-11eb-349a-cfe86f526399
+# ╟─c8c4f0a0-7b50-11eb-0be9-27b71bddbc9f
 # ╟─1e9d6620-78f3-11eb-3f66-7748e8758e08
 # ╟─c91e8142-78f3-11eb-3410-0d65bfb93f0a
 # ╟─8331f0b2-7900-11eb-2496-117104c3cfc1
