@@ -30,7 +30,7 @@ begin
 end
 
 # ╔═╡ 3766b28a-79be-11eb-2731-b55581ccd19f
-md"Activate the notebook's environment, load all libraries, use  `Pkg.status()` to display version numbers of all librariesin the terminal where you started Pluto."
+md"Activate the notebook's environment, load all libraries, use  `Pkg.status()` to display version numbers of all libraries in the terminal where you started Pluto."
 
 # ╔═╡ 1fd65eae-79be-11eb-1599-875ca1d8e6f4
 md"># Under the hood of the MID validator notebook"
@@ -364,6 +364,38 @@ function completenessView(urn, repo)
 
 end
 
+# ╔═╡ 6c24a126-7b5d-11eb-07eb-6f437bbc869a
+# Format HTML for EditingRepository's reporting on cataloging status.
+function catalogcheck(editorsrepo::EditingRepository)
+	cites = citation_df(editorsrepo)
+	if filesmatch(editorsrepo, cites)
+		md"✅XML files in repository match catalog entries."
+	else
+		htmlstrings = []
+		
+		missingfiles = filesonly(editorsrepo, cites)
+		if ! isempty(missingfiles)
+			fileitems = map(f -> "<li>" * f * "</li>", missingfiles)
+			filelist = "<p>Uncataloged files found on disk: </p><ul>" * join(fileitems,"\n") * "</ul>"
+			
+			hdr = "<div class='warn'><h1>⚠️ Warning</h1>"
+			tail = "</div>"
+			badfileshtml = join([hdr, filelist, tail],"\n")
+			push!(htmlstrings, badfileshtml)
+		end
+		
+		notondisk = citedonly(editorsrepo, cites)
+		if ! isempty(notondisk)
+			nofilelist = "<p>Configured files not found on disk: </p><ul>" * join(nofiletems, "\n") * "</ul>"
+			hdr = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨 </h1>" 
+			tail = "</div>"
+			nofilehtml = join([hdr, nofilelist, tail],"\n")
+			push!(htmlstrings,nofilehtml)
+		end
+		HTML(join(htmlstrings,"\n"))
+	end
+end
+
 # ╔═╡ ac2d4f3c-7925-11eb-3f8c-957b9de49d88
 css = html"""
 <style>
@@ -482,6 +514,7 @@ editorsrepo() |> surfacemenu
 # ╟─442b37f6-791a-11eb-16b7-536a71aee034
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
 # ╟─0150956a-78f8-11eb-3ebd-793eefb046cb
+# ╟─6c24a126-7b5d-11eb-07eb-6f437bbc869a
 # ╟─ac2d4f3c-7925-11eb-3f8c-957b9de49d88
 # ╟─1b381d96-79bf-11eb-2b39-4d510da858f3
 # ╠═af847106-78f3-11eb-153b-0312f0390fdc

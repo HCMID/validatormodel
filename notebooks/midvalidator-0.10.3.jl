@@ -293,6 +293,18 @@ begin
 	editorsrepo() |> catalogcheck
 end
 
+# ╔═╡ 78df8c78-7b5a-11eb-3741-b5cf46962986
+function testcataloging()
+	repo = editorsrepo()
+	cites = citation_df(repo)
+	filesmatch(repo, cites)
+	filesonly(repo, cites)
+	citedonly(repo, cites)
+end
+
+# ╔═╡ 89516570-7b5a-11eb-3863-adb388fa963f
+testcataloging()
+
 # ╔═╡ cc19dac4-78f6-11eb-2269-453e2b1664fd
 # Base URL for an ImageCitationTool
 function ict()
@@ -608,6 +620,8 @@ end
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
 # ╟─0150956a-78f8-11eb-3ebd-793eefb046cb
 # ╠═62550016-7b59-11eb-1f01-3de7603752cc
+# ╠═78df8c78-7b5a-11eb-3741-b5cf46962986
+# ╠═89516570-7b5a-11eb-3863-adb388fa963f
 # ╟─ac2d4f3c-7925-11eb-3f8c-957b9de49d88
 # ╟─c5d65e86-79b3-11eb-2c3f-d5e5c8efcc5a
 # ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
