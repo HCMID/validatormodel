@@ -499,10 +499,7 @@ begin
 		catch  e
 			md"Error. $(e)"
 		end
-		#HTML(join(htmlout,"\n"))
 		HTML(join(htmlout,"\n"))
-		
-		#Markdown.parse(join(map(i -> string("- ", i), htmlout), "\n"))
 	end
 end
 
