@@ -499,10 +499,7 @@ begin
 		catch  e
 			md"Error. $(e)"
 		end
-		#HTML(join(htmlout,"\n"))
 		HTML(join(htmlout,"\n"))
-		
-		#Markdown.parse(join(map(i -> string("- ", i), htmlout), "\n"))
 	end
 end
 
@@ -520,7 +517,7 @@ end
 # ╟─b4ab331a-78f6-11eb-33f9-c3fde8bed5d1
 # ╟─b4a23c4c-78f4-11eb-20d3-71eac58097c2
 # ╟─70f42154-7900-11eb-325d-9b20517cb744
-# ╠═7a11f584-7905-11eb-0ea6-1b8543a4e471
+# ╟─7a11f584-7905-11eb-0ea6-1b8543a4e471
 # ╟─6f96dc0c-78f6-11eb-2894-f7c474078043
 # ╟─509c782a-79b4-11eb-0801-a1d0c9b4ffb3
 # ╟─283df9ae-7904-11eb-1b77-b74be19a859c
