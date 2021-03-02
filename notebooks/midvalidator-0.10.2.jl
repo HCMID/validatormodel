@@ -39,7 +39,7 @@ begin
 end
 
 # ╔═╡ 5495ea1c-7b56-11eb-39ed-d1078b0808b0
-md"> ## Cataloging"
+md"> ## Validation: cataloging texts"
 
 # ╔═╡ c8c4f0a0-7b50-11eb-0be9-27b71bddbc9f
 html"""
@@ -289,7 +289,7 @@ end
 
 # ╔═╡ 6a94c362-7b59-11eb-2a6f-77375afae47e
 begin
-	#loadem
+	loadem
 	editorsrepo() |> catalogcheck
 end
 
@@ -607,7 +607,7 @@ end
 # ╟─442b37f6-791a-11eb-16b7-536a71aee034
 # ╟─06d139d4-78f5-11eb-0247-df4126777208
 # ╟─0150956a-78f8-11eb-3ebd-793eefb046cb
-# ╠═62550016-7b59-11eb-1f01-3de7603752cc
+# ╟─62550016-7b59-11eb-1f01-3de7603752cc
 # ╟─ac2d4f3c-7925-11eb-3f8c-957b9de49d88
 # ╟─c5d65e86-79b3-11eb-2c3f-d5e5c8efcc5a
 # ╟─54a24382-78f1-11eb-24c8-198fc54ef67e
