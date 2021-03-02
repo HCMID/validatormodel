@@ -17,6 +17,7 @@ using Lycian
 using Markdown
 using Orthography
 using PolytonicGreek
+using EzXML
 
 export editorsrepo, catalogedtexts, catalogedurns
 export diplpassages, diplnode, normednode, normedpassages
@@ -226,4 +227,41 @@ function formatToken(ortho, s)
 	end
 end
 
+end
+
+
+function xmlcorpus(repo::EditingRepository)
+    textcat = textcatalog(repo, "catalog.cex")
+    online = filter(row -> row.online, textcat)
+    corpora = []
+    for txt in online
+        urn = CtsUrn(txt.urn)
+        reader = o2converter(repo, urn) |> Meta.parse |> eval
+        xml = textforurn(repo, urn)	
+        push!(corpora, reader(xml, urn))
+    end
+    composite_array(corpora)
+end
+
+
+function indexnames(c::CitableCorpus)
+    dict = Dict()
+    for cn in c.corpus
+        xml = parsexml(cn.text)
+        pns = findall("//persName", xml)
+        for pn in pns
+            if haskey(pn, "n")
+                n = pn["n"]
+                if haskey(dict, n)
+                    #Already seen
+                    prev = dict[n]
+                    push!(dict, n => push!(prev, cn.urn))
+                else
+                    #First time
+                    push!(dict, n => [cn.urn])
+                end
+            end 
+        end
+    end
+    dict
 end
