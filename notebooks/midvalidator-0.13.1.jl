@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.7
+# v0.14.8
 
 using Markdown
 using InteractiveUtils
@@ -17,7 +17,7 @@ end
 begin
 	import Pkg
 	Pkg.activate(".")
-	Pkg.instantiate()	
+	Pkg.update()	
 	using PlutoUI
 	using CitableText
 	using CitableObject
