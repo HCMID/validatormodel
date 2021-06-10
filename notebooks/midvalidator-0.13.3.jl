@@ -20,6 +20,7 @@ begin
 	Pkg.update()	
 	using PlutoUI
 	using CitableText
+	using CitableCorpus
 	using CitableObject
 	using CitableImage
 	using CitablePhysicalText
@@ -302,6 +303,21 @@ md"""###  Choose a surface to verify
 $(@bind surface Select(surfacemenu(editorsrepo())))
 """
 
+# ╔═╡ d48582b0-2646-451d-afd3-f07182f02d43
+begin 
+	catalog = textcatalog(editorsrepo(), "catalog.cex")
+	#=
+	u = CtsUrn("urn:cts:trmilli:tl.3.v1:1") |> droppassage
+	xsurfDse = surfaceDse(editorsrepo(), Cite2Urn(surface) )
+	xrow = xsurfDse[1, :]
+
+	xrow.passage
+	worktitle(catalog, xrow.passage)
+	#urnlist = catalog[:, :urn]
+	=#
+
+end
+
 # ╔═╡ 3cb683e2-5350-4262-b693-0cddee340254
 # Compose HTML to display compliance with configured orthography
 function orthography()
@@ -446,7 +462,7 @@ end
 # ╟─9e6f8bf9-4aa7-4253-ba3f-695b13ca6def
 # ╟─06bfa57d-2bbb-498e-b68e-2892d7186245
 # ╟─ad541819-7d4f-4812-8476-8a307c5c1f87
-# ╟─73839e47-8199-4755-8d55-362185907c45
+# ╠═73839e47-8199-4755-8d55-362185907c45
 # ╟─3dd88640-e31f-4400-9c34-2adc2cd4c532
 # ╟─3b04a423-6d0e-4221-8540-ad457d0bb65e
 # ╟─ea1b6e21-7625-4f8f-a345-8e96449c0757
@@ -454,7 +470,8 @@ end
 # ╟─066b9181-9d41-4013-81b2-bcc37878ab68
 # ╟─5cba9a9c-74cc-4363-a1ff-026b7b3999ea
 # ╟─71d7a180-5742-415c-9013-d3d1c0ca920c
-# ╟─59fbd3de-ea0e-4b96-800c-d5d8a7272922
+# ╠═d48582b0-2646-451d-afd3-f07182f02d43
+# ╠═59fbd3de-ea0e-4b96-800c-d5d8a7272922
 # ╟─3cb683e2-5350-4262-b693-0cddee340254
 # ╟─1814e3b1-8711-4afd-9987-a41d85fd56d9
 # ╟─3dd9b96b-8bca-4d5d-98dc-a54e00c75030
