@@ -34,6 +34,7 @@ begin
 	using Orthography
 	using ManuscriptOrthography
 	using PolytonicGreek
+	using Unicode
 	Pkg.status()
 end
 
@@ -194,7 +195,9 @@ end
 # Wrap tokens with invalid orthography in HTML tag
 function formatToken(ortho, s)
 	
-	if validstring(ortho, s)
+	if isempty(strip(s))
+		s
+	elseif validstring(ortho, s)
 			s
 	else
 		"""<span class='invalid'>$(s)</span>"""
@@ -228,10 +231,14 @@ css = html"""
 	color: red;
 	}
 
- .invalid {
+ .invalidtoken {
 	text-decoration-line: underline;
   	text-decoration-style: wavy;
   	text-decoration-color: red;
+}
+ .invalid {
+	color: red;
+	border: solid;
 }
  .center {
 text-align: center;
@@ -309,12 +316,15 @@ function orthography()
 		for row in eachrow(sdse)
 			tidy = EditorsRepo.baseurn(row.passage)
 			ortho = orthographyforurn(textconfig, tidy)
-			chunks = normednodetext(editorsrepo(), row.passage) |> split
+			
+			
+			#chunks = normednodetext(editorsrepo(), row.passage) |> split
+			chunks = graphemes(normednodetext(editorsrepo(), row.passage)) |> collect
 			html = []
 			for chunk in chunks
 				push!(html, formatToken(ortho, chunk))
 			end
-			htmlrow =  string("<p><b>$(tidy.urn)</b> ", join(html," "), "</p>")
+			htmlrow =  string("<p><b>$(tidy.urn)</b> ", join(html), "</p>")
 			push!(htmlrows,htmlrow)
 		end
 		HTML(join(htmlrows,"\n"))
