@@ -17,6 +17,8 @@ end
 let
 	using CitableText
 	using CitableCorpus
+	using DataFrames
+	using EditorsRepo
 	using PlutoUI
 end
 
@@ -42,6 +44,9 @@ begin
 		"</ul>")
 	HTML(pg)
 end
+
+# ╔═╡ 06e8f120-355a-40b0-ac2c-8eff2316bcde
+@bind loadem Button("Load/reload data")
 
 # ╔═╡ d204917f-cbc4-4c0f-9ee4-c28e3b00ee19
 md"> ## Verification: DSE indexing"
@@ -76,16 +81,285 @@ md"""
 
 """
 
+# ╔═╡ bbed8bba-f869-4dbc-9db3-04755cfdd5e8
+md"""
+
+---
+
+---
+
+
+> ### Functions
+
+You don't need to look at the rest of the notebook unless you're curious about how it works.  The following cells define the functions that retreive data from your editing repository, validate it, and format it for visual verification.
+
+"""
+
+# ╔═╡ 4eb11515-a060-4641-82d2-e8ef11fbbef9
+md"> Formatting"
+
+
+# ╔═╡ c34b8953-3623-4968-a899-1db5c73ed20a
+# Format HTML for EditingRepository's reporting on cataloging status.
+function catalogcheck(editorsrepo::EditingRepository)
+	cites = citation_df(editorsrepo)
+	if filesmatch(editorsrepo, cites)
+		md"✅XML files in repository match catalog entries."
+	else
+		htmlstrings = []
+		
+		missingfiles = filesonly(editorsrepo, cites)
+		if ! isempty(missingfiles)
+			fileitems = map(f -> "<li>" * f * "</li>", missingfiles)
+			filelist = "<p>Uncataloged files found on disk: </p><ul>" * join(fileitems,"\n") * "</ul>"
+			
+			hdr = "<div class='warn'><h1>⚠️ Warning</h1>"
+			tail = "</div>"
+			badfileshtml = join([hdr, filelist, tail],"\n")
+			push!(htmlstrings, badfileshtml)
+		end
+		
+		notondisk = citedonly(editorsrepo, cites)
+		if ! isempty(notondisk)
+			nofilelist = "<p>Configured files not found on disk: </p><ul>" * join(fileitems , "\n") * "</ul>"
+			hdr = "<div class='danger'><h1>🧨🧨 Configuration error 🧨🧨 </h1>" 
+			tail = "</div>"
+			nofilehtml = join([hdr, nofilelist, tail],"\n")
+			push!(htmlstrings,nofilehtml)
+		end
+		HTML(join(htmlstrings,"\n"))
+	end
+
+end
+
+# ╔═╡ d65636ec-12ed-44f3-be97-5dcc527d0782
+#Create list of text labels for popupmenu
+function surfacemenu(editorsrepo)
+	loadem
+	surfurns = EditorsRepo.surfaces(editorsrepo)
+	surflist = map(u -> u.urn, surfurns)
+	# Add a blank entry so popup menu can come up without a selection
+	pushfirst!( surflist, "")
+end
+
+# ╔═╡ bf186270-4ac1-4715-b4e5-f120a6debfd3
+# Wrap tokens with invalid orthography in HTML tag
+function formatToken(ortho, s)
+	
+	if isempty(strip(s))
+		s
+	elseif validstring(ortho, s)
+			s
+	else
+		"""<span class='invalid'>$(s)</span>"""
+	end
+end
+
+# ╔═╡ 0e181c10-06d9-4795-be9d-e644a8751528
+css = html"""
+<style>
+.splash {
+	background-color: #f0f7fb;
+}
+.danger {
+     background-color: #fbf0f0;
+     border-left: solid 4px #db3434;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+	  }
+.warn {
+     background-color: 	#ffeeab;
+     border-left: solid 4px  black;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+  }
+
+  .danger h1 {
+	color: red;
+	}
+
+ .invalidtoken {
+	text-decoration-line: underline;
+  	text-decoration-style: wavy;
+  	text-decoration-color: red;
+}
+ .invalid {
+	color: red;
+	border: solid;
+}
+ .center {
+text-align: center;
+}
+.highlight {
+  background: yellow;  
+}
+.urn {
+	color: silver;
+}
+  .note { -moz-border-radius: 6px;
+     -webkit-border-radius: 6px;
+     background-color: #eee;
+     background-image: url(../Images/icons/Pencil-48.png);
+     background-position: 9px 0px;
+     background-repeat: no-repeat;
+     border: solid 1px black;
+     border-radius: 6px;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+    font-style: italic;
+ }
+
+
+.instructions {
+     background-color: #f0f7fb;
+     border-left: solid 4px  #3498db;
+     line-height: 18px;
+     overflow: hidden;
+     padding: 15px 60px;
+   font-style: normal;
+  }
+
+
+
+</style>
+"""
+
+# ╔═╡ 8893c76b-33ca-49fe-9b18-8b1e8554f698
+md"> Repository and image services"
+
+# ╔═╡ cd2adfb3-dec2-4116-8a09-9f05f2d47c9a
+# Create EditingRepository for this notebook's repository
+# Since the notebook is in the `notebooks` subdirectory of the repository,
+# we can just use the parent directory (dirname() in julia) for the
+# root directory.
+function editorsrepo() 
+    repository(dirname(pwd()))
+end
+
+# ╔═╡ 31886ff3-eaa2-46e8-9d91-11fcaa3be359
+md"""###  Choose a surface to verify
+
+$(@bind surface Select(surfacemenu(editorsrepo())))
+"""
+
+# ╔═╡ a01a6437-8382-4846-a1f1-8a235d9be0df
+# Compose HTML to display compliance with configured orthography
+function orthography()
+	if isempty(surface)
+		md""
+	else
+	
+		textconfig = citation_df(editorsrepo())
+		catalog = textcatalog_df(editorsrepo())
+		sdse = EditorsRepo.surfaceDse(editorsrepo(), Cite2Urn(surface))
+		
+		htmlrows = []
+		for row in eachrow(sdse)
+			tidy = EditorsRepo.baseurn(row.passage)
+			ortho = orthographyforurn(textconfig, tidy)
+			title = worktitle(catalog, row.passage)
+			
+			#chunks = normednodetext(editorsrepo(), row.passage) |> split
+			chunks = graphemes(normednodetext(editorsrepo(), row.passage)) |> collect
+			html = []
+			for chunk in chunks
+				push!(html, formatToken(ortho, chunk))
+			end
+			
+			psg = passagecomponent(tidy)
+			htmlrow =  string("<p><i>$title</>, <b>$psg</b> ", join(html), "</p>")
+			push!(htmlrows,htmlrow)
+		end
+		HTML(join(htmlrows,"\n"))
+	end
+end
+
+# ╔═╡ 538e6344-2f9b-40e4-baa7-a21d1d5451e8
+# Base URL for an ImageCitationTool
+function ict()
+	"http://www.homermultitext.org/ict2/?"
+end
+
+# ╔═╡ e761fa5d-3f7e-4ec1-bd9d-cf9687713163
+# API to work with an IIIF image service
+function iiifsvc()
+	IIIFservice("http://www.homermultitext.org/iipsrv",
+	"/project/homer/pyramidal/deepzoom")
+end
+
+# ╔═╡ 5f0bf4d5-2d80-49c7-a1f1-c3028c86f6c5
+
+# Compose markdown for thumbnail images linked to ICT with overlay of all
+# DSE regions.
+function completenessView(urn, repo)
+     
+	# Group images with ROI into a dictionary keyed by image
+	# WITHOUT RoI.
+	grouped = Dict()
+	for row in eachrow(surfaceDse(repo, urn))
+		trimmed = CitableObject.dropsubref(row.image)
+		if haskey(grouped, trimmed)
+			push!(grouped[trimmed], row.image)
+		else
+			grouped[trimmed] = [row.image]
+		end
+	end
+
+	mdstrings = []
+	for k in keys(grouped)
+		thumb = markdownImage(k, iiifsvc(), thumbht)
+		params = map(img -> "urn=" * img.urn * "&", grouped[k]) 
+		lnk = ict() * join(params,"") 
+		push!(mdstrings, "[$(thumb)]($(lnk))")
+		
+	end
+	join(mdstrings, " ")
+
+end
+
+# ╔═╡ 0869e356-ebfa-46d2-8413-6ddc452a6165
+# Compose markdown for one row of display interleaving citable
+# text passage and indexed image.
+function accuracyView(row::DataFrameRow)
+	textcatalog = textcatalog_df(editorsrepo())
+    title 	= worktitle(textcatalog, row.passage)
+	citation = string("*", title, "*, **" * passagecomponent(row.passage)  * "** ")
+
+	
+	txt = diplnodetext(editorsrepo(), row.passage, )
+	caption = passagecomponent(row.passage)
+	
+	img = linkedMarkdownImage(ict(), row.image, iiifsvc(); ht=w, caption=caption)
+	
+	#urn
+	record = """$(citation) $(txt)
+
+$(img)
+
+---
+"""
+	record
+end
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [compat]
 CitableCorpus = "~0.2.0"
 CitableText = "~0.9.0"
+DataFrames = "~1.1.1"
+EditorsRepo = "~0.11.3"
 PlutoUI = "~0.7.9"
 
 [deps]
 CitableCorpus = "cf5ac11a-93ef-4a1a-97a3-f6af101603b5"
 CitableText = "41e66566-473b-49d4-85b7-da83b66615d8"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+EditorsRepo = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 """
 
@@ -98,6 +372,12 @@ uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
 
 [[Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
+
+[[AtticGreek]]
+deps = ["DocStringExtensions", "Documenter", "Orthography", "PolytonicGreek", "Test", "Unicode"]
+git-tree-sha1 = "33d9ae46379002ec79e0925d88e679cc5da94c72"
+uuid = "330c8319-f7ed-461a-8c52-cee5da4c0892"
+version = "0.6.0"
 
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -125,6 +405,24 @@ deps = ["CSV", "CitableText", "DataFrames", "DocStringExtensions", "Documenter",
 git-tree-sha1 = "aabe6a98c1f5eb335ba0b3d0cbb5c82979c88c73"
 uuid = "cf5ac11a-93ef-4a1a-97a3-f6af101603b5"
 version = "0.2.0"
+
+[[CitableObject]]
+deps = ["CitableBase", "DocStringExtensions", "Documenter", "Test"]
+git-tree-sha1 = "dadf5b024b5d104fa03e7596c915858b06605dc3"
+uuid = "e2b2f5ea-1cd8-4ce8-9b2b-05dad64c2a57"
+version = "0.5.1"
+
+[[CitablePhysicalText]]
+deps = ["CitableObject", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "Test"]
+git-tree-sha1 = "aedff017c56a6feab41b802b5ce85eef0128abe5"
+uuid = "e38a874e-a7c2-4ff3-8dea-81ae2e5c9b07"
+version = "0.2.6"
+
+[[CitableTeiReaders]]
+deps = ["CitableCorpus", "CitableText", "DocStringExtensions", "Documenter", "EzXML", "Test"]
+git-tree-sha1 = "82e0d3a70d8a689b6f8b0f764591d6bbdc0f6d16"
+uuid = "b4325aa9-906c-402e-9c3f-19ab8a88308e"
+version = "0.6.4"
 
 [[CitableText]]
 deps = ["BenchmarkTools", "CitableBase", "DocStringExtensions", "Documenter", "Test"]
@@ -193,6 +491,24 @@ version = "0.26.3"
 deps = ["ArgTools", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 
+[[EditionBuilders]]
+deps = ["CitableCorpus", "CitableText", "DocStringExtensions", "Documenter", "EzXML", "Test"]
+git-tree-sha1 = "5fdf695f515c1146a2604f39e1b7a4f93d28b601"
+uuid = "2fb66cca-c1f8-4a32-85dd-1a01a9e8cd8f"
+version = "0.4.4"
+
+[[EditorsRepo]]
+deps = ["AtticGreek", "CSV", "CitableBase", "CitableCorpus", "CitableObject", "CitablePhysicalText", "CitableTeiReaders", "CitableText", "DataFrames", "DocStringExtensions", "Documenter", "EditionBuilders", "Lycian", "ManuscriptOrthography", "Orthography", "PolytonicGreek", "Test"]
+git-tree-sha1 = "30b5c7ad064b50982acf1c8227aa1f9d42e83170"
+uuid = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
+version = "0.11.3"
+
+[[EzXML]]
+deps = ["Printf", "XML2_jll"]
+git-tree-sha1 = "0fa3b52a04a4e210aeb1626def9c90df3ae65268"
+uuid = "8f5d6c58-4d21-5cfd-889c-e3ad7ee6a615"
+version = "1.1.0"
+
 [[Formatting]]
 deps = ["Printf"]
 git-tree-sha1 = "8339d61043228fdd3eb658d86c926cb282ae72a8"
@@ -236,6 +552,12 @@ git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
 
+[[JLLWrappers]]
+deps = ["Preferences"]
+git-tree-sha1 = "642a199af8b68253517b80bd3bfd17eb4e84df6e"
+uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
+version = "1.3.0"
+
 [[JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
 git-tree-sha1 = "81690084b6198a2e1da36fcfda16eeca9f9f24e4"
@@ -261,12 +583,30 @@ uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
 [[Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 
+[[Libiconv_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "8d22e127ea9a0917bc98ebd3755c8bd31989381e"
+uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
+version = "1.16.1+0"
+
 [[LinearAlgebra]]
 deps = ["Libdl"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
+
+[[Lycian]]
+deps = ["DocStringExtensions", "Documenter", "Orthography", "Test"]
+git-tree-sha1 = "0afb5162d76290e586e586bdd2fa478a42fad3de"
+uuid = "7c215dd3-d1b4-4517-b6c6-0123f1059a20"
+version = "0.2.0"
+
+[[ManuscriptOrthography]]
+deps = ["DocStringExtensions", "Documenter", "Orthography", "PolytonicGreek", "Test", "Unicode"]
+git-tree-sha1 = "db8d37b5da038cc85748b897cb48eb0c16094c18"
+uuid = "c7d01213-112e-44c9-bed3-ac95fd3728c7"
+version = "0.1.1"
 
 [[Markdown]]
 deps = ["Base64"]
@@ -302,6 +642,12 @@ git-tree-sha1 = "85f8e6578bf1f9ee0d11e7bb1b1456435479d47c"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 version = "1.4.1"
 
+[[Orthography]]
+deps = ["DocStringExtensions", "Documenter", "Test", "Unicode"]
+git-tree-sha1 = "5593d0e9ef2779815073c641f63eca7ea0e2e046"
+uuid = "0b4c9448-09b0-4e78-95ea-3eb3328be36d"
+version = "0.8.0"
+
 [[Parsers]]
 deps = ["Dates"]
 git-tree-sha1 = "c8abc88faa3f7a3950832ac5d6e690881590d6dc"
@@ -318,11 +664,23 @@ git-tree-sha1 = "44e225d5837e2a2345e69a1d1e01ac2443ff9fcb"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 version = "0.7.9"
 
+[[PolytonicGreek]]
+deps = ["DocStringExtensions", "Documenter", "Orthography", "Test", "Unicode"]
+git-tree-sha1 = "306667a0336b447004caa299135aedc0eae7ea6c"
+uuid = "72b824a7-2b4a-40fa-944c-ac4f345dc63a"
+version = "0.12.0"
+
 [[PooledArrays]]
 deps = ["DataAPI", "Future"]
 git-tree-sha1 = "cde4ce9d6f33219465b55162811d8de8139c0414"
 uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
 version = "1.2.1"
+
+[[Preferences]]
+deps = ["TOML"]
+git-tree-sha1 = "00cfd92944ca9c760982747e9a1d0d5d86ab1e5a"
+uuid = "21216c6a-2e73-6563-6e65-726566657250"
+version = "1.2.2"
 
 [[PrettyTables]]
 deps = ["Crayons", "Formatting", "Markdown", "Reexport", "Tables"]
@@ -421,6 +779,12 @@ uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 [[Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
+[[XML2_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Pkg", "Zlib_jll"]
+git-tree-sha1 = "1acf5bdf07aa0907e0a37d3718bb88d4b687b74a"
+uuid = "02c8fc9c-b97f-50b9-bbe4-9be30ff0a78a"
+version = "2.9.12+0"
+
 [[Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
@@ -439,10 +803,25 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═9a934220-7d72-403d-9592-ad06a15d391c
 # ╟─a122adca-ce4a-434e-aa72-e1d3bae772ec
 # ╠═07fd8d40-c1b7-4fe0-93e5-90f91c8d1a46
+# ╟─06e8f120-355a-40b0-ac2c-8eff2316bcde
+# ╟─31886ff3-eaa2-46e8-9d91-11fcaa3be359
 # ╟─d204917f-cbc4-4c0f-9ee4-c28e3b00ee19
 # ╟─c42faa19-8986-45b5-bceb-16d30b303b31
 # ╟─fef5e91d-9e8f-42b5-b5f9-e0923a1a6ad5
 # ╟─86b7e1a0-8cc6-44db-bad7-c725069d06b0
 # ╟─18a3bb79-01aa-48eb-a9ff-ceb433dd10f2
+# ╟─bbed8bba-f869-4dbc-9db3-04755cfdd5e8
+# ╟─4eb11515-a060-4641-82d2-e8ef11fbbef9
+# ╟─c34b8953-3623-4968-a899-1db5c73ed20a
+# ╟─d65636ec-12ed-44f3-be97-5dcc527d0782
+# ╟─5f0bf4d5-2d80-49c7-a1f1-c3028c86f6c5
+# ╟─0869e356-ebfa-46d2-8413-6ddc452a6165
+# ╟─a01a6437-8382-4846-a1f1-8a235d9be0df
+# ╟─bf186270-4ac1-4715-b4e5-f120a6debfd3
+# ╟─0e181c10-06d9-4795-be9d-e644a8751528
+# ╟─8893c76b-33ca-49fe-9b18-8b1e8554f698
+# ╟─cd2adfb3-dec2-4116-8a09-9f05f2d47c9a
+# ╟─538e6344-2f9b-40e4-baa7-a21d1d5451e8
+# ╟─e761fa5d-3f7e-4ec1-bd9d-cf9687713163
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
