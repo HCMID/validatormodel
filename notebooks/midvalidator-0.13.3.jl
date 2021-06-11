@@ -20,6 +20,7 @@ begin
 	Pkg.update()	
 	using PlutoUI
 	using CitableText
+	using CitableCorpus
 	using CitableObject
 	using CitableImage
 	using CitablePhysicalText
@@ -310,13 +311,14 @@ function orthography()
 	else
 	
 		textconfig = citation_df(editorsrepo())
+		catalog = textcatalog_df(editorsrepo())
 		sdse = EditorsRepo.surfaceDse(editorsrepo(), Cite2Urn(surface))
 		
 		htmlrows = []
 		for row in eachrow(sdse)
 			tidy = EditorsRepo.baseurn(row.passage)
 			ortho = orthographyforurn(textconfig, tidy)
-			
+			title = worktitle(catalog, row.passage)
 			
 			#chunks = normednodetext(editorsrepo(), row.passage) |> split
 			chunks = graphemes(normednodetext(editorsrepo(), row.passage)) |> collect
@@ -324,7 +326,9 @@ function orthography()
 			for chunk in chunks
 				push!(html, formatToken(ortho, chunk))
 			end
-			htmlrow =  string("<p><b>$(tidy.urn)</b> ", join(html), "</p>")
+			
+			psg = passagecomponent(tidy)
+			htmlrow =  string("<p><i>$title</>, <b>$psg</b> ", join(html), "</p>")
 			push!(htmlrows,htmlrow)
 		end
 		HTML(join(htmlrows,"\n"))
@@ -391,7 +395,9 @@ end
 # Compose markdown for one row of display interleaving citable
 # text passage and indexed image.
 function accuracyView(row::DataFrameRow)
-	citation = "**" * passagecomponent(row.passage)  * "** "
+	catalog = textcatalog_df(editorsrepo())
+    title 	= worktitle(catalog, xrow.passage)
+	citation = string("*", title, "*, **" * passagecomponent(row.passage)  * "** ")
 
 	
 	txt = diplnodetext(editorsrepo(), row.passage, )
