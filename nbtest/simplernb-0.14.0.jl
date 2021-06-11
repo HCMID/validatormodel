@@ -17,8 +17,20 @@ end
 let
 	using CitableText
 	using CitableCorpus
+	using CitableObject
+	using CitableImage
+	using CitablePhysicalText
+	using CitableTeiReaders
+	using CSV
 	using DataFrames
 	using EditorsRepo
+	using EditionBuilders
+	using Markdown
+	using Orthography
+	using ManuscriptOrthography
+	using PolytonicGreek
+	using Unicode
+	
 	using PlutoUI
 end
 
@@ -71,6 +83,12 @@ md"""
 
 *Check that diplomatic text and indexed image correspond.*
 
+
+"""
+
+# ╔═╡ d7ecb79a-191e-4517-9895-6137f1a3a26b
+md"""
+*Maximum width of image*: $(@bind w Slider(200:1200, show_value=true))
 
 """
 
@@ -279,6 +297,9 @@ function orthography()
 	end
 end
 
+# ╔═╡ 69ea601e-2953-4993-bea0-dd8113dc7c0c
+orthography()
+
 # ╔═╡ 538e6344-2f9b-40e4-baa7-a21d1d5451e8
 # Base URL for an ImageCitationTool
 function ict()
@@ -322,6 +343,16 @@ function completenessView(urn, repo)
 
 end
 
+# ╔═╡ 0f3db560-3a6b-40b0-8205-484a41c5d983
+# Display link for completeness view
+begin
+	if isempty(surface)
+		md""
+	else
+		Markdown.parse(completenessView(Cite2Urn(surface), editorsrepo()))
+	end
+end
+
 # ╔═╡ 0869e356-ebfa-46d2-8413-6ddc452a6165
 # Compose markdown for one row of display interleaving citable
 # text passage and indexed image.
@@ -346,21 +377,65 @@ $(img)
 	record
 end
 
+# ╔═╡ b04f31aa-3767-4d90-94d6-727ba0405b09
+# Display for visual validation of DSE indexing
+begin
+
+	if surface == ""
+		md"(Select a surface)"
+	else
+		surfDse = surfaceDse(editorsrepo(), Cite2Urn(surface) )
+		cellout = []
+		
+		try
+			for r in eachrow(surfDse)
+				push!(cellout, accuracyView(r))
+			end
+
+		catch e
+			html"<p class='danger'>Problem with XML edition: see message below</p>"
+		end
+		Markdown.parse(join(cellout,"\n"))				
+		
+	end
+
+end
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
-[compat]
-CitableCorpus = "~0.2.0"
-CitableText = "~0.9.0"
-DataFrames = "~1.1.1"
-EditorsRepo = "~0.11.3"
-PlutoUI = "~0.7.9"
-
 [deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CitableCorpus = "cf5ac11a-93ef-4a1a-97a3-f6af101603b5"
+CitableImage = "17ccb2e5-db19-44b3-b354-4fd16d92c74e"
+CitableObject = "e2b2f5ea-1cd8-4ce8-9b2b-05dad64c2a57"
+CitablePhysicalText = "e38a874e-a7c2-4ff3-8dea-81ae2e5c9b07"
+CitableTeiReaders = "b4325aa9-906c-402e-9c3f-19ab8a88308e"
 CitableText = "41e66566-473b-49d4-85b7-da83b66615d8"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+EditionBuilders = "2fb66cca-c1f8-4a32-85dd-1a01a9e8cd8f"
 EditorsRepo = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
+ManuscriptOrthography = "c7d01213-112e-44c9-bed3-ac95fd3728c7"
+Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
+Orthography = "0b4c9448-09b0-4e78-95ea-3eb3328be36d"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+PolytonicGreek = "72b824a7-2b4a-40fa-944c-ac4f345dc63a"
+Unicode = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
+
+[compat]
+CSV = "~0.8.5"
+CitableCorpus = "~0.2.0"
+CitableImage = "~0.1.7"
+CitableObject = "~0.5.1"
+CitablePhysicalText = "~0.2.6"
+CitableTeiReaders = "~0.6.4"
+CitableText = "~0.9.0"
+DataFrames = "~1.1.1"
+EditionBuilders = "~0.4.4"
+EditorsRepo = "~0.11.3"
+ManuscriptOrthography = "~0.1.1"
+Orthography = "~0.8.0"
+PlutoUI = "~0.7.9"
+PolytonicGreek = "~0.12.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -405,6 +480,12 @@ deps = ["CSV", "CitableText", "DataFrames", "DocStringExtensions", "Documenter",
 git-tree-sha1 = "aabe6a98c1f5eb335ba0b3d0cbb5c82979c88c73"
 uuid = "cf5ac11a-93ef-4a1a-97a3-f6af101603b5"
 version = "0.2.0"
+
+[[CitableImage]]
+deps = ["CitableBase", "CitableObject", "DocStringExtensions", "Documenter", "Test"]
+git-tree-sha1 = "8e47f9f3d007ae6e3adeee8e4d278d3ce1f249bd"
+uuid = "17ccb2e5-db19-44b3-b354-4fd16d92c74e"
+version = "0.1.7"
 
 [[CitableObject]]
 deps = ["CitableBase", "DocStringExtensions", "Documenter", "Test"]
@@ -799,17 +880,21 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 """
 
 # ╔═╡ Cell order:
-# ╠═610df038-caad-11eb-3594-459b1f183cc0
-# ╠═9a934220-7d72-403d-9592-ad06a15d391c
+# ╟─9a934220-7d72-403d-9592-ad06a15d391c
+# ╟─610df038-caad-11eb-3594-459b1f183cc0
 # ╟─a122adca-ce4a-434e-aa72-e1d3bae772ec
-# ╠═07fd8d40-c1b7-4fe0-93e5-90f91c8d1a46
+# ╟─07fd8d40-c1b7-4fe0-93e5-90f91c8d1a46
 # ╟─06e8f120-355a-40b0-ac2c-8eff2316bcde
 # ╟─31886ff3-eaa2-46e8-9d91-11fcaa3be359
 # ╟─d204917f-cbc4-4c0f-9ee4-c28e3b00ee19
 # ╟─c42faa19-8986-45b5-bceb-16d30b303b31
 # ╟─fef5e91d-9e8f-42b5-b5f9-e0923a1a6ad5
+# ╟─0f3db560-3a6b-40b0-8205-484a41c5d983
 # ╟─86b7e1a0-8cc6-44db-bad7-c725069d06b0
+# ╟─d7ecb79a-191e-4517-9895-6137f1a3a26b
+# ╟─b04f31aa-3767-4d90-94d6-727ba0405b09
 # ╟─18a3bb79-01aa-48eb-a9ff-ceb433dd10f2
+# ╟─69ea601e-2953-4993-bea0-dd8113dc7c0c
 # ╟─bbed8bba-f869-4dbc-9db3-04755cfdd5e8
 # ╟─4eb11515-a060-4641-82d2-e8ef11fbbef9
 # ╟─c34b8953-3623-4968-a899-1db5c73ed20a
