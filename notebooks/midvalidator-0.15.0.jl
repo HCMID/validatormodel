@@ -43,56 +43,6 @@ end
 # ╔═╡ 617ce64a-d7b1-4f66-8bd0-f7a240a929a7
 @bind loadem Button("Load/reload data")
 
-# ╔═╡ 8cd70daf-566d-423d-931c-e5021ad2778a
-begin
-	loadem
-	nbversion = "READ MANUALLY FROM TOML" #Pkg.TOML.parse(read("Project.toml", String))["version"]
-	md"""## Validating notebook: version *$(nbversion)*
-	
-Problems, suggestions?  Please file an issue in the MID  [`validatormodel` repository](https://github.com/HCMID/validatormodel/issues).
-
-References for HMT editors:  see the [2021 summer experience reference sheet](https://homermultitext.github.io/hmt-se2021/references/)
-	
-	
-	
-	
-	"""
-end
-
-# ╔═╡ 17ebe116-0d7f-4051-a548-1573121a33c9
-begin
-	loadem
-	github = "READ MANUALLY FROM TOML" # Pkg.TOML.parse(read("MID.toml", String))["github"]
-	projectname =	"READ MANUALLY FROM TOML" # Pkg.TOML.parse(read("MID.toml", String))["projectname"]
-
-	pg = string(
-		
-		"<blockquote  class='splash'>",
-		"<div class=\"center\">",
-		"<h2>Project: <em>",
-		projectname,
-		"</em>",
-		"</h2>",
-		"</div>",
-		"<ul>",
-		"<li>On github at:  ",
-		"<a href=\"" * github * "\">" * github * "</a>",
-		"</li>",
-		
-		"<li>Repository cloned in: ",
-		"<strong>",
-		dirname(pwd()),
-		"</strong>",
-		"</li>",
-		"</ul>",
-
-		"</blockquote>"
-		)
-	
-	HTML(pg)
-	
-end
-
 # ╔═╡ ee2f04c1-42bb-46bb-a381-b12138e550ee
 md"> ## Verification: DSE indexing"
 
@@ -439,11 +389,87 @@ begin
 
 end
 
-# ╔═╡ 54b35748-2270-4b00-9e24-8203f519c5ea
+# ╔═╡ 6826f84a-542a-4de6-b862-79bc604ef559
+md"> Substitute Pkg.TOML reader"
+
+# ╔═╡ 70384afe-4853-4ce1-9d02-74946e396b97
+# Read MID.toml into a dictionary, since using the normal Pkg TOML parser
+# would turn off Pluto package management!
+function tomldict(f)
+	dict = Dict()
+	#lns = readlines(joinpath(pwd(), "MID.toml"))
+	lns = readlines(f)
+	for ln in lns
+		cols = split(ln, "=")
+		if length(cols) == 2
+			val = replace(cols[2],"\"" => "") |> strip
+			key = strip(cols[1])
+			dict[key] = val
+		end
+	end
+	dict
+end
+
+# ╔═╡ a4d4970f-5f26-49de-85d0-44352ef0f2e4
+middict = begin
+	loadem
+	tomldict(joinpath(pwd(), "MID.toml"))
+end
+
+# ╔═╡ 17ebe116-0d7f-4051-a548-1573121a33c9
 begin
-	allSurfDse = surfaceDse(editorsrepo(), Cite2Urn(surface) )
-	r1 =  allSurfDse[1,:]
-	accuracyView(r1)
+	loadem
+	github = middict["github"]
+	projectname =	middict["projectname"] 
+
+	pg = string(
+		
+		"<blockquote  class='splash'>",
+		"<div class=\"center\">",
+		"<h2>Project: <em>",
+		projectname,
+		"</em>",
+		"</h2>",
+		"</div>",
+		"<ul>",
+		"<li>On github at:  ",
+		"<a href=\"" * github * "\">" * github * "</a>",
+		"</li>",
+		
+		"<li>Repository cloned in: ",
+		"<strong>",
+		dirname(pwd()),
+		"</strong>",
+		"</li>",
+		"</ul>",
+
+		"</blockquote>"
+		)
+	
+	HTML(pg)
+	
+end
+
+# ╔═╡ 82c8f9e6-4ebb-4820-ae12-a06bb774aad0
+projectdict = begin
+	loadem
+	tomldict(joinpath(pwd(), "Project.toml"))
+end
+
+# ╔═╡ 8cd70daf-566d-423d-931c-e5021ad2778a
+begin
+	loadem
+	nbversion = projectdict["version"] 
+	md"""## Validating notebook: version *$(nbversion)*
+	
+Problems, suggestions?  Please file an issue in the MID  [`validatormodel` repository](https://github.com/HCMID/validatormodel/issues).
+
+References for HMT editors:  see the [2021 summer experience reference sheet](https://homermultitext.github.io/hmt-se2021/references/)
+	
+	
+	
+	
+	"""
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1092,13 +1118,12 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╟─ad541819-7d4f-4812-8476-8a307c5c1f87
 # ╟─73839e47-8199-4755-8d55-362185907c45
 # ╟─3dd88640-e31f-4400-9c34-2adc2cd4c532
-# ╠═3b04a423-6d0e-4221-8540-ad457d0bb65e
+# ╟─3b04a423-6d0e-4221-8540-ad457d0bb65e
 # ╟─ea1b6e21-7625-4f8f-a345-8e96449c0757
 # ╟─fd401bd7-38e5-44b5-8131-dbe5eb4fe41b
 # ╟─066b9181-9d41-4013-81b2-bcc37878ab68
 # ╟─5cba9a9c-74cc-4363-a1ff-026b7b3999ea
 # ╟─71d7a180-5742-415c-9013-d3d1c0ca920c
-# ╠═54b35748-2270-4b00-9e24-8203f519c5ea
 # ╟─59fbd3de-ea0e-4b96-800c-d5d8a7272922
 # ╟─3cb683e2-5350-4262-b693-0cddee340254
 # ╟─1814e3b1-8711-4afd-9987-a41d85fd56d9
@@ -1107,5 +1132,9 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╟─43734e4f-2efc-4f12-81ac-bce7bf7ada0a
 # ╟─080b744e-8f14-406d-bdd2-fbcd3c1ec753
 # ╟─806b3733-6c06-4956-8b86-aa096f060ac6
+# ╟─6826f84a-542a-4de6-b862-79bc604ef559
+# ╟─a4d4970f-5f26-49de-85d0-44352ef0f2e4
+# ╟─82c8f9e6-4ebb-4820-ae12-a06bb774aad0
+# ╟─70384afe-4853-4ce1-9d02-74946e396b97
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
