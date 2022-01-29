@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.17.5
+# v0.17.7
 
 using Markdown
 using InteractiveUtils
@@ -39,7 +39,7 @@ begin
 end
 
 # ╔═╡ bbef0d04-803e-11ec-2d0c-99bccd51e7f3
-md"""> # MID validating notebook
+md"""> ### MID validating notebook:   `v0.16.0`
 >
 > Problems, suggestions?  Please file an issue in the MID  [`validatormodel` repository](https://github.com/HCMID/validatormodel/issues).
 > 
@@ -53,10 +53,10 @@ md"""> # MID validating notebook
 @bind loadem Button("Reload data from repository")
 
 # ╔═╡ 976cbb8f-9257-47b2-b047-4f0c66567439
-md"> ## Verification of DSE indexing"
+md"> ## 1. Verification of DSE indexing"
 
 # ╔═╡ 09369bf5-fc9a-4e62-be15-96f5cbf1c5d7
-md"""### Verify *completeness* of indexing
+md"""### 1.A. Verify *completeness* of indexing
 
 *Use the linked thumbnail image to see this surface in the Image Citation Tool.*
 """
@@ -66,7 +66,7 @@ md"*Height of thumbnail image*: $(@bind thumbht Slider(150:500, show_value=true)
 
 
 # ╔═╡ 62191bb9-b773-4a62-a4c6-07311c3a5ba6
-md""" ### Verify *accuracy* of indexing
+md""" ### 1.B. Verify *accuracy* of indexing
 
 *Check that the diplomatic reading and the indexed image correspond*.
 """
@@ -78,8 +78,15 @@ md"""
 """
 
 # ╔═╡ b30b10ce-3f72-44fc-8b28-2643aab2213c
-md""" ### Verification: orthography
+md"""> ## 2. Verification: orthography
 
+"""
+
+# ╔═╡ d9458d07-7635-4c34-97b6-eb41a5d02100
+html"""
+<i>
+Tokens highlighted like <span class="invalidtoken">this</span> contain invalid characters.
+</i>
 """
 
 # ╔═╡ 9ddd7641-257b-408f-9422-bf7fd7fe5ceb
@@ -101,7 +108,13 @@ md"""> Repository and image services
 # Since the notebook is in the `notebooks` subdirectory of the repository,
 # we can just use the parent directory (dirname() in julia) for the
 # root directory.
-r =  repository(dirname(pwd()))
+# Add reference to "reload" button so that the repository will be reloaded
+# when user clicks it.
+r =  begin
+	loadem
+	repository(dirname(pwd()))
+end
+
 
 # ╔═╡ 801be716-b830-4ab8-b6f1-17fece56abc0
 # Base URL for an ImageCitationTool
@@ -114,6 +127,70 @@ end
 function iiifsvc()
 	IIIFservice("http://www.homermultitext.org/iipsrv",
 	"/project/homer/pyramidal/deepzoom")
+end
+
+# ╔═╡ cc210c3d-e5cc-4e1b-9e6d-e8c779f82742
+md"""> Substitute Pkg.TOML reader
+>
+> *Julia's built-in TOML package part of `Pkg` but using `Pkg` turns off Pluto's built-in management system!  Easy enough to read a s imple TOML file into a dictionary, so that's what we do here.*
+"""
+
+# ╔═╡ 346130d1-24e1-4146-a2c6-a3848ddb2828
+# Read TOML file into a dictionary, since using the normal Pkg TOML parser
+# would turn off Pluto package management!
+function tomldict(f)
+	dict = Dict()
+	#lns = readlines(joinpath(pwd(), "MID.toml"))
+	lns = readlines(f)
+	for ln in lns
+		cols = split(ln, "=")
+		if length(cols) == 2
+			val = replace(cols[2],"\"" => "") |> strip
+			key = strip(cols[1])
+			dict[key] = val
+		end
+	end
+	dict
+end
+
+# ╔═╡ 54e002c7-084e-4e0e-b8fe-c9b877092e52
+middict = begin
+	loadem
+	tomldict(joinpath(pwd(), "MID.toml"))
+end
+
+# ╔═╡ ba30002a-997b-40c0-9990-5ab72db94422
+begin
+	loadem
+	github = middict["github"]
+	projectname =	middict["projectname"] 
+
+	pg = string(
+		
+		"<blockquote  class='splash'>",
+		"<div class=\"center\">",
+		"<h2>Project: <em>",
+		projectname,
+		"</em>",
+		"</h2>",
+		"</div>",
+		"<ul>",
+		"<li>On github at:  ",
+		"<a href=\"" * github * "\">" * github * "</a>",
+		"</li>",
+		
+		"<li>Repository cloned in: ",
+		"<strong>",
+		dirname(pwd()),
+		"</strong>",
+		"</li>",
+		"</ul>",
+
+		"</blockquote>"
+		)
+	
+	HTML(pg)
+	
 end
 
 # ╔═╡ 5e45dfb7-5ba4-4a29-8ac4-b933bbff40d0
@@ -134,6 +211,7 @@ md""" ## Choose a surface to verify
 
 $(@bind surface Select(surfacemenu()))
 """
+
 
 # ╔═╡ 80d8f71d-f4ca-4590-8f7f-9e1420f52879
 surfaceurn = isempty(surface) ? nothing  : Cite2Urn(surface)
@@ -179,11 +257,12 @@ css = html"""
 .waiting {
 	color: silver;
 	font-style: italic;
-	background-color: gray;
+	background-color: #silver;
 	padding: 1em;
 }
 .splash {
-	background-color: #f0f7fb;
+	background-color: #8399d4;
+	color: #800080;
 }
 .danger {
      background-color: #fbf0f0;
@@ -929,6 +1008,7 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╔═╡ Cell order:
 # ╟─50f5bcdd-dd1f-459c-89fe-7f7a81905f20
 # ╟─bbef0d04-803e-11ec-2d0c-99bccd51e7f3
+# ╟─ba30002a-997b-40c0-9990-5ab72db94422
 # ╟─59201f18-0185-4beb-bd39-9367a783150d
 # ╟─bbe0b2f7-7be5-41d5-9400-1c47cf8580b5
 # ╟─976cbb8f-9257-47b2-b047-4f0c66567439
@@ -939,12 +1019,16 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╟─08435521-4e1e-4a35-8f9a-0fc672752ae1
 # ╟─29209027-16f9-4e6c-a91a-c16ef34f77fb
 # ╟─b30b10ce-3f72-44fc-8b28-2643aab2213c
+# ╟─d9458d07-7635-4c34-97b6-eb41a5d02100
 # ╟─f6ade70f-fd4d-4dff-a64b-6fcdb4fa5255
 # ╟─9ddd7641-257b-408f-9422-bf7fd7fe5ceb
 # ╟─e0a05b0a-273d-4246-b71c-9a193784245f
 # ╟─be7937f0-134d-4072-a2b8-804eedbefb98
 # ╟─801be716-b830-4ab8-b6f1-17fece56abc0
 # ╟─f185efb9-ce87-4807-a55a-2a0e10284b4a
+# ╟─cc210c3d-e5cc-4e1b-9e6d-e8c779f82742
+# ╟─54e002c7-084e-4e0e-b8fe-c9b877092e52
+# ╟─346130d1-24e1-4146-a2c6-a3848ddb2828
 # ╟─5e45dfb7-5ba4-4a29-8ac4-b933bbff40d0
 # ╟─80d8f71d-f4ca-4590-8f7f-9e1420f52879
 # ╟─194501ae-d930-4f55-b806-4fa56d88e478
