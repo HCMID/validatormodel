@@ -1,7 +1,7 @@
 urn|file|converter|diplomatic|normalized|orthography
-urn:cts:trmilli:tl.3.v1:|tl3.xml|simpleAbReader|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|lycianAscii()
-urn:cts:trmilli:tl.25.v1:|tl25.xml|simpleAbReader|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|lycianAscii()
-urn:cts:trmilli:tl.44.v1:|tl44.xml|divAbReader|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|lycianAscii()
-urn:cts:latinLit:phi0881.phi003.bern88:|aratea.xml|poeticLineReader|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|simpleAscii()
-urn:cts:greekLit:tlg0012.tlg001.msA:|va.xml|divLineReader|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|literaryGreek()
-urn:cts:greekLit:tlg5026.e3.hmt:|e3_scholia.xml|groupedThreeDivReader|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|literaryGreek()
+urn:cts:trmilli:tl.3.v1:|tl3.xml|TEIAnonblock|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|lycianAscii()
+urn:cts:trmilli:tl.25.v1:|tl25.xml|TEIAnonblock|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|lycianAscii()
+urn:cts:trmilli:tl.44.v1:|tl44.xml|TEIDivAb|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|lycianAscii()
+urn:cts:latinLit:phi0881.phi003.bern88:|aratea.xml|TEIPoeticLine|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|simpleAscii()
+urn:cts:greekLit:tlg0012.tlg001.msA:|va.xml|TEIDivLine|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|literaryGreek()
+urn:cts:greekLit:tlg5026.e3.hmt:|e3_scholia.xml|TEIThreeDivsGrouped|MidDiplomaticBuilder("Diplomatic edition builder","dipl")|MidNormalizedBuilder("Normalized edition builder","normed")|literaryGreek()
