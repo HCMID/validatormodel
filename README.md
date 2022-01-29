@@ -1,4 +1,4 @@
-# HC MID template repository, version `0.15.0`
+# HC MID template repository, version `0.16.0`
 
 This is a template repository illustrating HC MID validation and verification using an interactive Pluto notebook.
 
@@ -11,8 +11,12 @@ The validating notebook uses Pluto's package management system (introduced in ve
 
 
 
-## Status
+## Roadmap to 1.0
 
 The validating notebook is still under development.  The [project issue tracker](https://github.com/HCMID/validatormodel/issues) includes a [1.0 milestone](https://github.com/HCMID/validatormodel/milestone/1) listing issues that define a 1.0 standard for cross-project validation of MID standards.
+
+
+- [x] `v0.16.0`: rewrite using updated packages.  Verification of DSE indexing and of configurable orthography.
+- [ ] `v1.0.0`:  comprehensive validation of configuration data, and of referential integrity in indexing and editing.
 
 
