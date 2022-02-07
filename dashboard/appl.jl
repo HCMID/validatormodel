@@ -16,7 +16,8 @@ using EditionBuilders
 using Orthography
 using EditorsRepo
 
-
+THUMBHEIGHT = 200
+TEXTHEIGHT = 600
 r = repository(pwd())
 function ict()
 	"http://www.homermultitext.org/ict2/?"
@@ -31,7 +32,7 @@ app = dash(external_stylesheets=external_stylesheets)
 #app = dash()
 
 app.layout = html_div() do
-    html_h1("MID validating notebook"),
+    html_h1("MID validating dashboard"),
   
     html_button("Load/update data", id="load_button"),
     html_div(children="No data loaded", id="datastate"),
@@ -41,7 +42,7 @@ app.layout = html_div() do
     html_div(style = Dict("width" => "600px")) do
         dcc_dropdown(id = "surfacepicker")
     end,
-    html_div(id="thumb"),
+
     html_div(id="dsecompleteness"),
     html_div(id="dseaccuracy"),
     html_div(id="orthography")
@@ -65,10 +66,10 @@ function updaterepodata(n_clicks)
     (msg, menupairs )
 end
 
-function updatesurfacedata()
-end
 
 
+# Update surfaces menu and user message when "Load/update data" button
+# is clicked:
 callback!(
     updaterepodata,
     app,
@@ -79,18 +80,29 @@ callback!(
 )
 
 
+# Update validation/verification sections of page when surface is selected:
 callback!(
-    
     app,
-    Output("thumb", "children"),
+    Output("dsecompleteness", "children"),
+    Output("dseaccuracy", "children"),
     Input("surfacepicker", "value")
 ) do newsurface
     if isnothing(newsurface) || isempty(newsurface)
-        dcc_markdown("")
+        (dcc_markdown(""), dcc_markdown(""))
     else
-        thumbhdr = "### 1.A. Verify completeness of indexing\n*Use the linked thumbnail image to see this surface in the Image Citation Tool.*\n\n"
-        thumbmarkdown = indexingcompleteness_html(r, Cite2Urn(newsurface), height=150)
-        dcc_markdown(thumbhdr * thumbmarkdown)
+        surfurn = Cite2Urn(newsurface)
+        completenesshdr = "### 1.A. Verify completeness of indexing\n*Use the linked thumbnail image to see this surface in the Image Citation Tool.*\n\n"
+        completenessimg = indexingcompleteness_html(r, surfurn, height=THUMBHEIGHT)
+        
+        completeness = dcc_markdown(completenesshdr * completenessimg)
+        
+
+        accuracyhdr = "### 1.B. Verify accuracy of indexing\n*Check that the diplomatic reading and the indexed image correspond.*\n\n"
+        accuracypassages = indexingaccuracy_html(r, surfurn, height=TEXTHEIGHT)
+
+        accuracy = dcc_markdown(accuracyhdr * accuracypassages)
+        
+        (completeness, accuracy)
     end
     
 end
