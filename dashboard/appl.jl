@@ -77,14 +77,14 @@ callback!(
     prevent_initial_call=true
 )
 
-#=
 
 callback!(
+    
     app,
     Output("thumb", "children"),
-    Input("surfacepicker", "option")
+    Input("surfacepicker", "value")
 ) do newsurface
     dcc_markdown("Woohoo! **$(newsurface)**")
 end
-=#
+
 run_server(app, "0.0.0.0", debug=true)
