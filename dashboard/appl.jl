@@ -37,6 +37,7 @@ app.layout = html_div() do
     html_div(children="No data loaded", id="datastate"),
     
   
+    html_h2("Choose a surface to validate"),
     html_div(style = Dict("width" => "600px")) do
         dcc_dropdown(id = "surfacepicker")
     end,
@@ -84,7 +85,14 @@ callback!(
     Output("thumb", "children"),
     Input("surfacepicker", "value")
 ) do newsurface
-    dcc_markdown("Woohoo! **$(newsurface)**")
+    if isnothing(newsurface) || isempty(newsurface)
+        dcc_markdown("")
+    else
+        thumbhdr = "### 1.A. Verify completeness of indexing\n*Use the linked thumbnail image to see this surface in the Image Citation Tool.*\n\n"
+        thumbmarkdown = indexingcompleteness_html(r, Cite2Urn(newsurface), height=150)
+        dcc_markdown(thumbhdr * thumbmarkdown)
+    end
+    
 end
 
 run_server(app, "0.0.0.0", debug=true)
