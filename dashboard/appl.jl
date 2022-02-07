@@ -18,26 +18,18 @@ using EditorsRepo
 
 THUMBHEIGHT = 200
 TEXTHEIGHT = 600
-r = repository(pwd())
-function ict()
-	"http://www.homermultitext.org/ict2/?"
-end
-function iiifsvc()
-	IIIFservice("http://www.homermultitext.org/iipsrv",
-	"/project/homer/pyramidal/deepzoom")
-end
 
-external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
-app = dash(external_stylesheets=external_stylesheets)
-#app = dash()
+r = repository(pwd())
+
+assetfolder = joinpath(pwd(), "dashboard", "assets")
+app = dash(assets_folder = assetfolder, include_assets_files=true)
 
 app.layout = html_div() do
     html_h1("MID validating dashboard"),
-  
+    
     html_button("Load/update data", id="load_button"),
     html_div(children="No data loaded", id="datastate"),
-    
-  
+   
     html_h2("Choose a surface to validate"),
     html_div(style = Dict("width" => "600px")) do
         dcc_dropdown(id = "surfacepicker")
@@ -46,7 +38,6 @@ app.layout = html_div() do
     html_div(id="dsecompleteness"),
     html_div(id="dseaccuracy"),
     html_div(id="orthography")
-
 end
 
 "Update surfaces menu and set user message about number of times data loaded."
@@ -67,7 +58,6 @@ function updaterepodata(n_clicks)
 end
 
 
-
 # Update surfaces menu and user message when "Load/update data" button
 # is clicked:
 callback!(
@@ -79,32 +69,33 @@ callback!(
     prevent_initial_call=true
 )
 
-
 # Update validation/verification sections of page when surface is selected:
 callback!(
     app,
     Output("dsecompleteness", "children"),
     Output("dseaccuracy", "children"),
+    Output("orthography", "children"),
     Input("surfacepicker", "value")
 ) do newsurface
     if isnothing(newsurface) || isempty(newsurface)
-        (dcc_markdown(""), dcc_markdown(""))
+        (dcc_markdown(""), dcc_markdown(""), dcc_markdown(""))
     else
         surfurn = Cite2Urn(newsurface)
-        completenesshdr = "### 1.A. Verify completeness of indexing\n*Use the linked thumbnail image to see this surface in the Image Citation Tool.*\n\n"
+        completenesshdr = "> ## 1. Verification of DSE indexing\n\n### 1.A. Verify completeness of indexing\n*Use the linked thumbnail image to see this surface in the Image Citation Tool.*\n\n"
         completenessimg = indexingcompleteness_html(r, surfurn, height=THUMBHEIGHT)
         
         completeness = dcc_markdown(completenesshdr * completenessimg)
         
-
         accuracyhdr = "### 1.B. Verify accuracy of indexing\n*Check that the diplomatic reading and the indexed image correspond.*\n\n"
         accuracypassages = indexingaccuracy_html(r, surfurn, height=TEXTHEIGHT)
-
         accuracy = dcc_markdown(accuracyhdr * accuracypassages)
         
-        (completeness, accuracy)
+        orthohdr = "> ## 2. Verification: orthography\n\nHighlighted tokens contain invalid characters.\n\n"
+        orthopsgs = orthographicvalidity_html(r, surfurn)
+        orthography = dcc_markdown(orthohdr * orthopsgs,dangerously_allow_html=true)
+
+        (completeness, accuracy, orthography)
     end
-    
 end
 
 run_server(app, "0.0.0.0", debug=true)
