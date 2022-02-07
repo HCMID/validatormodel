@@ -26,9 +26,9 @@ function iiifsvc()
 	"/project/homer/pyramidal/deepzoom")
 end
 
-#external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
-#app = dash(external_stylesheets=external_stylesheets)
-app = dash()
+external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+app = dash(external_stylesheets=external_stylesheets)
+#app = dash()
 
 app.layout = html_div() do
     html_h1("MID validating notebook"),
@@ -36,10 +36,10 @@ app.layout = html_div() do
     html_button("Load/update data", id="load_button"),
     html_div(children="No data loaded", id="datastate"),
     
-    html_div(id="surfacemenu") do 
-        html_div(id="surfacepicker")
+  
+    html_div(style = Dict("width" => "600px")) do
+        dcc_dropdown(id = "surfacepicker")
     end,
-
     html_div(id="thumb"),
     html_div(id="dsecompleteness"),
     html_div(id="dseaccuracy"),
@@ -61,16 +61,7 @@ function updaterepodata(n_clicks)
     for s in surfaces(r)
 		push!(menupairs, (label=string(s), value=string(s)))
 	end
-
-    menu = html_div(style = Dict("width" => "600px")) do
-        dcc_dropdown(
-            id = "surfacepicker",
-            options = menupairs,
-            value = ""
-        )
-    end
-
-    (msg, [dcc_markdown("## Choose a surface to verify"), menu] )
+    (msg, menupairs )
 end
 
 function updatesurfacedata()
@@ -81,18 +72,17 @@ callback!(
     updaterepodata,
     app,
     Output("datastate", "children"),
-    Output("surfacepicker", "children"),
+    Output("surfacepicker", "options"),
     Input("load_button", "n_clicks"),
     prevent_initial_call=true
 )
-
 
 #=
 
 callback!(
     app,
     Output("thumb", "children"),
-    Input("surfacepicker", "value")
+    Input("surfacepicker", "option")
 ) do newsurface
     dcc_markdown("Woohoo! **$(newsurface)**")
 end
