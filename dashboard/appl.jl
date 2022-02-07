@@ -56,7 +56,6 @@ function updaterepodata(n_clicks)
     else
         dcc_markdown("""Data loaded **$(n_clicks)** times.""")
     end
-#=
 
     menupairs = [(label="", value="")]
     for s in surfaces(r)
@@ -72,14 +71,12 @@ function updaterepodata(n_clicks)
     end
 
     (msg, [dcc_markdown("## Choose a surface to verify"), menu] )
-=#
-    (msg, ["Message 2"])
 end
 
 function updatesurfacedata()
 end
 
-#=
+
 callback!(
     updaterepodata,
     app,
@@ -90,7 +87,7 @@ callback!(
 )
 
 
-
+#=
 
 callback!(
     app,
