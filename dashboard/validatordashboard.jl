@@ -1,8 +1,10 @@
+# Run this dashboard from the root of the
+# github repository:
 using Pkg
-if  ! isfile("Manifest.toml")
-    Pkg.activate(".")
-    Pkg.instantiate()
-end
+Pkg.activate(joinpath(pwd(), "dashboard"))
+Pkg.instantiate()
+
+DASHBOARD_VERSION = "0.16.1"
 
 using Dash
 using CitableBase
@@ -25,6 +27,10 @@ assetfolder = joinpath(pwd(), "dashboard", "assets")
 app = dash(assets_folder = assetfolder, include_assets_files=true)
 
 app.layout = html_div() do
+    dcc_markdown() do 
+        """*Dashboard version*: **$(DASHBOARD_VERSION)**. 
+        """
+    end
     html_h1("MID validating dashboard"),
     
     html_button("Load/update data", id="load_button"),
@@ -69,7 +75,7 @@ callback!(
     prevent_initial_call=true
 )
 
-# Update validation/verification sections of page when surface is selected:
+#= Update validation/verification sections of page when surface is selected:
 callback!(
     app,
     Output("dsecompleteness", "children"),
@@ -97,5 +103,5 @@ callback!(
         (completeness, accuracy, orthography)
     end
 end
-
-run_server(app, "0.0.0.0", debug=true)
+=#
+run_server(app, "0.0.0.0", 8051, debug=true)
