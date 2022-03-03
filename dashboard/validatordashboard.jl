@@ -4,7 +4,7 @@ using Pkg
 Pkg.activate(joinpath(pwd(), "dashboard"))
 Pkg.instantiate()
 
-DASHBOARD_VERSION = "0.16.1"
+DASHBOARD_VERSION = "0.17.0"
 
 using Dash
 using CitableBase
@@ -30,7 +30,7 @@ app.layout = html_div() do
     dcc_markdown() do 
         """*Dashboard version*: **$(DASHBOARD_VERSION)**. 
         """
-    end
+    end,
     html_h1("MID validating dashboard"),
     
     html_button("Load/update data", id="load_button"),
@@ -57,7 +57,7 @@ function updaterepodata(n_clicks)
     end
 
     menupairs = [(label="", value="")]
-    for s in surfaces(r)
+    for s in surfaces(r, strict = false)
 		push!(menupairs, (label=string(s), value=string(s)))
 	end
     (msg, menupairs )
@@ -75,7 +75,7 @@ callback!(
     prevent_initial_call=true
 )
 
-#= Update validation/verification sections of page when surface is selected:
+# Update validation/verification sections of page when surface is selected:
 callback!(
     app,
     Output("dsecompleteness", "children"),
@@ -88,12 +88,12 @@ callback!(
     else
         surfurn = Cite2Urn(newsurface)
         completenesshdr = "> ## 1. Verification of DSE indexing\n\n### 1.A. Verify completeness of indexing\n*Use the linked thumbnail image to see this surface in the Image Citation Tool.*\n\n"
-        completenessimg = indexingcompleteness_html(r, surfurn, height=THUMBHEIGHT)
+        completenessimg = indexingcompleteness_html(r, surfurn, height=THUMBHEIGHT, strict = false)
         
         completeness = dcc_markdown(completenesshdr * completenessimg)
         
         accuracyhdr = "### 1.B. Verify accuracy of indexing\n*Check that the diplomatic reading and the indexed image correspond.*\n\n"
-        accuracypassages = indexingaccuracy_html(r, surfurn, height=TEXTHEIGHT)
+        accuracypassages = indexingaccuracy_html(r, surfurn, height=TEXTHEIGHT, strict = false)
         accuracy = dcc_markdown(accuracyhdr * accuracypassages)
         
         orthohdr = "> ## 2. Verification: orthography\n\nHighlighted tokens contain invalid characters.\n\n"
@@ -103,5 +103,5 @@ callback!(
         (completeness, accuracy, orthography)
     end
 end
-=#
+
 run_server(app, "0.0.0.0", 8051, debug=true)
