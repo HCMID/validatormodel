@@ -97,7 +97,7 @@ callback!(
         accuracy = dcc_markdown(accuracyhdr * accuracypassages)
         
         orthohdr = "> ## 2. Verification: orthography\n\nHighlighted tokens contain invalid characters.\n\n"
-        orthopsgs = orthographicvalidity_html(r, surfurn)
+        orthopsgs = orthographicvalidity_html(r, surfurn, strict = false)
         orthography = dcc_markdown(orthohdr * orthopsgs,dangerously_allow_html=true)
 
         (completeness, accuracy, orthography)
