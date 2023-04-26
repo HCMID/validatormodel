@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.12
+# v0.19.24
 
 using Markdown
 using InteractiveUtils
@@ -98,10 +98,16 @@ Tokens highlighted like <span class="invalidtoken">this</span> contain invalid c
 html"""
 
 <br/><br/><br/><br/><br/><br/>
-<hr/>
 <br/>
-Configuration and formatting you can ignore unless you're curious about how it works.
+
 """
+
+# ╔═╡ e1b1291f-2e1a-48d2-b026-113ba4b7d21f
+md"""---
+
+
+
+> Configuration and formatting you can ignore unless you're curious about how it works."""
 
 # ╔═╡ e0a05b0a-273d-4246-b71c-9a193784245f
 md"""> Repository and image services
@@ -202,7 +208,7 @@ end
 md"> Formatting"
 
 # ╔═╡ 194501ae-d930-4f55-b806-4fa56d88e478
-# Create a menu of string options with an initial blank item
+"Create a menu of string options with an initial blank item."
 function surfacemenu()
 	options = [""]
 	for s in surfaces(r, strict = false)
@@ -220,12 +226,6 @@ $(@bind surface Select(surfacemenu()))
 
 # ╔═╡ 80d8f71d-f4ca-4590-8f7f-9e1420f52879
 surfaceurn = isempty(surface) ? nothing  : Cite2Urn(surface)
-
-# ╔═╡ a1a46ecc-76d1-40e2-8fcf-d53826367f8d
-surfaceurn
-
-# ╔═╡ 45709ce3-1b35-4813-9bf8-7060ac7b28a5
-surfaces(r, strict = false)
 
 # ╔═╡ 64db31f9-564f-417e-84f2-0069ce3a14e8
 function waiting()
@@ -379,7 +379,7 @@ PolytonicGreek = "~0.17.21"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.1"
+julia_version = "1.8.5"
 manifest_format = "2.0"
 project_hash = "7493496bd65686222b0ffceb5a4e868ee81e4d00"
 
@@ -561,7 +561,7 @@ version = "4.2.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "0.5.2+0"
+version = "1.0.1+0"
 
 [[deps.ComputationalResources]]
 git-tree-sha1 = "52cb3ec90e8a8bea0e62e275ba577ad0f74821f7"
@@ -706,9 +706,9 @@ uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[deps.Ghostscript_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "78e2c69783c9753a91cdae88a8d432be85a2ab5e"
+git-tree-sha1 = "43ba3d3c82c18d88471cfd2924931658838c9d8f"
 uuid = "61579ee1-b43e-5ca0-a5da-69d92c66a64b"
-version = "9.55.0+0"
+version = "9.55.0+4"
 
 [[deps.Graphics]]
 deps = ["Colors", "LinearAlgebra", "NaNMath"]
@@ -992,9 +992,9 @@ uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 
 [[deps.Libiconv_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "42b62845d70a619f063a7da093d995ec8e15e778"
+git-tree-sha1 = "c7cb1f5d892775ba13767a87c7ada0b980ea0a71"
 uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
-version = "1.16.1+1"
+version = "1.16.1+2"
 
 [[deps.Libtiff_jll]]
 deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "LERC_jll", "Libdl", "Pkg", "Zlib_jll", "Zstd_jll"]
@@ -1404,7 +1404,7 @@ version = "1.9.0"
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
-version = "1.10.0"
+version = "1.10.1"
 
 [[deps.TensorCore]]
 deps = ["LinearAlgebra"]
@@ -1532,7 +1532,7 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═50f5bcdd-dd1f-459c-89fe-7f7a81905f20
+# ╟─50f5bcdd-dd1f-459c-89fe-7f7a81905f20
 # ╟─bbef0d04-803e-11ec-2d0c-99bccd51e7f3
 # ╟─ba30002a-997b-40c0-9990-5ab72db94422
 # ╟─59201f18-0185-4beb-bd39-9367a783150d
@@ -1543,12 +1543,12 @@ version = "17.4.0+0"
 # ╟─e85a492a-ab05-4ab9-a4b8-d699c8486bd1
 # ╟─62191bb9-b773-4a62-a4c6-07311c3a5ba6
 # ╟─08435521-4e1e-4a35-8f9a-0fc672752ae1
-# ╠═29209027-16f9-4e6c-a91a-c16ef34f77fb
+# ╟─29209027-16f9-4e6c-a91a-c16ef34f77fb
 # ╟─b30b10ce-3f72-44fc-8b28-2643aab2213c
-# ╠═d9458d07-7635-4c34-97b6-eb41a5d02100
-# ╠═f6ade70f-fd4d-4dff-a64b-6fcdb4fa5255
-# ╠═a1a46ecc-76d1-40e2-8fcf-d53826367f8d
-# ╠═9ddd7641-257b-408f-9422-bf7fd7fe5ceb
+# ╟─d9458d07-7635-4c34-97b6-eb41a5d02100
+# ╟─f6ade70f-fd4d-4dff-a64b-6fcdb4fa5255
+# ╟─9ddd7641-257b-408f-9422-bf7fd7fe5ceb
+# ╟─e1b1291f-2e1a-48d2-b026-113ba4b7d21f
 # ╟─e0a05b0a-273d-4246-b71c-9a193784245f
 # ╟─be7937f0-134d-4072-a2b8-804eedbefb98
 # ╟─801be716-b830-4ab8-b6f1-17fece56abc0
@@ -1557,9 +1557,8 @@ version = "17.4.0+0"
 # ╟─54e002c7-084e-4e0e-b8fe-c9b877092e52
 # ╟─346130d1-24e1-4146-a2c6-a3848ddb2828
 # ╟─5e45dfb7-5ba4-4a29-8ac4-b933bbff40d0
-# ╠═80d8f71d-f4ca-4590-8f7f-9e1420f52879
-# ╠═194501ae-d930-4f55-b806-4fa56d88e478
-# ╠═45709ce3-1b35-4813-9bf8-7060ac7b28a5
+# ╟─80d8f71d-f4ca-4590-8f7f-9e1420f52879
+# ╟─194501ae-d930-4f55-b806-4fa56d88e478
 # ╟─64db31f9-564f-417e-84f2-0069ce3a14e8
 # ╟─11867dd1-f497-4efd-8b8c-a233483aa521
 # ╟─00000000-0000-0000-0000-000000000001

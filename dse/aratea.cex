@@ -1,7 +1,11 @@
-#!citerelationset
-urn|urn:cite2:mid:dse.v1:bern88
-label|Collection of DSE records for Bern 88 manuscript of Aratea
+#!datamodels
+Collection|Model|Label|Description
+urn:cite2:hmt:dse.v1:bern88|urn:cite2:cite:datamodels.v1:dsemodel|Relations of text, manuscript page and documentary image for MS Bern 88.
 
+
+#!citerelationset
+urn|urn:cite2:hmt:dse.v1:bern88
+label|Collection of DSE records for MS Bern88
 passage|imageroi|surface
 urn:cts:latinLit:phi0881.phi003.bern88:256|urn:cite2:citeecod:bern88imgs.v1:bern88_004v@0.2658,0.1119,0.3911,0.02654|urn:cite2:mid:bern88pages.v1:4v
 urn:cts:latinLit:phi0881.phi003.bern88:257|urn:cite2:citeecod:bern88imgs.v1:bern88_004v@0.2686,0.1371,0.3304,0.01590|urn:cite2:mid:bern88pages.v1:4v
