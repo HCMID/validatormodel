@@ -38,7 +38,7 @@ begin
 	# Add any concrete orthographies you need.  Here's
 	# a whole bunch for some MID projects!
 	using PolytonicGreek
-	#using ManuscriptOrthography
+	using ManuscriptOrthography
 	#using Lycian
 	
 end
@@ -56,9 +56,6 @@ md"""> ### MID validating notebook:   `v0.17.0`
 
 # ╔═╡ 59201f18-0185-4beb-bd39-9367a783150d
 @bind loadem Button("Reload data from repository")
-
-# ╔═╡ 067132a6-c7bf-4df0-b852-923e6efbb423
-
 
 # ╔═╡ 976cbb8f-9257-47b2-b047-4f0c66567439
 md"> ## 1. Verification of DSE indexing"
@@ -358,6 +355,7 @@ CitableTeiReaders = "b4325aa9-906c-402e-9c3f-19ab8a88308e"
 CitableText = "41e66566-473b-49d4-85b7-da83b66615d8"
 EditionBuilders = "2fb66cca-c1f8-4a32-85dd-1a01a9e8cd8f"
 EditorsRepo = "3fa2051c-bcb6-4d65-8a68-41ff86d56437"
+ManuscriptOrthography = "c7d01213-112e-44c9-bed3-ac95fd3728c7"
 Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
 Orthography = "0b4c9448-09b0-4e78-95ea-3eb3328be36d"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
@@ -372,7 +370,8 @@ CitablePhysicalText = "~0.9.5"
 CitableTeiReaders = "~0.10.1"
 CitableText = "~0.15.2"
 EditionBuilders = "~0.8.2"
-EditorsRepo = "~0.18.3"
+EditorsRepo = "~0.18.4"
+ManuscriptOrthography = "~0.4.3"
 Orthography = "~0.18.2"
 PlutoUI = "~0.7.50"
 PolytonicGreek = "~0.18.0"
@@ -384,7 +383,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "781057d6299594dce0bd13eb07d121c4d76ec1b8"
+project_hash = "ab8221e01dd2a711d7f5a3a44cbc7ab5bd078a93"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -1036,10 +1035,10 @@ uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 version = "0.5.10"
 
 [[deps.ManuscriptOrthography]]
-deps = ["Compat", "DocStringExtensions", "Documenter", "Orthography", "PolytonicGreek", "Test", "TestSetExtensions", "Unicode"]
-git-tree-sha1 = "df28f27bc6dd09ac4ad180b4a02b99c01da40267"
+deps = ["DocStringExtensions", "Documenter", "Orthography", "PolytonicGreek", "Test", "TestSetExtensions", "Unicode"]
+git-tree-sha1 = "1eb59e7ea8b54efb2914dc27eed64de1dcad8640"
 uuid = "c7d01213-112e-44c9-bed3-ac95fd3728c7"
-version = "0.4.1"
+version = "0.4.3"
 
 [[deps.MappedArrays]]
 git-tree-sha1 = "e8b359ef06ec72e8c030463fe02efe5527ee5142"
@@ -1567,7 +1566,6 @@ version = "17.4.0+0"
 # ╟─bbef0d04-803e-11ec-2d0c-99bccd51e7f3
 # ╟─ba30002a-997b-40c0-9990-5ab72db94422
 # ╟─59201f18-0185-4beb-bd39-9367a783150d
-# ╠═067132a6-c7bf-4df0-b852-923e6efbb423
 # ╟─bbe0b2f7-7be5-41d5-9400-1c47cf8580b5
 # ╟─976cbb8f-9257-47b2-b047-4f0c66567439
 # ╟─09369bf5-fc9a-4e62-be15-96f5cbf1c5d7
